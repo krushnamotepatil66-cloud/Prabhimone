@@ -1,0 +1,23 @@
+.customer-table{
+width:100%;
+background:#fff;
+border-collapse:collapse;
+border-radius:10px;
+overflow:hidden;
+}
+
+.customer-table th,
+.customer-table td{
+padding:15px;
+text-align:left;
+border-bottom:1px solid #eee;
+}
+
+.customer-table button{
+padding:8px 14px;
+background:#2563eb;
+color:#fff;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}

@@ -1,0 +1,233 @@
+/* Zoho Invoice Inspired Widget CSS System */
+
+:root {
+  --zoho-blue: #1b75bb;
+  --zoho-hover-blue: #155e96;
+  --zoho-green: #2fb344;
+  --zoho-red: #ea4335;
+  --zoho-orange: #f59e0b;
+  --zoho-navy: #1e293b;
+  --text-dark: #374151;
+  --text-light: #6b7280;
+  --border-color: #e5e7eb;
+  --card-bg: #ffffff;
+  --bg-light: #f8fafc;
+}
+
+.zoho-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.zoho-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.zoho-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 12px;
+}
+
+.zoho-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--zoho-navy);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoho-card-action {
+  background: none;
+  border: none;
+  color: var(--zoho-blue);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.zoho-card-action:hover {
+  background: #eff6ff;
+}
+
+.zoho-card-select {
+  font-size: 13px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: #fff;
+  color: var(--text-dark);
+  cursor: pointer;
+  outline: none;
+}
+
+.zoho-card-select:focus {
+  border-color: var(--zoho-blue);
+}
+
+/* Receivables Widget Styles */
+.receivables-amount {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--zoho-navy);
+  margin-bottom: 16px;
+}
+
+.receivables-bar-container {
+  height: 12px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  display: flex;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.receivables-bar-current {
+  height: 100%;
+  background: var(--zoho-green);
+  transition: width 0.4s ease;
+}
+
+.receivables-bar-overdue {
+  height: 100%;
+  background: var(--zoho-red);
+  transition: width 0.4s ease;
+}
+
+.receivables-breakdown {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.breakdown-item {
+  flex: 1;
+  padding: 10px;
+  background: var(--bg-light);
+  border-radius: 6px;
+}
+
+.breakdown-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.breakdown-label.current {
+  color: var(--zoho-green);
+}
+
+.breakdown-label.overdue {
+  color: var(--zoho-red);
+}
+
+.breakdown-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--zoho-navy);
+}
+
+/* Projects and List Styles */
+.zoho-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.zoho-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+  border-radius: 4px;
+}
+
+.zoho-list-item:hover {
+  background-color: var(--bg-light);
+}
+
+.item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--zoho-navy);
+}
+
+.item-desc {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.item-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.badge-active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-billable {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.badge-nonbillable {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.item-metric {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* Scrollbar tweaks */
+.zoho-list::-webkit-scrollbar {
+  width: 4px;
+}
+.zoho-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.zoho-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}

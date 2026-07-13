@@ -1,0 +1,19 @@
+.activity{
+background:#fff;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.activity h3{
+margin-bottom:20px;
+}
+
+.activity ul{
+list-style:none;
+}
+
+.activity li{
+padding:12px 0;
+border-bottom:1px solid #eee;
+}

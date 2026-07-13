@@ -1,0 +1,456 @@
+/* Zoho Invoices Preview Split-Pane Styling */
+
+.zoho-preview-pane {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 180px); /* Fill the available vertical space */
+  overflow: hidden;
+}
+
+/* Action Toolbar */
+.zoho-preview-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.toolbar-btn {
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.toolbar-btn:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.toolbar-btn.close-btn {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+  font-weight: 600;
+}
+
+.toolbar-btn.close-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.toolbar-btn.edit-btn:hover {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-color: #86efac;
+}
+
+.toolbar-btn.payment-btn {
+  background-color: #1b75bb;
+  color: #ffffff;
+  border-color: #155e96;
+}
+
+.toolbar-btn.payment-btn:hover {
+  background-color: #155e96;
+}
+
+.toolbar-btn.delete-btn:hover {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.toolbar-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* Status Banner */
+.status-timeline-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.status-timeline-banner.paid {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.status-timeline-banner.paid .banner-badge-dot {
+  background-color: #22c55e;
+}
+
+.status-timeline-banner.pending {
+  background-color: #fffbeb;
+  color: #92400e;
+}
+
+.status-timeline-banner.pending .banner-badge-dot {
+  background-color: #f59e0b;
+}
+
+.status-timeline-banner.overdue {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.status-timeline-banner.overdue .banner-badge-dot {
+  background-color: #ef4444;
+}
+
+.banner-badge-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Paper Document simulated sheet */
+.paper-document-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f1f5f9;
+  padding: 24px;
+}
+
+.invoice-paper-sheet {
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.paper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.org-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+}
+
+.org-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0;
+}
+
+.doc-type-title {
+  text-align: right;
+}
+
+.doc-type-title h1 {
+  font-size: 28px;
+  color: #94a3b8;
+  font-weight: 300;
+  margin: 0 0 12px 0;
+}
+
+.invoice-meta-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 6px 12px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.meta-label {
+  color: #64748b;
+}
+
+.meta-value {
+  color: #334155;
+}
+
+.bold-text {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.paper-divider {
+  border: 0;
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 24px 0;
+}
+
+/* Bill to section */
+.bill-to-section {
+  margin-bottom: 24px;
+}
+
+.bill-label {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  margin: 0 0 6px 0;
+}
+
+.bill-customer-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.bill-customer-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0;
+}
+
+/* Items Table */
+.paper-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 13px;
+}
+
+.paper-items-table th {
+  background-color: #1e293b;
+  color: #ffffff;
+  padding: 10px 14px;
+  font-weight: 500;
+}
+
+.paper-items-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.item-name-cell {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+/* Paper Summary */
+.paper-summary-section {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  gap: 30px;
+}
+
+.summary-col-left {
+  flex: 1;
+}
+
+.payment-terms-text {
+  font-size: 12px;
+  color: #64748b;
+  font-style: italic;
+  margin: 0;
+}
+
+.summary-col-right {
+  width: 280px;
+}
+
+.summary-meta-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 8px 16px;
+  font-size: 13px;
+}
+
+.summary-label {
+  color: #64748b;
+  text-align: right;
+}
+
+.summary-val {
+  color: #334155;
+  text-align: right;
+  font-weight: 500;
+}
+
+.grid-divider {
+  grid-column: span 2;
+  border: 0;
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 4px 0;
+}
+
+.grand-total-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.grand-total-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1b75bb;
+}
+
+@media (max-width: 640px) {
+  .invoice-paper-sheet {
+    padding: 20px;
+  }
+  
+  /* Stacking Table cells into cards for Mobile Viewports */
+  .paper-items-table, 
+  .paper-items-table thead, 
+  .paper-items-table tbody, 
+  .paper-items-table th, 
+  .paper-items-table td, 
+  .paper-items-table tr { 
+    display: block; 
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .paper-items-table thead {
+    display: none;
+  }
+  
+  .paper-items-table tr {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+  
+  .paper-items-table td {
+    border: none;
+    padding: 8px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: right !important;
+    font-size: 13px;
+    border-bottom: 1px dashed #f1f5f9;
+  }
+
+  .paper-items-table td:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .paper-items-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #64748b;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Style name cell as a heading block without data-label */
+  .paper-items-table td.item-name-cell {
+    display: block;
+    text-align: left !important;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    padding-top: 0;
+  }
+  
+  .paper-items-table td.item-name-cell::before {
+    display: none;
+  }
+
+  .paper-summary-section {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .summary-col-right {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .zoho-preview-pane {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 180px);
+    overflow: visible;
+  }
+
+  .paper-document-scroll-container {
+    order: 1;
+    overflow-y: visible;
+    height: auto;
+    padding: 12px;
+  }
+
+  .status-timeline-banner {
+    order: 2;
+    border-top: 1px solid #cbd5e1;
+    border-bottom: 1px solid #cbd5e1;
+    margin: 8px 0;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .zoho-preview-toolbar {
+    order: 3;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    align-items: stretch;
+    border-top: 1px solid #cbd5e1;
+    border-bottom: none;
+    background-color: #ffffff;
+  }
+
+  .toolbar-left, 
+  .toolbar-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .toolbar-left .toolbar-btn,
+  .toolbar-right .toolbar-btn {
+    flex: 1 1 calc(50% - 8px);
+    justify-content: center;
+    box-sizing: border-box;
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  /* Close button spans full width */
+  .toolbar-left .toolbar-btn {
+    flex: 1 1 100%;
+  }
+}

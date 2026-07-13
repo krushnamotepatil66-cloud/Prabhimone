@@ -1,0 +1,217 @@
+/* Zoho-style Invoice Header Styles */
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.invoice-header-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Status Filter Selector Dropdown */
+.status-selector-container {
+  position: relative;
+}
+
+.status-selector-btn {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+  outline: none;
+}
+
+.status-selector-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.status-selector-btn h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.dropdown-arrow {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.status-dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  background: transparent;
+}
+
+.status-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  width: 180px;
+  z-index: 100;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.status-dropdown-item {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.status-dropdown-item:hover {
+  background-color: #f3f4f6;
+  color: #1b75bb;
+}
+
+.status-dropdown-item.active {
+  background-color: #eff6ff;
+  color: #1b75bb;
+  font-weight: 600;
+}
+
+/* Actions Section */
+.invoice-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  order: 2;
+}
+
+/* Search Bar */
+.search-bar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  order: 1;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.search-input {
+  padding: 9px 12px 9px 36px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  width: 220px;
+  outline: none;
+  background-color: #f8fafc;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #1b75bb;
+  background-color: #fff;
+}
+
+/* Actions Buttons */
+.primary-btn.add-invoice-btn {
+  background-color: #1b75bb;
+  color: #fff;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.primary-btn.add-invoice-btn:hover {
+  background-color: #155e96;
+}
+
+.secondary-btn.export-btn {
+  background-color: #fff;
+  color: #475569;
+  padding: 8px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.secondary-btn.export-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .invoice-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .invoice-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .search-bar-container {
+    width: 100%;
+    order: 2;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .action-buttons-group {
+    order: 1;
+    width: 100%;
+    display: flex;
+    gap: 10px;
+  }
+
+  .action-buttons-group button {
+    flex: 1;
+    width: auto;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+}

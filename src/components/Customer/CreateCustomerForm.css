@@ -1,0 +1,306 @@
+/* Zoho Customer Form Redesign CSS */
+
+.zoho-customer-form-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  min-height: calc(100vh - 120px);
+  position: relative;
+  text-align: left;
+}
+
+/* Header */
+.form-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 8px 8px 0 0;
+}
+
+.form-page-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.form-close-x {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.form-close-x:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+/* Form layouts */
+.zoho-billing-form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-section-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+.section-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1b75bb; /* Zoho blue title highlights */
+  margin: 0 0 18px 0;
+  border-bottom: 1px dashed #e2e8f0;
+  padding-bottom: 8px;
+}
+
+/* Radio buttons for Contact Type */
+.contact-type-radio-group {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #1b75bb;
+  cursor: pointer;
+}
+
+/* Name Split Flex Row */
+.name-inputs-row {
+  display: flex;
+  gap: 12px;
+}
+
+.salutation-select {
+  width: 90px !important;
+  flex-shrink: 0;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* Input Fields Controls */
+.form-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.form-field-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.required-label::after {
+  content: " *";
+  color: #ea4335;
+}
+
+.form-input-control {
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  background-color: #ffffff;
+  color: #1e293b;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.form-input-control:focus {
+  border-color: #1b75bb;
+}
+
+/* Customer Fields Grid */
+.customer-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .customer-fields-grid {
+    grid-template-columns: 1fr;
+  }
+  .name-inputs-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .salutation-select {
+    width: 100% !important;
+  }
+}
+
+/* Address Tabs Layout */
+.address-tabs-header {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 16px;
+}
+
+.address-tab-btn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  padding: 8px 4px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.address-tab-btn:hover {
+  color: #1e293b;
+}
+
+.address-tab-btn.active {
+  color: #1b75bb;
+  border-bottom-color: #1b75bb;
+}
+
+.copy-billing-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.copy-billing-btn {
+  background: none;
+  border: none;
+  color: #1b75bb;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.copy-billing-btn:hover {
+  text-decoration: underline;
+  background-color: #eff6ff;
+}
+
+/* Textarea Controls */
+.form-textarea-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  background-color: #ffffff;
+  color: #1e293b;
+  transition: border-color 0.2s ease;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.form-textarea-control:focus {
+  border-color: #1b75bb;
+}
+
+/* Sticky Footer actions bar */
+.customer-form-footer-actions {
+  position: sticky;
+  bottom: 0;
+  height: 70px;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 12px;
+  z-index: 50;
+  box-sizing: border-box;
+  margin-top: auto;
+}
+
+.action-footer-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.save-btn {
+  background-color: #1b75bb;
+  color: #ffffff;
+  border: 1px solid #155e96;
+}
+
+.save-btn:hover {
+  background-color: #155e96;
+}
+
+.cancel-btn {
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.cancel-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .zoho-billing-form {
+    padding: 16px;
+  }
+  
+  .form-section-card {
+    padding: 16px;
+  }
+  
+  .customer-form-footer-actions {
+    padding: 0 16px;
+    gap: 8px;
+  }
+  
+  .action-footer-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px 12px;
+  }
+}

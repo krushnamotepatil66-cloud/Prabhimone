@@ -1,0 +1,132 @@
+.payments-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.payments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.payments-header h1 {
+  font-size: 26px;
+  color: var(--secondary);
+}
+
+.payments-header .subtitle {
+  color: var(--gray);
+  font-size: 14px;
+}
+
+.record-payment-btn {
+  background: #10b981;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.record-payment-btn:hover {
+  background: #059669;
+}
+
+.positive-collected {
+  color: #10b981 !important;
+}
+
+.payments-table-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.payments-list-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payments-list-table th,
+.payments-list-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+}
+
+.payments-list-table th {
+  background: #f8fafc;
+  color: var(--gray);
+  font-weight: 600;
+}
+
+.payment-row-item {
+  transition: var(--transition);
+}
+
+.payment-row-item:hover {
+  background: #f8fafc;
+}
+
+.invoice-link {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.method-pill {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.reference-cell {
+  font-family: monospace;
+  color: #64748b;
+}
+
+.amount-collected-val {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.delete-action-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.delete-action-btn:hover {
+  background: #fee2e2;
+}
+
+@media (max-width: 768px) {
+  .payments-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .payments-header h1 {
+    font-size: 22px;
+  }
+
+  .record-payment-btn {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+  }
+}

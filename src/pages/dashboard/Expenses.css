@@ -1,0 +1,178 @@
+/* Expenses Page Layout and Styling */
+
+.expenses-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.expenses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.expenses-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.expenses-header .subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Filters Bar */
+.filters-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.filter-btn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  padding: 6px 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.filter-btn.active {
+  background-color: #eff6ff;
+  color: #1b75bb;
+  font-weight: 600;
+}
+
+/* Table Card & Elements */
+.expenses-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.expenses-table th {
+  background: #f8fafc;
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.expenses-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.expenses-table tr:hover {
+  background-color: #f8fafc;
+}
+
+.expense-id-cell {
+  font-weight: 600;
+  color: #1b75bb;
+}
+
+.category-cell {
+  font-weight: 500;
+}
+
+.none-text {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.status-badge.badge-billable {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge.badge-non-billable {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+/* Delete Icon */
+.delete-icon-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.delete-icon-btn:hover {
+  background-color: #fee2e2;
+}
+
+/* Add expense button styling */
+.add-expense-btn {
+  background-color: #1b75bb;
+  color: #fff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-expense-btn:hover {
+  background-color: #155e96;
+}
+
+@media (max-width: 640px) {
+  .expenses-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

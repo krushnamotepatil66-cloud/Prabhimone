@@ -1,0 +1,134 @@
+.reports-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reports-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reports-header h1 {
+  font-size: 26px;
+  color: var(--secondary);
+}
+
+.reports-header .subtitle {
+  color: var(--gray);
+  font-size: 14px;
+}
+
+.tab-buttons {
+  display: flex;
+  background: #e2e8f0;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.tab-btn.active {
+  background: #fff;
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.trend {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.reports-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.reports-grid.single-col {
+  flex-direction: column;
+}
+
+.report-chart-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+}
+
+.large-chart {
+  flex: 2;
+  min-width: 500px;
+}
+
+.small-chart {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.report-chart-card h3 {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: var(--secondary);
+}
+
+.chart-pie-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 15px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 15px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.legend-item .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-item .name {
+  color: var(--secondary);
+  font-weight: 500;
+  flex: 1;
+}
+
+.legend-item .val {
+  color: var(--gray);
+}
+@media (max-width: 768px) {
+  .reports-grid {
+    flex-direction: column;
+  }
+  .large-chart, .small-chart {
+    min-width: 100%;
+  }
+}

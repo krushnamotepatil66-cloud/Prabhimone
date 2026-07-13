@@ -1,0 +1,130 @@
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-header h1 {
+  font-size: 26px;
+  color: var(--secondary);
+}
+
+.settings-header .subtitle {
+  color: var(--gray);
+  font-size: 14px;
+}
+
+.success-toast {
+  background: #dcfce7;
+  color: #15803d;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  border-left: 4px solid #10b981;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settings-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+  padding: 30px;
+  max-width: 800px;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.settings-section h3 {
+  font-size: 16px;
+  color: var(--secondary);
+  margin-bottom: 4px;
+}
+
+.section-description {
+  color: var(--gray);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.form-group-full {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-form label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.settings-form input,
+.settings-form select {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.settings-form input:focus,
+.settings-form select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.settings-divider {
+  border: 0;
+  border-top: 1px solid #f1f5f9;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-settings-btn {
+  background: var(--primary);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.save-settings-btn:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-group-full {
+    grid-column: span 1;
+  }
+}

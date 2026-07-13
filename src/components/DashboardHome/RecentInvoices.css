@@ -1,0 +1,43 @@
+.recent-invoices{
+    margin-top:30px;
+    background:#fff;
+    padding:20px;
+    border-radius:10px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:15px;
+    text-align:left;
+}
+
+tr{
+    border-bottom:1px solid #eee;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-badge.paid {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-badge.pending {
+    background: #fef9c3;
+    color: #a16207;
+}
+
+.status-badge.overdue {
+    background: #fee2e2;
+    color: #b91c1c;
+}
