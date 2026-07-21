@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 
 import DashboardLayout from "../../layouts/DashboardLayout";
 import InvoiceHeader from "../../components/Invoice/InvoiceHeader";
-import InvoiceSummary from "../../components/InvoiceSummary/InvoiceSummary";
 import InvoiceTable from "../../components/Invoice/InvoiceTable";
 import CreateInvoiceForm from "../../components/Invoice/CreateInvoiceForm";
 import InvoicePreview from "../../components/Invoice/InvoicePreview";
@@ -39,19 +38,26 @@ function Invoices() {
     }
   }, [searchParams, setSearchParams]);
 
-  const handleAddInvoice = (invoice) => {
+  const handleAddInvoice = (invoice, shouldPrint) => {
     addInvoice(invoice);
     setIsCreating(false);
+    setPreviewInvoice(invoice);
+    if (shouldPrint) {
+      setTimeout(() => {
+        window.print();
+      }, 400);
+    }
   };
 
-  const handleUpdateInvoice = (updatedInvoice) => {
+  const handleUpdateInvoice = (updatedInvoice, shouldPrint) => {
     updateInvoice(updatedInvoice);
     setIsEditing(false);
     setEditingInvoice(null);
-
-    // Refresh details preview pane if active
-    if (previewInvoice && previewInvoice.id === updatedInvoice.id) {
-      setPreviewInvoice(updatedInvoice);
+    setPreviewInvoice(updatedInvoice);
+    if (shouldPrint) {
+      setTimeout(() => {
+        window.print();
+      }, 400);
     }
   };
 
@@ -104,34 +110,72 @@ function Invoices() {
 
   return (
     <DashboardLayout>
-      <InvoiceHeader
-        search={search}
-        setSearch={setSearch}
-        status={status}
-        setStatus={setStatus}
-        onCreate={() => {
-          setIsCreating(true);
-        }}
-        invoices={invoiceList}
-      />
-
       {previewInvoice ? (
-        /* Full Width Details Preview Panel */
-        <div className="invoice-full-preview-container">
-          <InvoicePreview
-            invoice={previewInvoice}
-            onClose={() => setPreviewInvoice(null)}
-            onEdit={(inv) => {
-              setEditingInvoice(inv);
-              setIsEditing(true);
-            }}
-            onDelete={handleDeleteInvoice}
-            onRecordPayment={handleRecordPaymentClick}
-          />
+        /* Split Screen Layout: Left list of invoices, Right detailed invoice preview */
+        <div className="invoices-split-container">
+          <div className="split-list-panel">
+            <div className="split-list-header">
+              <span>INVOICES ({filteredList.length})</span>
+            </div>
+            <div className="split-list-scroll">
+              {filteredList.length === 0 ? (
+                <div className="no-split-data">No invoices found</div>
+              ) : (
+                filteredList.map((inv) => (
+                  <div
+                    key={inv.id}
+                    className={`split-invoice-card status-border-${inv.status.toLowerCase()} ${
+                      previewInvoice.id === inv.id ? "active" : ""
+                    }`}
+                    onClick={() => setPreviewInvoice(inv)}
+                  >
+                    <div className="card-top">
+                      <span className="card-id">{inv.id}</span>
+                      <span className="card-amount">{inv.amount}</span>
+                    </div>
+                    <div className="card-middle">
+                      <span className="card-customer">{inv.customer}</span>
+                      <span className={`card-badge-inline badge-${inv.status.toLowerCase()}`}>
+                        {inv.status}
+                      </span>
+                    </div>
+                    <div className="card-bottom">
+                      <span>{inv.date}</span>
+                      <span>Due: {inv.dueDate || inv.date}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="split-preview-panel">
+            <InvoicePreview
+              invoice={previewInvoice}
+              onClose={() => setPreviewInvoice(null)}
+              onEdit={(inv) => {
+                setEditingInvoice(inv);
+                setIsEditing(true);
+              }}
+              onDelete={handleDeleteInvoice}
+              onRecordPayment={handleRecordPaymentClick}
+            />
+          </div>
         </div>
       ) : (
         /* Full Width Table Layout */
         <>
+          <InvoiceHeader
+            search={search}
+            setSearch={setSearch}
+            status={status}
+            setStatus={setStatus}
+            onCreate={() => {
+              setIsCreating(true);
+            }}
+            invoices={invoiceList}
+          />
+
           <InvoiceTable
             invoices={invoiceList}
             search={search}
@@ -146,8 +190,6 @@ function Invoices() {
             }}
             activeInvoiceId={null}
           />
-
-          <InvoiceSummary invoices={invoiceList} />
         </>
       )}
 

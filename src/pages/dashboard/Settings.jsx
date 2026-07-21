@@ -83,6 +83,17 @@ function Settings() {
     setTimeout(() => setShowSuccess(false), 3000);
   };
 
+  const handleLogoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleInput("companyLogo", reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleReset = () => {
     setForm({ ...defaults, ...settings });
   };
@@ -102,6 +113,22 @@ function Settings() {
         <h3 className="settings-card-title"><FiBriefcase className="card-title-icon" /> Company Details</h3>
         <p className="settings-card-desc">Your legal business identity and contact information.</p>
         <div className="settings-form-grid">
+          <div className="form-group full-width">
+            <label>Company Logo</label>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+              {form.companyLogo ? (
+                <img src={form.companyLogo} alt="Logo Preview" style={{ width: "80px", height: "80px", objectFit: "contain", border: "1px solid #e2e8f0", borderRadius: "8px", background: "#fff" }} />
+              ) : (
+                <div style={{ width: "80px", height: "80px", background: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed #cbd5e1", borderRadius: "8px", color: "#64748b", fontSize: "12px" }}>No Logo</div>
+              )}
+              <div>
+                <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ border: "none", padding: "0", background: "transparent" }} />
+                {form.companyLogo && (
+                  <button type="button" onClick={() => handleInput("companyLogo", "")} className="btn-secondary" style={{ padding: "6px 12px", height: "auto", marginTop: "8px", display: "block" }}>Remove Logo</button>
+                )}
+              </div>
+            </div>
+          </div>
           <div className="form-group full-width">
             <label>Company / Organization Name *</label>
             <input type="text" value={form.companyName} onChange={(e) => handleInput("companyName", e.target.value)} required />

@@ -16,87 +16,21 @@ import "./Dashboard.css";
 function Dashboard() {
   const { profile, settings } = useApp();
   const navigate = useNavigate();
-
-  // Dropdown states
-  const [showQuickAdd, setShowQuickAdd] = useState(false);
-
   return (
     <DashboardLayout>
       {/* Zoho Custom Dashboard Header */}
       <div className="zoho-dashboard-header">
-        <div className="header-left">
-          <h2 className="welcome-title">Hello, {profile.name}</h2>
-          <p className="company-subtitle">{settings.companyName}</p>
-        </div>
-
-        <div className="header-right">
-          <div className="quick-add-container">
-            <button
-              className="quick-add-btn"
-              onClick={() => setShowQuickAdd(!showQuickAdd)}
-              aria-haspopup="true"
-              aria-expanded={showQuickAdd}
-            >
-              + New <span className="arrow">▼</span>
-            </button>
-
-            {showQuickAdd && (
-              <>
-                <div
-                  className="quick-add-overlay-trigger"
-                  onClick={() => setShowQuickAdd(false)}
-                  style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    zIndex: 99,
-                    background: "transparent"
-                  }}
-                />
-                <div className="quick-add-dropdown" style={{ zIndex: 100 }}>
-                  <div
-                    className="dropdown-item"
-                    onClick={() => {
-                      navigate("/dashboard/invoices?action=new");
-                      setShowQuickAdd(false);
-                    }}
-                  >
-                    New Invoice
-                  </div>
-                  <div
-                    className="dropdown-item"
-                    onClick={() => {
-                      navigate("/dashboard/customers?action=new");
-                      setShowQuickAdd(false);
-                    }}
-                  >
-                    New Customer
-                  </div>
-                  <div
-                    className="dropdown-item"
-                    onClick={() => {
-                      navigate("/dashboard/payments?action=new");
-                      setShowQuickAdd(false);
-                    }}
-                  >
-                    Record Payment
-                  </div>
-                  <div
-                    className="dropdown-item"
-                    onClick={() => {
-                      navigate("/dashboard/expenses?action=new");
-                      setShowQuickAdd(false);
-                    }}
-                  >
-                    New Expense
-                  </div>
-                </div>
-              </>
-            )}
+        <div className="header-left" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          {settings.companyLogo && (
+            <img src={settings.companyLogo} alt="Company Logo" style={{ height: "64px", width: "auto", objectFit: "contain", borderRadius: "6px" }} />
+          )}
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <h2 className="welcome-title" style={{ margin: "0 0 4px 0" }}>{profile.name}</h2>
+            <p className="company-subtitle" style={{ margin: 0 }}>{settings.companyName}</p>
           </div>
         </div>
+
+        {/* Removed header-right / quick add container (moved to TotalReceivables) */}
       </div>
 
       {/* Main Grid Widget System */}

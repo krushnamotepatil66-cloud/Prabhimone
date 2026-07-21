@@ -384,7 +384,7 @@ function CreateProformaInvoiceForm({ editingProformaInvoice, onSave, onCancel })
         price: Number(item.price) || 0,
         discount: Number(item.discount) || 0,
         discountType: item.discountType,
-        tax: Number(item.tax) || 18
+        tax: item.tax !== "" && !isNaN(Number(item.tax)) ? Number(item.tax) : 0
       })),
       notes: form.notes,
       internalNote: form.internalNote,
@@ -917,17 +917,19 @@ function CreateProformaInvoiceForm({ editingProformaInvoice, onSave, onCancel })
                             />
                           </td>
                           <td>
-                            <select 
-                              value={item.tax}
-                              onChange={(e) => handleItemChange(index, "tax", e.target.value)}
-                              className="align-center"
-                            >
-                              <option value="0">0%</option>
-                              <option value="5">5%</option>
-                              <option value="12">12%</option>
-                              <option value="18">18%</option>
-                              <option value="28">28%</option>
-                            </select>
+                            <div className="gst-input-wrapper">
+                              <input
+                                type="number"
+                                value={item.tax}
+                                onChange={(e) => handleItemChange(index, "tax", e.target.value)}
+                                placeholder="0"
+                                className="align-center gst-input"
+                                min="0"
+                                max="100"
+                                step="any"
+                              />
+                              <span className="gst-percent-badge">%</span>
+                            </div>
                           </td>
                           <td>
                             <input 

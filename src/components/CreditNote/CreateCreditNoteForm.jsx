@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import { useApp } from "../../context/AppContext";
 import "../Invoice/CreateInvoiceForm.css";
-import { 
-  FiUser, 
-  FiFileText, 
-  FiPackage, 
-  FiEdit3, 
-  FiCreditCard, 
-  FiSearch, 
-  FiTrash2, 
-  FiPlus, 
-  FiCalendar, 
-  FiSettings, 
-  FiBell, 
+import {
+  FiUser,
+  FiFileText,
+  FiPackage,
+  FiEdit3,
+  FiCreditCard,
+  FiSearch,
+  FiTrash2,
+  FiPlus,
+  FiCalendar,
+  FiSettings,
+  FiBell,
   FiHelpCircle,
-  FiChevronDown 
+  FiChevronDown
 } from "react-icons/fi";
 
 const defaultTermsAndConditions = `1. Credit balance must be applied to future invoices within 180 days.
@@ -45,7 +45,7 @@ const emptyForm = {
       price: "",
       discount: "",
       discountType: "Flat",
-      tax: "18",
+      tax: "",
     }
   ],
   notes: "",
@@ -125,16 +125,16 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
         referenceNo: editingCreditNote.referenceNo || "",
         items: editingCreditNote.items && editingCreditNote.items.length > 0
           ? editingCreditNote.items.map(item => ({
-              product: item.product,
-              description: item.description || "",
-              hsn: item.hsn || "",
-              qty: String(item.qty),
-              unit: item.unit || "Nos",
-              price: String(item.price),
-              discount: String(item.discount || ""),
-              discountType: item.discountType || "Flat",
-              tax: String(item.tax !== undefined ? item.tax : 18)
-            }))
+            product: item.product,
+            description: item.description || "",
+            hsn: item.hsn || "",
+            qty: String(item.qty),
+            unit: item.unit || "Nos",
+            price: String(item.price),
+            discount: String(item.discount || ""),
+            discountType: item.discountType || "Flat",
+            tax: String(item.tax !== undefined ? item.tax : 18)
+          }))
           : [{ product: "Returned Goods Credit", description: "", hsn: "", qty: "1", unit: "Nos", price: String(parseAmount(editingCreditNote.amount)), discount: "", discountType: "Flat", tax: "18" }],
         notes: editingCreditNote.notes || "",
         internalNote: editingCreditNote.internalNote || "",
@@ -343,7 +343,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
         price: Number(item.price) || 0,
         discount: Number(item.discount) || 0,
         discountType: item.discountType,
-        tax: Number(item.tax) || 18
+        tax: item.tax !== "" && !isNaN(Number(item.tax)) ? Number(item.tax) : 0
       })),
       notes: form.notes,
       internalNote: form.internalNote,
@@ -367,14 +367,14 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
           </div>
           <h1 className="new-invoice-page-title">{editingCreditNote ? `Edit Credit Note (${form.creditNoteId})` : "Create Credit Note"}</h1>
         </div>
-        
+
         <div className="new-invoice-header-right">
           <button type="button" className="btn-header-secondary" onClick={onCancel}>
             Cancel
           </button>
           <div className="btn-group-primary">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="btn-header-primary-main"
               onClick={(e) => handleSubmitForm(e)}
             >
@@ -390,14 +390,14 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
       <form onSubmit={handleSubmitForm} className="new-invoice-grid-form">
         {/* Left Column */}
         <div className="new-invoice-left-col">
-          
+
           {/* 1. Customer Details Card */}
           <div className="new-invoice-card">
             <div className="card-header">
               <span className="card-header-icon"><FiUser /></span>
               <h2>Customer Details</h2>
             </div>
-            
+
             <div className="card-body">
               {/* Customer Type Radio Group */}
               <div className="form-row radio-group-row">
@@ -405,9 +405,9 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                 <div className="radio-options-flex">
                   {["Walk-in", "Existing", "Business"].map((type) => (
                     <label key={type} className={`radio-custom-label ${form.customerType === type ? "radio-active" : ""}`}>
-                      <input 
-                        type="radio" 
-                        name="customerType" 
+                      <input
+                        type="radio"
+                        name="customerType"
                         value={type}
                         checked={form.customerType === type}
                         onChange={() => handleCustomerTypeChange(type)}
@@ -424,8 +424,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                   <div className="customer-details-left-side">
                     <div className="form-group">
                       <label className="required-field">Customer Name</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={form.customer}
                         onChange={(e) => handleInput("customer", e.target.value)}
                         placeholder="Customer Name"
@@ -435,8 +435,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                     <div className="form-group">
                       <label>Mobile Number</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
                         placeholder="+91 00000 00000"
@@ -448,7 +448,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                     <div className="side-by-side-row">
                       <div className="form-group half-width">
                         <label className="required-field">State</label>
-                        <select 
+                        <select
                           value={form.state}
                           onChange={(e) => handleInput("state", e.target.value)}
                         >
@@ -462,7 +462,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                       <div className="form-group half-width">
                         <label className="required-field">Place of Supply</label>
-                        <select 
+                        <select
                           value={form.placeOfSupply}
                           onChange={(e) => handleInput("placeOfSupply", e.target.value)}
                         >
@@ -485,8 +485,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                     <div className="form-group" ref={dropdownRef}>
                       <label className="required-field">Customer Name</label>
                       <div className="autocomplete-input-wrapper">
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           value={form.customer}
                           onChange={(e) => {
                             handleInput("customer", e.target.value);
@@ -497,13 +497,13 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                           required
                         />
                         <span className="dropdown-caret-arrow"><FiChevronDown /></span>
-                        
+
                         {showDropdown && (
                           <div className="autocomplete-suggestions">
                             {filteredCustomers.length > 0 ? (
                               filteredCustomers.map((c) => (
-                                <div 
-                                  key={c.id} 
+                                <div
+                                  key={c.id}
                                   className="suggestion-row"
                                   onClick={() => handleSelectCustomer(c)}
                                 >
@@ -512,7 +512,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                                 </div>
                               ))
                             ) : (
-                              <div 
+                              <div
                                 className="suggestion-row create-option"
                                 onClick={() => {
                                   setShowDropdown(false);
@@ -529,8 +529,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                     <div className="form-group">
                       <label className="required-field">Mobile Number</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
                         placeholder="+91 00000 00000"
@@ -540,8 +540,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                     <div className="form-group">
                       <label>GSTIN</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={form.gstin}
                         onChange={(e) => handleInput("gstin", e.target.value)}
                         placeholder="27ABCDE1234F1Z5"
@@ -550,8 +550,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                     <div className="form-group">
                       <label>Email</label>
-                      <input 
-                        type="email" 
+                      <input
+                        type="email"
                         value={form.email}
                         onChange={(e) => handleInput("email", e.target.value)}
                         placeholder="customer@email.com"
@@ -562,7 +562,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                   <div className="customer-details-right-side">
                     <div className="form-group billing-address-textarea-group">
                       <label>Billing Address</label>
-                      <textarea 
+                      <textarea
                         value={form.billingAddress}
                         onChange={(e) => handleInput("billingAddress", e.target.value)}
                         placeholder="Enter Billing Address"
@@ -573,7 +573,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                     <div className="side-by-side-row">
                       <div className="form-group half-width">
                         <label className="required-field">State</label>
-                        <select 
+                        <select
                           value={form.state}
                           onChange={(e) => handleInput("state", e.target.value)}
                         >
@@ -587,7 +587,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                       <div className="form-group half-width">
                         <label className="required-field">Place of Supply</label>
-                        <select 
+                        <select
                           value={form.placeOfSupply}
                           onChange={(e) => handleInput("placeOfSupply", e.target.value)}
                         >
@@ -610,8 +610,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                     <div className="form-group" ref={dropdownRef}>
                       <label className="required-field">Business / Company Name</label>
                       <div className="autocomplete-input-wrapper">
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           value={form.customer}
                           onChange={(e) => {
                             handleInput("customer", e.target.value);
@@ -622,13 +622,13 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                           required
                         />
                         <span className="dropdown-caret-arrow"><FiChevronDown /></span>
-                        
+
                         {showDropdown && (
                           <div className="autocomplete-suggestions">
                             {filteredCustomers.length > 0 ? (
                               filteredCustomers.map((c) => (
-                                <div 
-                                  key={c.id} 
+                                <div
+                                  key={c.id}
                                   className="suggestion-row"
                                   onClick={() => handleSelectCustomer(c)}
                                 >
@@ -637,7 +637,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                                 </div>
                               ))
                             ) : (
-                              <div 
+                              <div
                                 className="suggestion-row create-option"
                                 onClick={() => {
                                   setShowDropdown(false);
@@ -654,8 +654,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                     <div className="form-group">
                       <label className="required-field">Mobile Number</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
                         placeholder="+91 00000 00000"
@@ -665,8 +665,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                     <div className="form-group">
                       <label>GSTIN</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={form.gstin}
                         onChange={(e) => handleInput("gstin", e.target.value)}
                         placeholder="27ABCDE1234F1Z5"
@@ -675,8 +675,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                     <div className="form-group">
                       <label>Email</label>
-                      <input 
-                        type="email" 
+                      <input
+                        type="email"
                         value={form.email}
                         onChange={(e) => handleInput("email", e.target.value)}
                         placeholder="business@company.com"
@@ -688,7 +688,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                   <div className="customer-details-right-side">
                     <div className="form-group billing-address-textarea-group">
                       <label className="required-field">Billing Address</label>
-                      <textarea 
+                      <textarea
                         value={form.billingAddress}
                         onChange={(e) => handleInput("billingAddress", e.target.value)}
                         placeholder="Registered business address"
@@ -700,7 +700,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                     <div className="side-by-side-row">
                       <div className="form-group half-width">
                         <label className="required-field">State</label>
-                        <select 
+                        <select
                           value={form.state}
                           onChange={(e) => handleInput("state", e.target.value)}
                         >
@@ -714,7 +714,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
                       <div className="form-group half-width">
                         <label className="required-field">Place of Supply</label>
-                        <select 
+                        <select
                           value={form.placeOfSupply}
                           onChange={(e) => handleInput("placeOfSupply", e.target.value)}
                         >
@@ -740,18 +740,18 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                   <span className="card-header-icon"><FiPackage /></span>
                   <h2>Items</h2>
                 </div>
-                
+
                 <div className="search-items-row">
                   <div className="search-bar-input-stack">
                     <span className="search-icon"><FiSearch /></span>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder="Search items by name / SKU"
                     />
                     <span className="barcode-scanner-icon">📷</span>
                   </div>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="btn-purple-outline"
                     onClick={addItemRow}
                   >
@@ -783,7 +783,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                       return (
                         <tr key={index}>
                           <td>
-                            <input 
+                            <input
                               type="text"
                               value={item.product}
                               onChange={(e) => handleItemChange(index, "product", e.target.value)}
@@ -792,7 +792,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                             />
                           </td>
                           <td>
-                            <input 
+                            <input
                               type="text"
                               value={item.description}
                               onChange={(e) => handleItemChange(index, "description", e.target.value)}
@@ -800,7 +800,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                             />
                           </td>
                           <td>
-                            <input 
+                            <input
                               type="number"
                               value={item.qty}
                               onChange={(e) => handleItemChange(index, "qty", e.target.value)}
@@ -809,7 +809,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                             />
                           </td>
                           <td>
-                            <select 
+                            <select
                               value={item.unit}
                               onChange={(e) => handleItemChange(index, "unit", e.target.value)}
                               className="align-center"
@@ -820,7 +820,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                             </select>
                           </td>
                           <td>
-                            <input 
+                            <input
                               type="text"
                               value={item.price}
                               onChange={(e) => handleItemChange(index, "price", e.target.value)}
@@ -830,20 +830,22 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                             />
                           </td>
                           <td>
-                            <select 
-                              value={item.tax}
-                              onChange={(e) => handleItemChange(index, "tax", e.target.value)}
-                              className="align-center"
-                            >
-                              <option value="0">0%</option>
-                              <option value="5">5%</option>
-                              <option value="12">12%</option>
-                              <option value="18">18%</option>
-                              <option value="28">28%</option>
-                            </select>
+                            <div className="gst-input-wrapper">
+                              <input
+                                type="number"
+                                value={item.tax}
+                                onChange={(e) => handleItemChange(index, "tax", e.target.value)}
+                                placeholder="0"
+                                className="align-center gst-input"
+                                min="0"
+                                max="100"
+                                step="any"
+                              />
+                              <span className="gst-percent-badge">%</span>
+                            </div>
                           </td>
                           <td>
-                            <input 
+                            <input
                               type="text"
                               value={item.discount}
                               onChange={(e) => handleItemChange(index, "discount", e.target.value)}
@@ -855,8 +857,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                             ₹{rowAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </td>
                           <td>
-                            <button 
-                              type="button" 
+                            <button
+                              type="button"
                               className="row-action-dots-btn"
                               onClick={() => removeItemRow(index)}
                               disabled={form.items.length === 1}
@@ -892,22 +894,22 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
               <span className="card-header-icon"><FiEdit3 /></span>
               <h2>Notes & Conditions</h2>
             </div>
-            
+
             <div className="card-body">
               <div className="notes-split-row">
                 <div className="form-group flex-1">
                   <label>Notes</label>
-                  <textarea 
+                  <textarea
                     value={form.notes}
                     onChange={(e) => handleInput("notes", e.target.value)}
                     placeholder="Add any notes or credit references..."
                     rows="3"
                   />
                 </div>
-                
+
                 <div className="form-group flex-1">
                   <label>Internal Note</label>
-                  <textarea 
+                  <textarea
                     value={form.internalNote}
                     onChange={(e) => handleInput("internalNote", e.target.value)}
                     placeholder="For administrative logging..."
@@ -918,7 +920,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
               <div className="form-group terms-textarea-stack" style={{ marginTop: "16px" }}>
                 <label>Terms and Conditions</label>
-                <textarea 
+                <textarea
                   value={form.termsAndConditions}
                   onChange={(e) => handleInput("termsAndConditions", e.target.value)}
                   className="terms-conditions-display"
@@ -931,20 +933,20 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
         {/* Right Column */}
         <div className="new-invoice-right-col">
-          
+
           {/* 1. Credit Note Details Card */}
           <div className="new-invoice-card">
             <div className="card-header">
               <span className="card-header-icon"><FiFileText /></span>
               <h2>Credit Note Details</h2>
             </div>
-            
+
             <div className="card-body flex-fields-vertical">
               <div className="form-group input-with-icon-group">
                 <label className="required-field">Credit Note Number</label>
                 <div className="input-with-side-button">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={form.creditNoteId}
                     onChange={(e) => handleInput("creditNoteId", e.target.value)}
                     placeholder="CN-000001"
@@ -959,8 +961,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
               <div className="form-group">
                 <label className="required-field">Credit Note Date</label>
                 <div className="input-with-inline-icon">
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     value={form.date}
                     onChange={(e) => handleInput("date", e.target.value)}
                     required
@@ -971,7 +973,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
               <div className="form-group">
                 <label>Reference Invoice</label>
-                <select 
+                <select
                   value={form.invoiceId}
                   onChange={(e) => handleInput("invoiceId", e.target.value)}
                 >
@@ -987,8 +989,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
               <div className="form-group">
                 <label>Sales Person</label>
                 <div className="autocomplete-input-wrapper">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={form.salesPerson}
                     onChange={(e) => handleInput("salesPerson", e.target.value)}
                     placeholder="Enter sales person name"
@@ -999,8 +1001,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
               <div className="form-group">
                 <label>Reference No.</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={form.referenceNo}
                   onChange={(e) => handleInput("referenceNo", e.target.value)}
                   placeholder="e.g. RET-4587"
@@ -1015,13 +1017,13 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
               <span className="card-header-icon"><FiEdit3 /></span>
               <h2>Credit Note Summary</h2>
             </div>
-            
+
             <div className="card-body summary-rows-list">
               <div className="summary-calc-row">
                 <span className="summary-label">Subtotal</span>
                 <span className="summary-value">₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
               </div>
-              
+
               {totalItemDiscount > 0 && (
                 <div className="summary-calc-row">
                   <span className="summary-label">Item Discount</span>
@@ -1041,7 +1043,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
               <div className="summary-calc-row">
                 <label className="checkbox-toggle-flex">
-                  <input 
+                  <input
                     type="checkbox"
                     checked={autoRoundOff}
                     onChange={(e) => setAutoRoundOff(e.target.checked)}
@@ -1068,11 +1070,11 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
               <span className="card-header-icon"><FiCreditCard /></span>
               <h2>Credit Note Status</h2>
             </div>
-            
+
             <div className="card-body payment-fields-vertical">
               <div className="form-group">
                 <label className="required-field">Status</label>
-                <select 
+                <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                 >
@@ -1081,8 +1083,8 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                 </select>
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="btn-purple-primary-block-action"
                 style={{ background: "#7c3aed" }}
               >
@@ -1145,11 +1147,11 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
         <div className="invoice-settings-popup-overlay">
           <div className="invoice-settings-popup customer-popup-large">
             <h3>Quick Add Customer</h3>
-            
+
             <div className="quick-cust-form-fields">
               <div className="form-group">
                 <label>Customer Name</label>
-                <input 
+                <input
                   type="text"
                   value={form.customer}
                   onChange={(e) => handleInput("customer", e.target.value)}
@@ -1158,7 +1160,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
               <div className="form-group">
                 <label>Email Address</label>
-                <input 
+                <input
                   type="email"
                   value={newCustomerData.email}
                   onChange={(e) => handleNewCustomerDataChange("email", e.target.value)}
@@ -1168,7 +1170,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
               <div className="form-group">
                 <label>Phone Number</label>
-                <input 
+                <input
                   type="text"
                   value={newCustomerData.phone}
                   onChange={(e) => handleNewCustomerDataChange("phone", e.target.value)}
@@ -1178,7 +1180,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
               <div className="form-group">
                 <label>Company Name</label>
-                <input 
+                <input
                   type="text"
                   value={newCustomerData.company}
                   onChange={(e) => handleNewCustomerDataChange("company", e.target.value)}
@@ -1188,7 +1190,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
               <div className="form-group">
                 <label>City</label>
-                <input 
+                <input
                   type="text"
                   value={newCustomerData.city}
                   onChange={(e) => handleNewCustomerDataChange("city", e.target.value)}
@@ -1198,7 +1200,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
 
               <div className="form-group full-width-span">
                 <label>Billing Address</label>
-                <textarea 
+                <textarea
                   value={newCustomerData.address}
                   onChange={(e) => handleNewCustomerDataChange("address", e.target.value)}
                   placeholder="123 Road, St."

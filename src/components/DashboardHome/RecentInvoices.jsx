@@ -2,9 +2,20 @@ import { useApp } from "../../context/AppContext";
 import "./RecentInvoices.css";
 
 function RecentInvoices() {
-  const { invoices } = useApp();
+  const { invoices, settings } = useApp();
 
-  const recent = invoices.slice(0, 5);
+  const recent = [...invoices].reverse().slice(0, 5);
+
+  const formatAmount = (amt) => {
+    if (typeof amt === "string" && (amt.includes("₹") || amt.includes("$") || amt.includes("€") || amt.includes("£"))) {
+      return amt;
+    }
+    const num = Number(String(amt).replace(/[^0-9.-]/g, "")) || 0;
+    return `${settings.currency || "₹"}${num.toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
 
   return (
     <div className="zoho-card recent-invoices-card">
@@ -35,7 +46,7 @@ function RecentInvoices() {
                 <tr key={invoice.id}>
                   <td className="invoice-id">{invoice.id}</td>
                   <td>{invoice.customer}</td>
-                  <td className="invoice-amount">{invoice.amount}</td>
+                  <td className="invoice-amount">{formatAmount(invoice.amount)}</td>
                   <td>
                     <span className={`status-badge ${invoice.status.toLowerCase()}`}>
                       {invoice.status}

@@ -212,12 +212,9 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
   };
 
   const handleItemChange = (index, field, value) => {
-    const updatedItems = [...form.items];
-    updatedItems[index][field] = value;
-
     setForm((prev) => ({
       ...prev,
-      items: updatedItems,
+      items: prev.items.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
     }));
   };
 
@@ -294,12 +291,15 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
     setShowSettingsModal(false);
   };
 
+  // Safe number parser
+  const parseNum = (val) => Number(String(val || 0).replace(/[^0-9.-]/g, "")) || 0;
+
   // Math Calculations
   const calculateItemDiscount = (item) => {
-    const qty = Number(item.qty) || 0;
-    const price = Number(item.price) || 0;
+    const qty = parseNum(item.qty);
+    const price = parseNum(item.price);
     const itemSub = qty * price;
-    const discVal = Number(item.discount) || 0;
+    const discVal = parseNum(item.discount);
     if (item.discountType === "%") {
       return (itemSub * discVal) / 100;
     }
@@ -307,8 +307,8 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
   };
 
   const calculateItemTaxableAmount = (item) => {
-    const qty = Number(item.qty) || 0;
-    const price = Number(item.price) || 0;
+    const qty = parseNum(item.qty);
+    const price = parseNum(item.price);
     const itemSub = qty * price;
     const disc = calculateItemDiscount(item);
     return Math.max(0, itemSub - disc);
@@ -316,7 +316,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
 
   const calculateItemTaxAmount = (item) => {
     const taxable = calculateItemTaxableAmount(item);
-    const taxRate = Number(item.tax) || 0;
+    const taxRate = parseNum(item.tax);
     return (taxable * taxRate) / 100;
   };
 
@@ -326,7 +326,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
     return taxable + taxAmt;
   };
 
-  let subtotal = form.items.reduce((sum, item) => sum + (Number(item.qty) || 0) * (Number(item.price) || 0), 0);
+  let subtotal = form.items.reduce((sum, item) => sum + parseNum(item.qty) * parseNum(item.price), 0);
   let totalItemDiscount = form.items.reduce((sum, item) => sum + calculateItemDiscount(item), 0);
   let totalTaxableAmount = form.items.reduce((sum, item) => sum + calculateItemTaxableAmount(item), 0);
   let totalTax = form.items.reduce((sum, item) => sum + calculateItemTaxAmount(item), 0);
@@ -363,7 +363,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
     setIsCashSaleDefault(false);
   };
 
-  const handleSubmitForm = (e, forceStatus) => {
+  const handleSubmitForm = (e, forceStatus, shouldPrint = false) => {
     if (e) e.preventDefault();
     if (!form.customer) {
       alert("Please select a customer.");
@@ -394,14 +394,18 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
     // Auto-generate invoice id if left blank
     const finalInvoiceId = form.invoiceId.trim() || `INV-${String(invoices.length + 1).padStart(6, "0")}`;
 
-    onSave({
+    const savedInvoiceData = {
       id: finalInvoiceId,
       customer: form.customer.trim(),
       date: form.date,
       terms: form.paymentTerms,
       dueDate: form.dueDate,
       status: forceStatus || (editingInvoice ? editingInvoice.status : (markAsFullyPaid || paidVal >= grandTotal ? "Paid" : "Pending")),
-      amount: `${settings.currency || "₹"}${grandTotal.toLocaleString()}`,
+      amount: `${settings.currency || "₹"}${grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      grandTotal: grandTotal,
+      subtotal: subtotal,
+      totalTaxableAmount: totalTaxableAmount,
+      totalTax: totalTax,
       items: form.items.map(item => ({
         product: item.product,
         description: item.description,
@@ -411,7 +415,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
         price: Number(item.price) || 0,
         discount: Number(item.discount) || 0,
         discountType: item.discountType,
-        tax: Number(item.tax) || 18
+        tax: item.tax !== "" && !isNaN(Number(item.tax)) ? Number(item.tax) : 0
       })),
       discount: Number(totalItemDiscount),
       discountType: "Flat",
@@ -435,7 +439,9 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
       placeOfSupply: form.placeOfSupply,
       salesPerson: form.salesPerson,
       referenceNo: form.referenceNo,
-    });
+    };
+
+    onSave(savedInvoiceData, shouldPrint);
   };
 
   const finalAmountPaid = Number(amountReceived) || 0;
@@ -916,17 +922,19 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                             />
                           </td>
                           <td>
-                            <select
-                              value={item.tax}
-                              onChange={(e) => handleItemChange(index, "tax", e.target.value)}
-                              className="align-center"
-                            >
-                              <option value="0">0%</option>
-                              <option value="5">5%</option>
-                              <option value="12">12%</option>
-                              <option value="18">18%</option>
-                              <option value="28">28%</option>
-                            </select>
+                            <div className="gst-input-wrapper">
+                              <input
+                                type="number"
+                                value={item.tax}
+                                onChange={(e) => handleItemChange(index, "tax", e.target.value)}
+                                placeholder="0"
+                                className="align-center gst-input"
+                                min="0"
+                                max="100"
+                                step="any"
+                              />
+                              <span className="gst-percent-badge">%</span>
+                            </div>
                           </td>
                           <td>
                             <input
@@ -1048,6 +1056,20 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                 <span className="summary-value">₹{totalTax.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
 
+              <div className="summary-calc-row">
+                <label className="checkbox-toggle-flex">
+                  <input
+                    type="checkbox"
+                    checked={autoRoundOff}
+                    onChange={(e) => setAutoRoundOff(e.target.checked)}
+                  />
+                  <span>Round Off</span>
+                </label>
+                <span className="summary-value font-semibold">
+                  {roundOffDifference >= 0 ? `+ ₹${roundOffDifference.toFixed(2)}` : `- ₹${Math.abs(roundOffDifference).toFixed(2)}`}
+                </span>
+              </div>
+
               <div className="summary-divider-line"></div>
 
               <div className="summary-grand-total-row">
@@ -1110,21 +1132,21 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
               </div>
 
               <div className="invoice-form-action-buttons">
-                <button type="button" className="btn-action-draft" onClick={(e) => handleSubmitForm(e, "Draft")}>
+                <button type="button" className="btn-action-draft" onClick={() => onCancel && onCancel()}>
                   Cancel
                 </button>
-                <button type="button" className="btn-action-preview">
-                  Save&Preview
+                <button type="button" className="btn-action-preview" onClick={(e) => handleSubmitForm(e, null, false)}>
+                  Save &amp; Preview
                 </button>
                 <div className="btn-action-send-group">
                   <button
                     type="button"
                     className="btn-action-send-main"
-                    onClick={(e) => handleSubmitForm(e)}
+                    onClick={(e) => handleSubmitForm(e, null, true)}
                   >
                     Save &amp; Print
                   </button>
-                  <button type="button" className="btn-action-send-arrow">
+                  <button type="button" className="btn-action-send-arrow" onClick={(e) => handleSubmitForm(e, null, true)}>
                     <FiChevronDown />
                   </button>
                 </div>

@@ -543,22 +543,23 @@
   color: #475569;
   font-size: 12px;
   font-weight: 600;
-  padding: 10px 20px;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--border-light);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .new-items-grid-table th.align-center {
   text-align: center;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .new-items-grid-table th.align-right {
   text-align: right;
-  padding-right: 20px;
+  padding-right: 12px;
 }
 
 .new-items-grid-table td {
@@ -620,6 +621,47 @@
 .new-items-grid-table input.align-right,
 .new-items-grid-table td.align-right {
   text-align: right;
+}
+
+/* GST Rate Input Container & Permanent Percentage Symbol */
+.gst-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.gst-input-wrapper input.gst-input {
+  width: 100%;
+  padding-right: 18px !important;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Remove scroll / spinner arrows from GST number input */
+.gst-input-wrapper input[type="number"]::-webkit-outer-spin-button,
+.gst-input-wrapper input[type="number"]::-webkit-inner-spin-button,
+.new-items-grid-table input[type="number"]::-webkit-outer-spin-button,
+.new-items-grid-table input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+
+.gst-input-wrapper input[type="number"],
+.new-items-grid-table input[type="number"] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+.gst-percent-badge {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-grey, #64748b);
+  pointer-events: none;
 }
 
 .new-items-grid-table td.row-final-amount {
@@ -1198,10 +1240,11 @@
 
 .amount-received-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   margin-bottom: 16px;
+  width: 100%;
 }
 
 .amount-received-row > label {
@@ -1218,7 +1261,7 @@
   border-radius: 6px;
   overflow: hidden;
   background-color: #ffffff;
-  max-width: 320px;
+  max-width: 100%;
   width: 100%;
 }
 

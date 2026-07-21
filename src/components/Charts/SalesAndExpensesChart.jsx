@@ -22,11 +22,16 @@ function SalesAndExpensesChart() {
 
   // Compute values
   const getChartData = () => {
-    // Current year is 2026 based on initial data
-    const targetYear = 2026;
+    const now = new Date();
+    // Default to current year or latest year present in invoices
+    const latestInvYear = invoices.length > 0
+      ? Math.max(...invoices.map((inv) => new Date(inv.date || now).getFullYear()).filter((y) => !isNaN(y)))
+      : now.getFullYear();
+    const targetYear = isNaN(latestInvYear) ? now.getFullYear() : latestInvYear;
+    const currentMonth = now.getMonth();
 
     if (timeframe === "month") {
-      // Show July 2026 split by weeks
+      // Show current month split by weeks
       const weeks = [
         { name: "Week 1", sales: 0, expenses: 0 },
         { name: "Week 2", sales: 0, expenses: 0 },
@@ -36,7 +41,7 @@ function SalesAndExpensesChart() {
 
       invoices.forEach((inv) => {
         const date = new Date(inv.date);
-        if (date.getFullYear() === targetYear && date.getMonth() === 6) { // July
+        if (date.getFullYear() === targetYear && date.getMonth() === currentMonth) {
           const day = date.getDate();
           const wIndex = Math.min(Math.floor((day - 1) / 7), 3);
           weeks[wIndex].sales += parseAmount(inv.amount);
@@ -45,7 +50,7 @@ function SalesAndExpensesChart() {
 
       expenses.forEach((exp) => {
         const date = new Date(exp.date);
-        if (date.getFullYear() === targetYear && date.getMonth() === 6) { // July
+        if (date.getFullYear() === targetYear && date.getMonth() === currentMonth) {
           const day = date.getDate();
           const wIndex = Math.min(Math.floor((day - 1) / 7), 3);
           weeks[wIndex].expenses += Number(exp.amount) || 0;
@@ -54,14 +59,14 @@ function SalesAndExpensesChart() {
 
       return weeks;
     } else if (timeframe === "quarter") {
-      // Show Q3 (Jul, Aug, Sep)
-      const q3Months = [
-        { name: "Jul", sales: 0, expenses: 0, index: 6 },
-        { name: "Aug", sales: 0, expenses: 0, index: 7 },
-        { name: "Sep", sales: 0, expenses: 0, index: 8 },
+      const qStart = Math.floor(currentMonth / 3) * 3;
+      const qMonths = [
+        { name: months[qStart], sales: 0, expenses: 0, index: qStart },
+        { name: months[qStart + 1], sales: 0, expenses: 0, index: qStart + 1 },
+        { name: months[qStart + 2], sales: 0, expenses: 0, index: qStart + 2 },
       ];
 
-      q3Months.forEach((m) => {
+      qMonths.forEach((m) => {
         m.sales = invoices
           .filter((inv) => {
             const date = new Date(inv.date);
@@ -77,7 +82,7 @@ function SalesAndExpensesChart() {
           .reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
       });
 
-      return q3Months.map(({ name, sales, expenses }) => ({ name, sales, expenses }));
+      return qMonths.map(({ name, sales, expenses }) => ({ name, sales, expenses }));
     } else {
       // Fiscal Year: Show Jan to Dec
       return months.map((monthName, index) => {
@@ -100,7 +105,7 @@ function SalesAndExpensesChart() {
           sales,
           expenses: expTotal,
         };
-      }).slice(0, 8); // Slice to August for clean presentation
+      });
     }
   };
 
