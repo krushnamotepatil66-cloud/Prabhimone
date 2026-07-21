@@ -47,7 +47,7 @@ function WhyChooseUs() {
     <section className="why">
       <div className="container">
 
-        <h2>Why Businesses Choose InvoicePro</h2>
+        <h2>Why Businesses Choose PrabhimOne</h2>
 
         <p className="subtitle">
           Everything you need to simplify invoicing and business management.

@@ -1,7 +1,7 @@
 :root {
   --sidebar-width-expanded: 260px;
   --sidebar-width-collapsed: 72px;
-  --sidebar-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --sidebar-transition: 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dashboard-layout {
@@ -13,16 +13,13 @@
 .dashboard-main {
   flex: 1;
   background: #f8fafc;
-  margin-left: var(--sidebar-width-expanded);
+  margin-left: var(--sidebar-width-expanded); /* Offset for permanently expanded sidebar */
+  width: calc(100% - var(--sidebar-width-expanded));
+  max-width: calc(100% - var(--sidebar-width-expanded));
   transition: margin-left var(--sidebar-transition);
   display: flex;
   flex-direction: column;
   min-width: 0;
-}
-
-/* Sidebar Collapsed state on desktop */
-.dashboard-layout.sidebar-collapsed .dashboard-main {
-  margin-left: var(--sidebar-width-collapsed);
 }
 
 .dashboard-content {
@@ -56,6 +53,8 @@
 @media (max-width: 768px) {
   .dashboard-main {
     margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
   
   .dashboard-content {

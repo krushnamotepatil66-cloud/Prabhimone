@@ -58,30 +58,34 @@
   gap: 12px;
 }
 
-.login-btn,
-.signup-btn {
+.nav-login-btn,
+.nav-signup-btn {
   text-decoration: none;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 6px;
   font-weight: 600;
   font-size: 14px;
   transition: all 0.15s ease;
 }
 
-.login-btn {
+.nav-login-btn {
   color: #0066ff;
+  border: 1px solid #0066ff;
 }
 
-.login-btn:hover {
+.nav-login-btn:hover {
   color: #0044bb;
+  border-color: #0044bb;
+  background-color: #f0f7ff;
 }
 
-.signup-btn {
+.nav-signup-btn {
   background: #0066ff;
   color: white;
+  border: 1px solid transparent;
 }
 
-.signup-btn:hover {
+.nav-signup-btn:hover {
   background: #0044bb;
 }
 
@@ -145,19 +149,19 @@
   }
 
   .nav-buttons {
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
     gap: 12px;
     width: 100%;
-    align-items: center;
     border-top: 1px solid #f3f4f6;
     padding-top: 20px;
   }
 
-  .login-btn,
-  .signup-btn {
-    width: 100%;
-    max-width: 280px;
+  .nav-login-btn,
+  .nav-signup-btn {
+    flex: 1;
+    max-width: 140px;
     text-align: center;
-    padding: 12px;
+    padding: 10px;
   }
 }

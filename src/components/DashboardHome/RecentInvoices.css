@@ -1,43 +1,69 @@
-.recent-invoices{
-    margin-top:30px;
-    background:#fff;
-    padding:20px;
-    border-radius:10px;
+.recent-invoices-card {
+  padding: 20px 24px;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
+.recent-invoices-table-container {
+  overflow-x: auto;
+  margin-top: 10px;
 }
 
-th,td{
-    padding:15px;
-    text-align:left;
+.recent-invoices-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
 }
 
-tr{
-    border-bottom:1px solid #eee;
+.recent-invoices-table th {
+  padding: 10px 8px;
+  text-align: left;
+  color: #6b7280;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.status-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    display: inline-block;
+.recent-invoices-table td {
+  padding: 12px 8px;
+  text-align: left;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+  white-space: nowrap;
 }
 
-.status-badge.paid {
-    background: #dcfce7;
-    color: #15803d;
+.recent-invoices-table tr:last-child td {
+  border-bottom: none;
 }
 
-.status-badge.pending {
-    background: #fef9c3;
-    color: #a16207;
+.recent-invoices-table .invoice-id {
+  font-weight: 600;
+  color: #1b75bb;
 }
 
-.status-badge.overdue {
-    background: #fee2e2;
-    color: #b91c1c;
+.recent-invoices-table .invoice-amount {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Status Badges */
+.recent-invoices-table .status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.recent-invoices-table .status-badge.paid {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.recent-invoices-table .status-badge.pending {
+  background: #fef9c3;
+  color: #a16207;
+}
+
+.recent-invoices-table .status-badge.overdue {
+  background: #fee2e2;
+  color: #b91c1c;
 }

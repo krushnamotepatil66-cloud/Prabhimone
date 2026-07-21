@@ -6,7 +6,7 @@ const testimonials = [
     name: "Rahul Sharma",
     role: "Small Business Owner",
     review:
-      "InvoicePro has completely changed how we manage our invoices. It's simple, fast, and reliable.",
+      "PrabhimOne has completely changed how we manage our invoices. It's simple, fast, and reliable.",
   },
   {
     name: "Priya Patel",
@@ -30,7 +30,7 @@ function Testimonials() {
         <h2>What Our Customers Say</h2>
 
         <p className="testimonial-subtitle">
-          Thousands of businesses trust InvoicePro every day.
+          Thousands of businesses trust PrabhimOne every day.
         </p>
 
         <div className="testimonial-grid">

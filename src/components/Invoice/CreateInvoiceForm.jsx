@@ -1,43 +1,263 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useApp } from "../../context/AppContext";
 import CreateCustomerForm from "../Customer/CreateCustomerForm";
 import "./CreateInvoiceForm.css";
+import {
+  FiUser,
+  FiFileText,
+  FiPackage,
+  FiEdit3,
+  FiCreditCard,
+  FiSearch,
+  FiTrash2,
+  FiPlus,
+  FiCalendar,
+  FiSettings,
+  FiBell,
+  FiHelpCircle,
+  FiChevronDown
+} from "react-icons/fi";
+
+const defaultTermsAndConditions = `1. Goods once sold will not be taken back or exchanged
+2. For warranty, retain cash memo
+3. Please check breakage and damage against delivery
+4. For order need to pay 50% advance amount
+5. All disputes are subject to PUNE jurisdiction only`;
 
 const emptyForm = {
   customer: "",
+  customerType: "Customer",
+  mobileNumber: "",
+  gstin: "",
+  email: "",
+  billingAddress: "",
+  shippingAddress: "",
+  isShippingSameAsBilling: true,
+  state: "Maharashtra",
+  placeOfSupply: "Maharashtra",
+  paymentTerms: "Custom",
   invoiceId: "",
-  orderNumber: "",
   date: new Date().toISOString().split("T")[0],
-  terms: "Net 30",
-  dueDate: "",
+  dueDate: new Date().toISOString().split("T")[0],
+  salesPerson: "",
+  referenceNo: "",
   items: [
     {
       product: "",
-      qty: 1,
-      price: 0,
-      tax: 18, // Default GST tax rate percentage
-    },
+      description: "",
+      hsn: "",
+      qty: "1",
+      unit: "",
+      price: "",
+      discount: "",
+      discountType: "Flat",
+      tax: "18",
+    }
   ],
-  discount: 0,
-  discountType: "%",
-  adjustment: 0,
-  notes: "Thanks for your business.",
-  termsAndConditions: "Please pay within the due date.",
+  notes: "",
+  internalNote: "",
+  termsAndConditions: defaultTermsAndConditions,
 };
 
 function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
   const { customers, invoices, addCustomer, settings } = useApp();
   const [form, setForm] = useState(emptyForm);
   const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
+  const [isEditingParty, setIsEditingParty] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Additional calculation states
+  const [additionalCharges, setAdditionalCharges] = useState("");
+  const [autoRoundOff, setAutoRoundOff] = useState(false);
+  const [amountReceived, setAmountReceived] = useState("");
+  const [paymentMode, setPaymentMode] = useState("UPI");
+  const [markAsFullyPaid, setMarkAsFullyPaid] = useState(false);
+  const [isCashSaleDefault, setIsCashSaleDefault] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+  const [newCustomerData, setNewCustomerData] = useState({
+    email: "",
+    phone: "",
+    company: "",
+    city: "",
+    address: ""
+  });
+
+  const handleNewCustomerDataChange = (field, value) => {
+    setNewCustomerData((prev) => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const filteredCustomers = customers.filter((c) => {
+    const term = (form.customer || "").toLowerCase().trim();
+    if (!term) return true;
+    return (
+      c.name.toLowerCase().includes(term) ||
+      (c.company && c.company.toLowerCase().includes(term))
+    );
+  });
+
+  // Load editing invoice details if available
+  useEffect(() => {
+    if (editingInvoice) {
+      const parseAmount = (amtStr) => Number(String(amtStr).replace(/[^0-9.-]/g, "")) || 0;
+
+      setForm({
+        customer: editingInvoice.customer,
+        customerType: editingInvoice.customerType || "Customer",
+        mobileNumber: editingInvoice.mobileNumber || "",
+        gstin: editingInvoice.gstin || "",
+        email: editingInvoice.email || "",
+        billingAddress: editingInvoice.billingAddress || "",
+        shippingAddress: editingInvoice.shippingAddress || "",
+        isShippingSameAsBilling: editingInvoice.isShippingSameAsBilling !== undefined ? editingInvoice.isShippingSameAsBilling : (editingInvoice.shippingAddress ? editingInvoice.shippingAddress === editingInvoice.billingAddress : true),
+        state: editingInvoice.state || "Maharashtra",
+        placeOfSupply: editingInvoice.placeOfSupply || "Maharashtra",
+        paymentTerms: editingInvoice.terms || "Custom",
+        invoiceId: editingInvoice.id,
+        date: editingInvoice.date,
+        dueDate: editingInvoice.dueDate || editingInvoice.date,
+        salesPerson: editingInvoice.salesPerson || "",
+        referenceNo: editingInvoice.referenceNo || "",
+        items: editingInvoice.items && editingInvoice.items.length > 0
+          ? editingInvoice.items.map(item => ({
+            product: item.product,
+            description: item.description || "",
+            hsn: item.hsn || "",
+            qty: String(item.qty),
+            unit: item.unit || "Nos",
+            price: String(item.price),
+            discount: String(item.discount || ""),
+            discountType: item.discountType || "Flat",
+            tax: String(item.tax !== undefined ? item.tax : 18)
+          }))
+          : [{ product: "Service Charges", description: "", hsn: "", qty: "1", unit: "Nos", price: String(parseAmount(editingInvoice.amount)), discount: "", discountType: "Flat", tax: "18" }],
+        notes: editingInvoice.notes || "",
+        internalNote: editingInvoice.internalNote || "",
+        termsAndConditions: editingInvoice.termsAndConditions || settings.invoiceTermsAndConditions || defaultTermsAndConditions,
+      });
+
+      setAdditionalCharges(editingInvoice.additionalCharges ? String(editingInvoice.additionalCharges) : "");
+      setAutoRoundOff(editingInvoice.autoRoundOff !== undefined ? editingInvoice.autoRoundOff : false);
+      setAmountReceived(editingInvoice.amountReceived ? String(editingInvoice.amountReceived) : "");
+      setPaymentMode(editingInvoice.paymentMode || "UPI");
+      setMarkAsFullyPaid(editingInvoice.status === "Paid");
+      setIsEditingParty(false);
+    } else {
+      // Start with empty invoice id (auto-generated on save if blank)
+      setForm({
+        ...emptyForm,
+        invoiceId: "",
+        date: new Date().toISOString().split("T")[0],
+        dueDate: new Date().toISOString().split("T")[0],
+        termsAndConditions: settings.invoiceTermsAndConditions || defaultTermsAndConditions,
+      });
+      setAmountReceived("");
+      setPaymentMode("UPI");
+      setMarkAsFullyPaid(false);
+      setIsEditingParty(true);
+    }
+  }, [editingInvoice, invoices.length, settings.invoiceTermsAndConditions]);
+
+  const handleInput = (field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleCustomerTypeChange = (type) => {
+    if (type === "Customer") {
+      setForm((prev) => ({
+        ...prev,
+        customerType: type,
+        customer: "",
+        mobileNumber: "",
+        gstin: "",
+        email: "",
+        billingAddress: "",
+      }));
+      setIsEditingParty(true);
+      setIsCashSaleDefault(false);
+    } else if (type === "Business") {
+      setForm((prev) => ({
+        ...prev,
+        customerType: type,
+        customer: "",
+        mobileNumber: "",
+        gstin: "",
+        email: "",
+        billingAddress: "",
+      }));
+      setIsEditingParty(true);
+      setIsCashSaleDefault(false);
+    }
+  };
+
+  const handleItemChange = (index, field, value) => {
+    const updatedItems = [...form.items];
+    updatedItems[index][field] = value;
+
+    setForm((prev) => ({
+      ...prev,
+      items: updatedItems,
+    }));
+  };
+
+  const addItemRow = () => {
+    setForm((prev) => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        {
+          product: "",
+          description: "",
+          hsn: "",
+          qty: "1",
+          unit: "",
+          price: "",
+          discount: "",
+          discountType: "Flat",
+          tax: "18",
+        },
+      ],
+    }));
+  };
+
+  const removeItemRow = (index) => {
+    if (form.items.length === 1) return;
+    setForm((prev) => ({
+      ...prev,
+      items: prev.items.filter((_, i) => i !== index),
+    }));
+  };
 
   // Auto calculate due date when date or terms change
   useEffect(() => {
-    if (!form.date) return;
+    if (!form.date || form.paymentTerms === "Custom") return;
 
     const baseDate = new Date(form.date);
-    let offsetDays = 0;
+    if (isNaN(baseDate.getTime())) return;
 
-    switch (form.terms) {
+    let offsetDays = 0;
+    switch (form.paymentTerms) {
       case "Due on Receipt":
         offsetDays = 0;
         break;
@@ -53,504 +273,1009 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
       case "Net 60":
         offsetDays = 60;
         break;
-      case "Custom":
-        // Keep user input or default to current due date
-        return;
       default:
-        offsetDays = 30;
+        offsetDays = 0;
     }
 
     baseDate.setDate(baseDate.getDate() + offsetDays);
     const calculatedDueDate = baseDate.toISOString().split("T")[0];
-    
+
     setForm((prev) => ({
       ...prev,
       dueDate: calculatedDueDate,
     }));
-  }, [form.date, form.terms]);
+  }, [form.date, form.paymentTerms]);
 
-  // Load editing invoice details if available
-  useEffect(() => {
-    if (editingInvoice) {
-      const parseAmount = (amtStr) => Number(String(amtStr).replace(/[^0-9.-]/g, "")) || 0;
-
-      // Fill in invoice parameters
-      setForm({
-        customer: editingInvoice.customer,
-        invoiceId: editingInvoice.id,
-        orderNumber: editingInvoice.orderNumber || "",
-        date: editingInvoice.date,
-        terms: editingInvoice.terms || "Net 30",
-        dueDate: editingInvoice.dueDate || editingInvoice.date,
-        items: editingInvoice.items && editingInvoice.items.length > 0
-          ? editingInvoice.items.map(item => ({
-              product: item.product,
-              qty: item.qty,
-              price: item.price,
-              tax: item.tax !== undefined ? item.tax : 18
-            }))
-          : [{ product: "Service Charges", qty: 1, price: parseAmount(editingInvoice.amount), tax: 18 }],
-        discount: editingInvoice.discount || 0,
-        discountType: editingInvoice.discountType || "%",
-        adjustment: editingInvoice.adjustment || 0,
-        notes: editingInvoice.notes || "Thanks for your business.",
-        termsAndConditions: editingInvoice.termsAndConditions || "Please pay within the due date.",
-      });
-    } else {
-      // Auto-generate invoice id
-      const nextId = `INV-${String(invoices.length + 1).padStart(3, "0")}`;
-      setForm({
-        ...emptyForm,
-        invoiceId: nextId,
-        date: new Date().toISOString().split("T")[0],
-      });
+  const handleSaveSettings = (newCurrency, newTaxRate) => {
+    if (settings) {
+      settings.currency = newCurrency;
+      settings.taxRate = Number(newTaxRate) || 18;
     }
-  }, [editingInvoice, invoices.length]);
-
-  const handleInput = (field, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleItemChange = (index, field, value) => {
-    const updatedItems = [...form.items];
-    if (field === "product") {
-      updatedItems[index][field] = value;
-    } else if (field === "amount") {
-      const amt = Number(value);
-      const qty = Number(updatedItems[index].qty) || 1;
-      updatedItems[index].price = qty > 0 ? Number((amt / qty).toFixed(2)) : amt;
-    } else {
-      updatedItems[index][field] = Number(value);
-    }
-
-    setForm((prev) => ({
-      ...prev,
-      items: updatedItems,
-    }));
-  };
-
-  const addItemRow = () => {
-    setForm((prev) => ({
-      ...prev,
-      items: [
-        ...prev.items,
-        { product: "", qty: 1, price: 0, tax: 18 },
-      ],
-    }));
-  };
-
-  const removeItemRow = (index) => {
-    if (form.items.length === 1) return;
-    setForm((prev) => ({
-      ...prev,
-      items: prev.items.filter((_, i) => i !== index),
-    }));
-  };
-
-  // Inline Customer Creation Save
-  const handleQuickCustomerSave = (newCust) => {
-    const savedCust = addCustomer(newCust);
-    setForm((prev) => ({
-      ...prev,
-      customer: savedCust.name,
-    }));
-    setIsCreatingCustomer(false);
+    setShowSettingsModal(false);
   };
 
   // Math Calculations
-  const subtotal = form.items.reduce((sum, item) => sum + item.qty * item.price, 0);
-  
-  // Calculate discount
-  let discountAmount = 0;
-  if (form.discountType === "%") {
-    discountAmount = (subtotal * Number(form.discount)) / 100;
-  } else {
-    discountAmount = Number(form.discount) || 0;
-  }
+  const calculateItemDiscount = (item) => {
+    const qty = Number(item.qty) || 0;
+    const price = Number(item.price) || 0;
+    const itemSub = qty * price;
+    const discVal = Number(item.discount) || 0;
+    if (item.discountType === "%") {
+      return (itemSub * discVal) / 100;
+    }
+    return discVal;
+  };
 
-  const amountAfterDiscount = Math.max(0, subtotal - discountAmount);
+  const calculateItemTaxableAmount = (item) => {
+    const qty = Number(item.qty) || 0;
+    const price = Number(item.price) || 0;
+    const itemSub = qty * price;
+    const disc = calculateItemDiscount(item);
+    return Math.max(0, itemSub - disc);
+  };
 
-  // Calculate tax per item (allowing custom tax rates)
-  const totalTax = form.items.reduce((sum, item) => {
-    const itemSub = item.qty * item.price;
-    // Distribute discount proportionally across items for accurate tax computation
-    const proportionalDiscount = subtotal > 0 ? (itemSub / subtotal) * discountAmount : 0;
-    const taxableItemAmount = Math.max(0, itemSub - proportionalDiscount);
-    return sum + (taxableItemAmount * item.tax) / 100;
-  }, 0);
+  const calculateItemTaxAmount = (item) => {
+    const taxable = calculateItemTaxableAmount(item);
+    const taxRate = Number(item.tax) || 0;
+    return (taxable * taxRate) / 100;
+  };
 
-  const grandTotal = Math.max(0, amountAfterDiscount + totalTax + Number(form.adjustment));
+  const calculateItemTotal = (item) => {
+    const taxable = calculateItemTaxableAmount(item);
+    const taxAmt = calculateItemTaxAmount(item);
+    return taxable + taxAmt;
+  };
+
+  let subtotal = form.items.reduce((sum, item) => sum + (Number(item.qty) || 0) * (Number(item.price) || 0), 0);
+  let totalItemDiscount = form.items.reduce((sum, item) => sum + calculateItemDiscount(item), 0);
+  let totalTaxableAmount = form.items.reduce((sum, item) => sum + calculateItemTaxableAmount(item), 0);
+  let totalTax = form.items.reduce((sum, item) => sum + calculateItemTaxAmount(item), 0);
+
+  const charges = Number(additionalCharges) || 0;
+  const tempGrandTotal = totalTaxableAmount + totalTax + charges;
+  const roundedGrandTotal = Math.round(tempGrandTotal);
+  let roundOffDifference = autoRoundOff ? Number((roundedGrandTotal - tempGrandTotal).toFixed(2)) : 0;
+  let grandTotal = autoRoundOff ? roundedGrandTotal : tempGrandTotal;
+
+  // Fully paid listener
+  useEffect(() => {
+    if (markAsFullyPaid) {
+      setAmountReceived(String(grandTotal));
+    }
+  }, [markAsFullyPaid, grandTotal]);
+
+  const getItemAmountForDisplay = (item, index) => {
+    return calculateItemTotal(item);
+  };
+
+  const handleSelectCustomer = (c) => {
+    setForm((prev) => ({
+      ...prev,
+      customer: c.name,
+      email: c.email || prev.email,
+      mobileNumber: c.phone || prev.mobileNumber,
+      billingAddress: c.address || prev.billingAddress,
+      gstin: c.gstin || "",
+    }));
+    setShowDropdown(false);
+    setShowNewCustomerForm(false);
+    setIsEditingParty(false);
+    setIsCashSaleDefault(false);
+  };
 
   const handleSubmitForm = (e, forceStatus) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!form.customer) {
       alert("Please select a customer.");
       return;
     }
-    if (form.items.some((item) => !item.product || item.price <= 0)) {
+    if (form.items.some((item) => !item.product || Number(item.price) <= 0)) {
       alert("Please ensure all items have a description and pricing details.");
       return;
     }
 
+    // Auto-create customer if they don't exist
+    const customerExists = customers.some(
+      (c) => c.name.trim().toLowerCase() === form.customer.trim().toLowerCase()
+    );
+    if (!customerExists && form.customer.trim()) {
+      addCustomer({
+        name: form.customer.trim(),
+        email: form.email,
+        phone: form.mobileNumber,
+        company: form.customer,
+        city: form.state,
+        address: form.billingAddress,
+      });
+    }
+
+    const paidVal = Number(amountReceived) || 0;
+
+    // Auto-generate invoice id if left blank
+    const finalInvoiceId = form.invoiceId.trim() || `INV-${String(invoices.length + 1).padStart(6, "0")}`;
+
     onSave({
-      id: form.invoiceId,
-      customer: form.customer,
+      id: finalInvoiceId,
+      customer: form.customer.trim(),
       date: form.date,
-      terms: form.terms,
+      terms: form.paymentTerms,
       dueDate: form.dueDate,
-      orderNumber: form.orderNumber,
-      status: forceStatus || (editingInvoice ? editingInvoice.status : "Pending"),
+      status: forceStatus || (editingInvoice ? editingInvoice.status : (markAsFullyPaid || paidVal >= grandTotal ? "Paid" : "Pending")),
       amount: `${settings.currency || "₹"}${grandTotal.toLocaleString()}`,
-      items: form.items,
-      discount: Number(form.discount),
-      discountType: form.discountType,
-      adjustment: Number(form.adjustment),
+      items: form.items.map(item => ({
+        product: item.product,
+        description: item.description,
+        hsn: item.hsn,
+        qty: Number(item.qty) || 1,
+        unit: item.unit || "Nos",
+        price: Number(item.price) || 0,
+        discount: Number(item.discount) || 0,
+        discountType: item.discountType,
+        tax: Number(item.tax) || 18
+      })),
+      discount: Number(totalItemDiscount),
+      discountType: "Flat",
+      adjustment: Number(roundOffDifference),
       notes: form.notes,
+      internalNote: form.internalNote,
       termsAndConditions: form.termsAndConditions,
+      additionalCharges: charges,
+      autoRoundOff,
+      amountReceived: paidVal,
+      paymentMode,
+      balanceDue: Math.max(0, grandTotal - paidVal),
+      customerType: form.customerType,
+      mobileNumber: form.mobileNumber,
+      gstin: form.gstin,
+      email: form.email,
+      billingAddress: form.billingAddress,
+      shippingAddress: form.isShippingSameAsBilling ? form.billingAddress : form.shippingAddress,
+      isShippingSameAsBilling: form.isShippingSameAsBilling,
+      state: form.state,
+      placeOfSupply: form.placeOfSupply,
+      salesPerson: form.salesPerson,
+      referenceNo: form.referenceNo,
     });
   };
 
-  // Sub-view: Inline Create Customer Form
-  if (isCreatingCustomer) {
-    return (
-      <CreateCustomerForm
-        editingCustomer={null}
-        onSave={handleQuickCustomerSave}
-        onCancel={() => setIsCreatingCustomer(false)}
-      />
-    );
-  }
+  const finalAmountPaid = Number(amountReceived) || 0;
 
   return (
-    <div className="zoho-invoice-form-container">
-      {/* Form Header */}
-      <div className="form-page-header">
-        <h2>{editingInvoice ? `Edit Invoice (${form.invoiceId})` : "New Invoice"}</h2>
-        <button className="form-close-x" onClick={onCancel} title="Close Form">
-          &times;
-        </button>
+    <div className="new-invoice-page-container">
+      {/* Top Breadcrumb and Actions Header */}
+      <div className="new-invoice-header-row">
+        <div className="new-invoice-header-left">
+          <div className="breadcrumb-nav">
+            <span>Home</span> &gt; <span>Invoices</span> &gt; <span className="active">Create</span>
+          </div>
+          <h1 className="new-invoice-page-title">Create Invoice</h1>
+        </div>
+
+        <div className="new-invoice-header-right">
+        </div>
       </div>
 
-      <form onSubmit={(e) => handleSubmitForm(e)} className="zoho-billing-form">
-        {/* Customer Select Section */}
-        <div className="form-section-card">
-          <div className="form-input-row customer-row-select">
-            <div className="form-field-group width-50">
-              <label className="required-label">Customer Name</label>
-              <div className="customer-select-flex">
-                <select
-                  value={form.customer}
-                  onChange={(e) => handleInput("customer", e.target.value)}
-                  required
-                  className="form-select-control"
-                >
-                  <option value="">Select Customer...</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.name}>
-                      {c.name} {c.company ? `(${c.company})` : ""}
-                    </option>
+      <form onSubmit={(e) => handleSubmitForm(e)} className="new-invoice-form-layout">
+
+        {/* â•â•â•â•â•â•â• ROW 1: Customer Details (left) + Invoice Details (right) â•â•â•â•â•â•â• */}
+        <div className="invoice-form-row invoice-form-row-top">
+          {/* Customer Details Card */}
+          <div className="new-invoice-card invoice-form-row-left">
+            <div className="card-header">
+              <span className="card-header-icon"><FiUser /></span>
+              <h2>Customer Details</h2>
+            </div>
+
+            <div className="card-body">
+              {/* Customer Type Radio Group */}
+              <div className="form-row radio-group-row">
+                <label className="field-label-inline">Customer Type</label>
+                <div className="radio-options-flex">
+                  {["Customer", "Business"].map((type) => (
+                    <label key={type} className={`radio-custom-label ${form.customerType === type ? "radio-active" : ""}`}>
+                      <input
+                        type="radio"
+                        name="customerType"
+                        value={type}
+                        checked={form.customerType === type}
+                        onChange={() => handleCustomerTypeChange(type)}
+                      />
+                      <span>{type}</span>
+                    </label>
                   ))}
-                </select>
-                <button
-                  type="button"
-                  className="quick-add-customer-btn"
-                  onClick={() => setIsCreatingCustomer(true)}
-                  title="Create Customer Inline"
-                >
-                  + New Customer
-                </button>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Invoice Parameters Grid Section */}
-        <div className="form-section-card">
-          <div className="invoice-fields-grid">
-            <div className="form-field-group">
-              <label className="required-label">Invoice#</label>
-              <input
-                type="text"
-                value={form.invoiceId}
-                onChange={(e) => handleInput("invoiceId", e.target.value)}
-                required
-                className="form-input-control"
-                placeholder="INV-XXX"
-              />
-            </div>
+              {/* â•â•â• Customer Layout â•â•â• */}
+              {form.customerType === "Customer" && (
+                <div className="customer-details-block-layout">
+                  {/* Row 1: Customer Name + Mobile Number (left) & Billing Address (right) */}
+                  <div className="details-section-row">
+                    <div className="details-left-col">
+                      <div className="form-group" ref={dropdownRef}>
+                        <label className="required-field">Customer Name</label>
+                        <div className="autocomplete-input-wrapper">
+                          <input
+                            type="text"
+                            value={form.customer}
+                            onChange={(e) => {
+                              handleInput("customer", e.target.value);
+                              setShowDropdown(true);
+                            }}
+                            onFocus={() => setShowDropdown(true)}
+                            placeholder="Search customers..."
+                            required
+                          />
+                          <span className="dropdown-caret-arrow"><FiChevronDown /></span>
 
-            <div className="form-field-group">
-              <label>Order Number</label>
-              <input
-                type="text"
-                value={form.orderNumber}
-                onChange={(e) => handleInput("orderNumber", e.target.value)}
-                className="form-input-control"
-                placeholder="Order Reference"
-              />
-            </div>
+                          {showDropdown && (
+                            <div className="autocomplete-suggestions">
+                              {filteredCustomers.map((c, idx) => (
+                                <div
+                                  key={idx}
+                                  className="suggestion-row"
+                                  onClick={() => handleSelectCustomer(c)}
+                                >
+                                  <div>{c.name}</div>
+                                  {c.email && <div className="subtext">{c.email}</div>}
+                                </div>
+                              ))}
+                              <div
+                                className="suggestion-row create-option"
+                                onClick={() => setShowNewCustomerForm(true)}
+                              >
+                                + Create New Customer
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
 
-            <div className="form-field-group">
-              <label className="required-label">Invoice Date</label>
-              <input
-                type="date"
-                value={form.date}
-                onChange={(e) => handleInput("date", e.target.value)}
-                required
-                className="form-input-control"
-              />
-            </div>
-
-            <div className="form-field-group">
-              <label>Payment Terms</label>
-              <select
-                value={form.terms}
-                onChange={(e) => handleInput("terms", e.target.value)}
-                className="form-select-control"
-              >
-                <option value="Due on Receipt">Due on Receipt</option>
-                <option value="Net 15">Net 15</option>
-                <option value="Net 30">Net 30</option>
-                <option value="Net 45">Net 45</option>
-                <option value="Net 60">Net 60</option>
-                <option value="Custom">Custom Date</option>
-              </select>
-            </div>
-
-            <div className="form-field-group">
-              <label className="required-label">Due Date</label>
-              <input
-                type="date"
-                value={form.dueDate}
-                onChange={(e) => handleInput("dueDate", e.target.value)}
-                disabled={form.terms !== "Custom"}
-                required
-                className="form-input-control"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Dynamic Items Table Grid */}
-        <div className="form-section-card no-padding">
-          <table className="form-items-table">
-            <thead>
-              <tr>
-                <th width="40%">Item Details</th>
-                <th width="15%" style={{ textAlign: "right" }}>Quantity</th>
-                <th width="18%" style={{ textAlign: "right" }}>Rate</th>
-                <th width="15%">Tax (GST %)</th>
-                <th width="12%" style={{ textAlign: "right" }}>Amount</th>
-                <th width="50"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {form.items.map((item, index) => {
-                const itemAmount = item.qty * item.price;
-                return (
-                  <tr key={index}>
-                    <td data-label="Item Details">
-                      <input
-                        type="text"
-                        placeholder="Type product name or service description..."
-                        value={item.product}
-                        onChange={(e) => handleItemChange(index, "product", e.target.value)}
-                        required
-                        className="form-input-control"
-                      />
-                    </td>
-                    <td data-label="Quantity">
-                      <input
-                        type="number"
-                        min="1"
-                        placeholder="1"
-                        value={item.qty === 0 ? "" : item.qty}
-                        onChange={(e) => handleItemChange(index, "qty", e.target.value)}
-                        required
-                        style={{ textAlign: "right" }}
-                        className="form-input-control"
-                      />
-                    </td>
-                    <td data-label="Rate">
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="0"
-                        value={item.price === 0 ? "" : item.price}
-                        onChange={(e) => handleItemChange(index, "price", e.target.value)}
-                        required
-                        style={{ textAlign: "right" }}
-                        className="form-input-control"
-                      />
-                    </td>
-                    <td data-label="Tax (GST %)">
-                      <select
-                        value={item.tax}
-                        onChange={(e) => handleItemChange(index, "tax", e.target.value)}
-                        className="form-select-control"
-                      >
-                        <option value="0">Non-Taxable (0%)</option>
-                        <option value="5">GST (5%)</option>
-                        <option value="12">GST (12%)</option>
-                        <option value="18">GST (18%)</option>
-                        <option value="28">GST (28%)</option>
-                      </select>
-                    </td>
-                    <td data-label="Amount">
-                      <div className="amount-input-wrapper">
-                        <span className="currency-symbol">{settings.currency || "₹"}</span>
+                      <div className="form-group">
+                        <label>Mobile Number</label>
                         <input
-                          type="number"
-                          placeholder="0"
-                          value={itemAmount === 0 ? "" : itemAmount}
-                          onChange={(e) => handleItemChange(index, "amount", e.target.value)}
-                          className="form-input-control item-amount-input"
-                          style={{ textAlign: "right", fontWeight: "600" }}
+                          type="text"
+                          value={form.mobileNumber}
+                          onChange={(e) => handleInput("mobileNumber", e.target.value)}
+                          placeholder="+91 00000 00000"
                         />
                       </div>
-                    </td>
-                    <td data-label="Action">
-                      <button
-                        type="button"
-                        className="item-row-delete-btn"
-                        onClick={() => removeItemRow(index)}
-                        disabled={form.items.length === 1}
-                        title="Remove row"
-                      >
-                        🗑️
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    </div>
 
-          <div style={{ padding: "16px" }}>
-            <button type="button" className="add-line-row-btn" onClick={addItemRow}>
-              + Add another line
-            </button>
+                    <div className="details-right-col">
+                      <div className="form-group">
+                        <label>Billing Address</label>
+                        <textarea
+                          value={form.billingAddress}
+                          onChange={(e) => handleInput("billingAddress", e.target.value)}
+                          placeholder="Enter Billing Address"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 2: GSTIN + Email (left) & Shipping Address (right) */}
+                  <div className="details-section-row">
+                    <div className="details-left-col">
+                      <div className="form-group">
+                        <label>GSTIN</label>
+                        <input
+                          type="text"
+                          value={form.gstin}
+                          onChange={(e) => handleInput("gstin", e.target.value)}
+                          placeholder="27ABCDE1234F1Z5"
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => handleInput("email", e.target.value)}
+                          placeholder="customer@email.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="details-right-col">
+                      <div className="form-group shipping-address-textarea-group">
+                        <label>Shipping Address</label>
+                        <label style={{ fontSize: "12px", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontWeight: "normal", marginBottom: form.isShippingSameAsBilling ? "0px" : "6px", color: "var(--text-grey)" }}>
+                          <input
+                            type="checkbox"
+                            checked={form.isShippingSameAsBilling}
+                            onChange={(e) => {
+                              handleInput("isShippingSameAsBilling", e.target.checked);
+                              if (e.target.checked) {
+                                handleInput("shippingAddress", form.billingAddress);
+                              }
+                            }}
+                          />
+                          Same as Billing Address
+                        </label>
+                        {!form.isShippingSameAsBilling && (
+                          <textarea
+                            value={form.shippingAddress}
+                            onChange={(e) => handleInput("shippingAddress", e.target.value)}
+                            placeholder="Enter Shipping Address"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* â•â•â• Business Layout â•â•â• */}
+              {form.customerType === "Business" && (
+                <div className="customer-details-block-layout">
+                  <div className="details-section-row">
+                    <div className="details-left-col">
+                      <div className="form-group" ref={dropdownRef}>
+                        <label className="required-field">Business Name</label>
+                        <div className="autocomplete-input-wrapper">
+                          <input
+                            type="text"
+                            value={form.customer}
+                            onChange={(e) => {
+                              handleInput("customer", e.target.value);
+                              setShowDropdown(true);
+                            }}
+                            onFocus={() => setShowDropdown(true)}
+                            placeholder="Search businesses..."
+                            required
+                          />
+                          <span className="dropdown-caret-arrow"><FiChevronDown /></span>
+
+                          {showDropdown && (
+                            <div className="autocomplete-suggestions">
+                              {filteredCustomers.map((c, idx) => (
+                                <div
+                                  key={idx}
+                                  className="suggestion-row"
+                                  onClick={() => handleSelectCustomer(c)}
+                                >
+                                  <div>{c.name}</div>
+                                  {c.email && <div className="subtext">{c.email}</div>}
+                                </div>
+                              ))}
+                              <div
+                                className="suggestion-row create-option"
+                                onClick={() => setShowNewCustomerForm(true)}
+                              >
+                                + Create New Business
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label className="required-field">Mobile Number</label>
+                        <input
+                          type="text"
+                          value={form.mobileNumber}
+                          onChange={(e) => handleInput("mobileNumber", e.target.value)}
+                          placeholder="+91 00000 00000"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="details-right-col">
+                      <div className="form-group">
+                        <label className="required-field">Billing Address</label>
+                        <textarea
+                          value={form.billingAddress}
+                          onChange={(e) => handleInput("billingAddress", e.target.value)}
+                          placeholder="Registered business address"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="details-section-row">
+                    <div className="details-left-col">
+                      <div className="form-group">
+                        <label className="required-field">GSTIN</label>
+                        <input
+                          type="text"
+                          value={form.gstin}
+                          onChange={(e) => handleInput("gstin", e.target.value)}
+                          placeholder="27ABCDE1234F1Z5"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="required-field">Email</label>
+                        <input
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => handleInput("email", e.target.value)}
+                          placeholder="business@company.com"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="details-right-col">
+                      <div className="form-group shipping-address-textarea-group">
+                        <label className={form.isShippingSameAsBilling ? "" : "required-field"}>Shipping Address</label>
+                        <label style={{ fontSize: "12px", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontWeight: "normal", marginBottom: form.isShippingSameAsBilling ? "0px" : "6px", color: "var(--text-grey)" }}>
+                          <input
+                            type="checkbox"
+                            checked={form.isShippingSameAsBilling}
+                            onChange={(e) => {
+                              handleInput("isShippingSameAsBilling", e.target.checked);
+                              if (e.target.checked) {
+                                handleInput("shippingAddress", form.billingAddress);
+                              }
+                            }}
+                          />
+                          Same as Billing Address
+                        </label>
+                        {!form.isShippingSameAsBilling && (
+                          <textarea
+                            value={form.shippingAddress}
+                            onChange={(e) => handleInput("shippingAddress", e.target.value)}
+                            placeholder="Registered shipping address"
+                            required={!form.isShippingSameAsBilling}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Invoice Details Card */}
+          <div className="new-invoice-card invoice-details-compact-card invoice-form-row-right">
+            <div className="card-header">
+              <span className="card-header-icon"><FiFileText /></span>
+              <h2>Invoice Details</h2>
+            </div>
+
+            <div className="card-body flex-fields-vertical">
+              <div className="form-group input-with-icon-group">
+                <label className="required-field">Invoice Number</label>
+                <div className="input-with-side-button">
+                  <input
+                    type="text"
+                    value={form.invoiceId}
+                    onChange={(e) => handleInput("invoiceId", e.target.value)}
+                    placeholder="INV-000001"
+                  />
+                  <button type="button" className="input-side-settings-btn" onClick={() => setShowSettingsModal(true)}>
+                    <FiSettings />
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="required-field">Invoice Date</label>
+                <div className="input-with-inline-icon">
+                  <input
+                    type="date"
+                    value={form.date}
+                    onChange={(e) => handleInput("date", e.target.value)}
+                    required
+                  />
+                  <span className="inline-input-icon"><FiCalendar /></span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="required-field">Due Date</label>
+                <div className="input-with-inline-icon">
+                  <input
+                    type="date"
+                    value={form.dueDate}
+                    onChange={(e) => handleInput("dueDate", e.target.value)}
+                    required
+                  />
+                  <span className="inline-input-icon"><FiCalendar /></span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Sales Person</label>
+                <div className="autocomplete-input-wrapper">
+                  <input
+                    type="text"
+                    value={form.salesPerson}
+                    onChange={(e) => handleInput("salesPerson", e.target.value)}
+                    placeholder="Enter sales person name"
+                  />
+                  <span className="dropdown-caret-arrow"><FiChevronDown /></span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Reference No.</label>
+                <input
+                  type="text"
+                  value={form.referenceNo}
+                  onChange={(e) => handleInput("referenceNo", e.target.value)}
+                  placeholder="e.g. PO-4587"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Notes and Totals Grid */}
-        <div className="totals-notes-split">
-          <div className="form-notes-col">
-            <div className="form-field-group">
-              <label>Customer Notes</label>
-              <textarea
-                value={form.notes}
-                onChange={(e) => handleInput("notes", e.target.value)}
-                className="form-textarea-control"
-                rows="3"
-                placeholder="Notes shown on invoice..."
-              />
+        {/* â•â•â•â•â•â•â• ROW 2: Items Table (full width) â•â•â•â•â•â•â• */}
+        <div className="invoice-form-row-full">
+          <div className="new-invoice-card no-padding">
+            <div className="card-header bordered-bottom padding-24">
+              <div className="flex-header-row">
+                <div className="card-title-flex">
+                  <span className="card-header-icon"><FiPackage /></span>
+                  <h2>Items</h2>
+                </div>
+
+                <div className="search-items-row">
+                  <div className="search-bar-input-stack">
+                    <span className="search-icon"><FiSearch /></span>
+                    <input
+                      type="text"
+                      placeholder="Search items by name / SKU / barcode"
+                    />
+                    <span className="barcode-scanner-icon">📷</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-purple-outline"
+                    onClick={addItemRow}
+                  >
+                    + Add Item
+                  </button>
+                </div>
+              </div>
             </div>
-            
-            <div className="form-field-group">
-              <label>Terms & Conditions</label>
-              <textarea
-                value={form.termsAndConditions}
-                onChange={(e) => handleInput("termsAndConditions", e.target.value)}
-                className="form-textarea-control"
-                rows="3"
-                placeholder="Payment policies..."
-              />
+
+            <div className="card-body no-padding">
+              <div className="responsive-table-container">
+                <table className="new-items-grid-table">
+                  <thead>
+                    <tr>
+                      <th width="4%" className="align-center">#</th>
+                      <th width="28%">Item Name</th>
+                      <th width="12%">HSN / SAC</th>
+                      <th width="8%" className="align-center">Qty</th>
+                      <th width="8%" className="align-center">Unit</th>
+                      <th width="12%" className="align-right">Price (₹)</th>
+                      <th width="10%" className="align-center">GST %</th>
+                      <th width="10%" className="align-right">Discount (₹)</th>
+                      <th width="14%" className="align-right">Amount (₹)</th>
+                      <th width="4%" className="align-center"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {form.items.map((item, index) => {
+                      const rowAmount = getItemAmountForDisplay(item, index);
+                      return (
+                        <tr key={index}>
+                          <td className="row-counter">{index + 1}</td>
+                          <td>
+                            <div className="item-name-fields">
+                              <input
+                                type="text"
+                                value={item.product}
+                                onChange={(e) => handleItemChange(index, "product", e.target.value)}
+                                placeholder="Item name"
+                                className="item-title-input"
+                                required
+                              />
+                              <input
+                                type="text"
+                                value={item.description}
+                                onChange={(e) => handleItemChange(index, "description", e.target.value)}
+                                placeholder="SKU/Description"
+                                className="item-subtitle-input"
+                              />
+                            </div>
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.hsn}
+                              onChange={(e) => handleItemChange(index, "hsn", e.target.value)}
+                              placeholder="HSN code"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.qty}
+                              onChange={(e) => handleItemChange(index, "qty", e.target.value)}
+                              className="align-center"
+                              required
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.unit}
+                              onChange={(e) => handleItemChange(index, "unit", e.target.value)}
+                              placeholder="Nos"
+                              className="align-center"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.price}
+                              onChange={(e) => handleItemChange(index, "price", e.target.value)}
+                              className="align-right"
+                              required
+                            />
+                          </td>
+                          <td>
+                            <select
+                              value={item.tax}
+                              onChange={(e) => handleItemChange(index, "tax", e.target.value)}
+                              className="align-center"
+                            >
+                              <option value="0">0%</option>
+                              <option value="5">5%</option>
+                              <option value="12">12%</option>
+                              <option value="18">18%</option>
+                              <option value="28">28%</option>
+                            </select>
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={item.discount}
+                              onChange={(e) => handleItemChange(index, "discount", e.target.value)}
+                              className="align-right"
+                            />
+                          </td>
+                          <td className="align-right row-final-amount font-semibold">
+                            ₹{rowAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              className="row-action-dots-btn"
+                              onClick={() => removeItemRow(index)}
+                              disabled={form.items.length === 1}
+                              title="Delete Row"
+                            >
+                              <FiTrash2 />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Table Bottom Actions */}
+              <div className="table-bottom-actions-row">
+                <div className="action-buttons-flex">
+                  <button type="button" className="btn-purple-outline" onClick={addItemRow}>
+                    <FiPlus style={{ marginRight: "4px" }} /> Add Item
+                  </button>
+                  <button type="button" className="btn-purple-outline" onClick={addItemRow}>
+                    <FiPlus style={{ marginRight: "4px" }} /> Add Service
+                  </button>
+                </div>
+                <div className="total-items-badge">
+                  Total Items: <span className="font-semibold">{form.items.length}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* â•â•â•â•â•â•â• ROW 3: Notes (left) + Summary & Payment (right) â•â•â•â•â•â•â• */}
+        <div className="invoice-form-row invoice-form-row-bottom">
+          {/* Notes Card */}
+          <div className="new-invoice-card invoice-form-row-left">
+            <div className="card-header">
+              <span className="card-header-icon"><FiEdit3 /></span>
+              <h2>Notes</h2>
+            </div>
+
+            <div className="card-body">
+              <div className="notes-split-row">
+                <div className="form-group flex-1">
+                  <label>Notes</label>
+                  <textarea
+                    value={form.notes}
+                    onChange={(e) => handleInput("notes", e.target.value)}
+                    placeholder="Add any notes or special instructions..."
+                    rows="3"
+                  />
+                </div>
+
+                <div className="form-group flex-1">
+                  <label>Internal Note</label>
+                  <textarea
+                    value={form.internalNote}
+                    onChange={(e) => handleInput("internalNote", e.target.value)}
+                    placeholder="For internal use only..."
+                    rows="3"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group terms-textarea-stack" style={{ marginTop: "16px" }}>
+                <label>Terms and Conditions</label>
+                <textarea
+                  value={form.termsAndConditions}
+                  onChange={(e) => handleInput("termsAndConditions", e.target.value)}
+                  className="terms-conditions-display"
+                  rows="4"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="form-totals-col">
-            <div className="totals-summary-card">
-              <div className="totals-calc-row">
-                <span>Sub Total:</span>
-                <span className="bold-calc-val">₹{subtotal.toLocaleString()}</span>
+          {/* Combined Invoice Summary + Payment Details Card */}
+          <div className="new-invoice-card invoice-form-row-right summary-payment-combined-card">
+            {/* Invoice Summary Section */}
+            <div className="card-header">
+              <span className="card-header-icon"><FiEdit3 /></span>
+              <h2>Invoice Summary</h2>
+            </div>
+
+            <div className="card-body summary-rows-list">
+              <div className="summary-calc-row">
+                <span className="summary-label">Subtotal</span>
+                <span className="summary-value">₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
               </div>
 
-              <div className="totals-calc-row">
-                <span style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                  Discount: 
-                  <input 
-                    type="number"
-                    value={form.discount === 0 ? "" : form.discount}
-                    onChange={(e) => handleInput("discount", Number(e.target.value) || 0)}
-                    className="calc-small-input"
+              <div className="summary-calc-row">
+                <span className="summary-label">Item Discount</span>
+                <span className="summary-value discount-text-red">- ₹{totalItemDiscount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+              </div>
+
+              <div className="summary-calc-row">
+                <span className="summary-label">Taxable Amount</span>
+                <span className="summary-value">₹{totalTaxableAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+              </div>
+
+              <div className="summary-calc-row">
+                <span className="summary-label">Total GST</span>
+                <span className="summary-value">₹{totalTax.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              </div>
+
+              <div className="summary-divider-line"></div>
+
+              <div className="summary-grand-total-row">
+                <span className="grand-total-label">Grand Total</span>
+                <span className="grand-total-value">₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              </div>
+            </div>
+
+            <div className="card-body payment-fields-vertical">
+              <div className="fully-paid-checkbox-row">
+                <label className="checkbox-toggle-flex-end">
+                  <span>Mark as fully paid</span>
+                  <input
+                    type="checkbox"
+                    checked={markAsFullyPaid}
+                    onChange={(e) => {
+                      setMarkAsFullyPaid(e.target.checked);
+                      if (e.target.checked) {
+                        setAmountReceived(String(grandTotal));
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+
+              <div className="amount-received-row">
+                <label className="required-field">Amount Received</label>
+                <div className="amount-received-combined-group">
+                  <span className="currency-prefix">₹</span>
+                  <input
+                    type="text"
+                    value={amountReceived}
+                    onChange={(e) => {
+                      setAmountReceived(e.target.value);
+                      if (Number(e.target.value) < grandTotal) {
+                        setMarkAsFullyPaid(false);
+                      }
+                    }}
+                    placeholder="0"
+                    disabled={markAsFullyPaid}
+                    required
                   />
                   <select
-                    value={form.discountType}
-                    onChange={(e) => handleInput("discountType", e.target.value)}
-                    className="calc-small-select"
+                    value={paymentMode}
+                    onChange={(e) => setPaymentMode(e.target.value)}
                   >
-                    <option value="%">%</option>
-                    <option value="Flat">₹</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Credit Card">Credit Card</option>
                   </select>
-                </span>
-                <span>- ₹{discountAmount.toLocaleString()}</span>
+                </div>
               </div>
 
-              <div className="totals-calc-row">
-                <span>Tax (GST Amount):</span>
-                <span>₹{totalTax.toLocaleString()}</span>
+              <div className="balance-due-display-row">
+                <span className="balance-label">Balance Due</span>
+                <span className="balance-value-badge font-semibold">
+                  ₹{Math.max(0, grandTotal - finalAmountPaid).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
               </div>
 
-              <div className="totals-calc-row">
-                <span style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                  Adjustment:
-                  <input
-                    type="number"
-                    value={form.adjustment === 0 ? "" : form.adjustment}
-                    onChange={(e) => handleInput("adjustment", Number(e.target.value) || 0)}
-                    className="calc-small-input width-70"
-                    placeholder="0"
-                  />
-                </span>
-                <span>₹{(Number(form.adjustment) || 0).toLocaleString()}</span>
-              </div>
-
-              <hr className="totals-divider" />
-
-              <div className="totals-calc-row grand-total-row">
-                <span>Grand Total:</span>
-                <span className="grand-total-calc-val">
-                  {settings.currency || "₹"}{grandTotal.toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  })}
-                </span>
+              <div className="invoice-form-action-buttons">
+                <button type="button" className="btn-action-draft" onClick={(e) => handleSubmitForm(e, "Draft")}>
+                  Cancel
+                </button>
+                <button type="button" className="btn-action-preview">
+                  Save&Preview
+                </button>
+                <div className="btn-action-send-group">
+                  <button
+                    type="button"
+                    className="btn-action-send-main"
+                    onClick={(e) => handleSubmitForm(e)}
+                  >
+                    Save &amp; Print
+                  </button>
+                  <button type="button" className="btn-action-send-arrow">
+                    <FiChevronDown />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Sticky Actions Bar at Footer */}
-        <div className="invoice-form-footer-actions">
-          <button
-            type="button"
-            className="action-footer-btn save-send-btn"
-            onClick={(e) => handleSubmitForm(e, "Pending")}
-          >
-            Save and Send
-          </button>
-          
-          <button
-            type="button"
-            className="action-footer-btn save-draft-btn"
-            onClick={(e) => handleSubmitForm(e, "Draft")}
-          >
-            Save as Draft
-          </button>
-          
-          <button
-            type="button"
-            className="action-footer-btn cancel-btn"
-            onClick={onCancel}
-          >
-            Cancel
-          </button>
-        </div>
       </form>
+
+      {/* Settings Modal Popup Dialog */}
+      {showSettingsModal && (
+        <div className="invoice-settings-popup-overlay">
+          <div className="invoice-settings-popup">
+            <h3>Invoice Form Settings</h3>
+            <div className="form-group" style={{ marginBottom: "12px" }}>
+              <label>Currency Symbol</label>
+              <input
+                type="text"
+                defaultValue={settings.currency || "₹"}
+                id="popup-currency-input"
+              />
+            </div>
+            <div className="form-group" style={{ marginBottom: "12px" }}>
+              <label>Default GST Tax Rate (%)</label>
+              <input
+                type="number"
+                defaultValue={settings.taxRate || 18}
+                id="popup-taxrate-input"
+              />
+            </div>
+            <div className="popup-actions" style={{ marginTop: "18px", display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                className="btn-header-secondary"
+                onClick={() => setShowSettingsModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-header-primary-main"
+                style={{ padding: "8px 16px", borderRadius: "6px" }}
+                onClick={() => {
+                  const curr = document.getElementById("popup-currency-input").value;
+                  const rate = document.getElementById("popup-taxrate-input").value;
+                  handleSaveSettings(curr, rate);
+                }}
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Customer Addition Inline Frame */}
+      {showNewCustomerForm && (
+        <div className="invoice-settings-popup-overlay">
+          <div className="invoice-settings-popup customer-popup-large">
+            <h3>Quick Add Customer</h3>
+
+            <div className="quick-cust-form-fields">
+              <div className="form-group">
+                <label>Customer Name</label>
+                <input
+                  type="text"
+                  value={form.customer}
+                  onChange={(e) => handleInput("customer", e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  value={newCustomerData.email}
+                  onChange={(e) => handleNewCustomerDataChange("email", e.target.value)}
+                  placeholder="customer@email.com"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Phone Number</label>
+                <input
+                  type="text"
+                  value={newCustomerData.phone}
+                  onChange={(e) => handleNewCustomerDataChange("phone", e.target.value)}
+                  placeholder="+91 00000 00000"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Company Name</label>
+                <input
+                  type="text"
+                  value={newCustomerData.company}
+                  onChange={(e) => handleNewCustomerDataChange("company", e.target.value)}
+                  placeholder="Company LLC"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>City</label>
+                <input
+                  type="text"
+                  value={newCustomerData.city}
+                  onChange={(e) => handleNewCustomerDataChange("city", e.target.value)}
+                  placeholder="Pune"
+                />
+              </div>
+
+              <div className="form-group full-width-span">
+                <label>Billing Address</label>
+                <textarea
+                  value={newCustomerData.address}
+                  onChange={(e) => handleNewCustomerDataChange("address", e.target.value)}
+                  placeholder="123 Road, St."
+                  rows="2"
+                />
+              </div>
+            </div>
+
+            <div className="popup-actions" style={{ marginTop: "18px", display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                className="btn-header-secondary"
+                onClick={() => setShowNewCustomerForm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-header-primary-main"
+                style={{ padding: "8px 16px", borderRadius: "6px" }}
+                onClick={() => {
+                  handleSelectCustomer({
+                    name: form.customer,
+                    email: newCustomerData.email,
+                    phone: newCustomerData.phone,
+                    company: newCustomerData.company,
+                    address: `${newCustomerData.address}, ${newCustomerData.city}`,
+                  });
+                }}
+              >
+                Add Customer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { useApp } from "../../context/AppContext";
 import TotalReceivables from "../../components/DashboardHome/TotalReceivables";
 import SalesAndExpensesChart from "../../components/Charts/SalesAndExpensesChart";
 import SalesReceiptsDuesChart from "../../components/Charts/SalesReceiptsDuesChart";
-import ProjectsWidget from "../../components/DashboardHome/ProjectsWidget";
+import RecentInvoices from "../../components/DashboardHome/RecentInvoices";
 import TopExpensesChart from "../../components/Charts/TopExpensesChart";
 import RecentUpdates from "../../components/DashboardHome/RecentUpdates";
 
@@ -92,15 +92,6 @@ function Dashboard() {
                   >
                     New Expense
                   </div>
-                  <div
-                    className="dropdown-item"
-                    onClick={() => {
-                      navigate("/dashboard/projects?action=new");
-                      setShowQuickAdd(false);
-                    }}
-                  >
-                    New Project
-                  </div>
                 </div>
               </>
             )}
@@ -119,7 +110,7 @@ function Dashboard() {
 
         {/* Right Column (Sidebar Lists & Breakdown Donuts) */}
         <div className="grid-right-col">
-          <ProjectsWidget />
+          <RecentInvoices />
           <TopExpensesChart />
           <RecentUpdates />
         </div>

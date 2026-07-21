@@ -19,8 +19,8 @@ function LoginForm() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1>InvoicePro</h1>
-        <h2>Welcome Back</h2>
+        <h1>PrabhimOne</h1>
+        <h2>Welcome </h2>
         <p>Sign in to continue managing your business.</p>
 
         <form onSubmit={handleSubmit}>

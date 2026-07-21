@@ -80,7 +80,7 @@ function InvoicePreview({ invoice, onClose, onEdit, onDelete, onRecordPayment })
         <div className="invoice-paper-sheet">
           <div className="paper-header">
             <div className="org-details">
-              <h2 className="org-name">{settings.companyName || "InvoicePro India"}</h2>
+              <h2 className="org-name">{settings.companyName || "PrabhimOne India"}</h2>
               <p className="org-sub">{settings.address || "123, Business Hub"}</p>
               <p className="org-sub">{settings.city || "Mumbai, Maharashtra"}</p>
               <p className="org-sub">GSTIN: 27AAAAA1111A1Z1</p>

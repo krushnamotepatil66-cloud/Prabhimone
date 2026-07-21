@@ -59,19 +59,79 @@ const initialPayments = [
 ];
 
 const initialSettings = {
-  companyName: "InvoicePro India",
-  email: "billing@invoicepro.com",
+  // Organization
+  companyName: "PrabhimOne India",
+  email: "billing@prabhimone.com",
   phone: "+91 98765 43210",
   address: "123, Business Hub, Bandra East",
   city: "Mumbai, Maharashtra",
   zip: "400051",
+  website: "",
+  gstinOrg: "",
+
+  // Invoices
   currency: "₹",
-  taxRate: 18
+  taxRate: 18,
+  invoicePrefix: "INV-",
+  invoiceAutoNumber: true,
+  invoiceDefaultTerms: "Due on Receipt",
+  invoiceDefaultNotes: "",
+  invoiceShowGstin: true,
+  invoiceTermsAndConditions: "1. Goods once sold will not be taken back or exchanged\n2. For warranty, retain cash memo\n3. Please check breakage and damage against delivery\n4. For order need to pay 50% advance amount\n5. All disputes are subject to PUNE jurisdiction only",
+
+  // Estimates
+  estimatePrefix: "EST-",
+  estimateAutoNumber: true,
+  estimateValidityDays: 30,
+  estimateDefaultNotes: "",
+  estimateDefaultTerms: "1. This estimate is valid for 30 days from the date of issue.\n2. Any changes in specifications or quantities will alter the final pricing.",
+  estimateTermsAndConditions: "1. This estimate is valid for 30 days from the date of issue.\n2. Any changes in specifications or quantities will alter the final pricing.\n3. Work will commence only upon approval of this estimate.\n4. All disputes are subject to PUNE jurisdiction only.",
+
+  // Credit Notes
+  creditNotePrefix: "CN-",
+  creditNoteAutoNumber: true,
+  creditNoteDefaultNotes: "",
+  creditNoteTermsAndConditions: "1. Credit balance must be applied to future invoices within 180 days.\n2. Refunds on credit notes are subject to review.\n3. Original invoice details must accompany any disputes.",
+
+  // Proforma Invoices
+  proformaPrefix: "PI-",
+  proformaAutoNumber: true,
+  proformaValidityDays: 30,
+  proformaDefaultNotes: "",
+  proformaTermsAndConditions: "1. This proforma invoice is sent for approval before final billing.\n2. Prices and rates listed are subject to terms of agreement.\n3. Final tax invoice will be generated upon receipt of payment or approval.",
+
+  // Customers
+  customerDefaultType: "Existing",
+  customerDefaultState: "Maharashtra",
+  customerRequireEmail: false,
+  customerRequirePhone: true,
+
+  // Payments
+  paymentDefaultMethod: "UPI",
+  paymentModes: "UPI,Cash,Bank Transfer,Cheque,Credit Card,Debit Card",
+  paymentShowReceipt: true,
+
+  // Expenses
+  expenseDefaultCategory: "Office Supplies",
+  expenseBillableDefault: false,
+  expenseCategories: "Rent & Accommodation,Advertising & Marketing,IT & Internet Expenses,Office Supplies,Travel Expenses,Utilities,Professional Fees,Miscellaneous",
+
+  // Tax & Compliance
+  gstRegistrationNo: "",
+  panNumber: "",
+  taxCalcMethod: "Exclusive",
+  defaultTaxSlab: "18",
+
+  // Preferences
+  dateFormat: "YYYY-MM-DD",
+  numberFormat: "Indian",
+  theme: "light",
+  language: "English"
 };
 
 const initialProfile = {
   name: "Aditya Kumar",
-  email: "aditya.k@invoicepro.com",
+  email: "aditya.k@prabhimone.com",
   phone: "+91 99887 76655",
   role: "Administrator",
   avatar: "👨‍💻",
@@ -93,55 +153,75 @@ const initialExpenses = [
   { id: "EXP-005", category: "Travel Expenses", amount: 4500, date: "2026-07-06", customerName: "Priya Patel", status: "Billable" }
 ];
 
-const initialProjects = [
-  { id: "PROJ-001", name: "E-Commerce Website Development", customer: "Rahul Sharma", hours: 45, status: "Active" },
-  { id: "PROJ-002", name: "Logistics Optimization Module", customer: "Amit Verma", hours: 18, status: "Active" },
-  { id: "PROJ-003", name: "SEO Optimization Campaign", customer: "Priya Patel", hours: 30, status: "Active" }
+const initialEstimates = [
+  { id: "EST-001", customer: "Rahul Sharma", date: "2026-07-10", expiryDate: "2026-08-10", amount: "₹4,500", status: "Accepted", items: [{ product: "Web Development Proposal", qty: 1, price: 4500 }] },
+  { id: "EST-002", customer: "Amit Verma", date: "2026-07-12", expiryDate: "2026-08-12", amount: "₹1,200", status: "Sent", items: [{ product: "Consulting Support Hour", qty: 1, price: 1200 }] },
+  { id: "EST-003", customer: "Priya Patel", date: "2026-07-15", expiryDate: "2026-08-15", amount: "₹8,900", status: "Draft", items: [{ product: "SEO Kickoff Proposal", qty: 1, price: 8900 }] }
+];
+
+const initialCreditNotes = [
+  { id: "CN-001", customer: "Rahul Sharma", date: "2026-07-05", amount: "₹200", status: "Open", invoiceId: "INV-001" },
+  { id: "CN-002", customer: "Sneha Joshi", date: "2026-07-08", amount: "₹500", status: "Closed", invoiceId: "INV-004" }
+];
+
+const initialProformaInvoices = [
+  { id: "PI-001", customer: "Vikas Kumar", date: "2026-07-09", expiryDate: "2026-08-09", amount: "₹3,200", status: "Sent", items: [{ product: "Server Provisioning Agreement", qty: 1, price: 3200 }] },
+  { id: "PI-002", customer: "Amit Verma", date: "2026-07-14", expiryDate: "2026-08-14", amount: "₹1,500", status: "Draft", items: [{ product: "UI Mockup Review", qty: 1, price: 1500 }] }
 ];
 
 export function AppProvider({ children }) {
   const [customers, setCustomers] = useState(() => {
-    const val = localStorage.getItem("invoicepro_customers");
+    const val = localStorage.getItem("prabhimone_customers");
     return val ? JSON.parse(val) : initialCustomers;
   });
 
   const [invoices, setInvoices] = useState(() => {
-    const val = localStorage.getItem("invoicepro_invoices");
+    const val = localStorage.getItem("prabhimone_invoices");
     return val ? JSON.parse(val) : initialInvoices;
   });
 
   const [payments, setPayments] = useState(() => {
-    const val = localStorage.getItem("invoicepro_payments");
+    const val = localStorage.getItem("prabhimone_payments");
     return val ? JSON.parse(val) : initialPayments;
   });
 
   const [settings, setSettings] = useState(() => {
-    const val = localStorage.getItem("invoicepro_settings");
+    const val = localStorage.getItem("prabhimone_settings");
     return val ? JSON.parse(val) : initialSettings;
   });
 
   const [profile, setProfile] = useState(() => {
-    const val = localStorage.getItem("invoicepro_profile");
+    const val = localStorage.getItem("prabhimone_profile");
     return val ? JSON.parse(val) : initialProfile;
   });
 
   const [activities, setActivities] = useState(() => {
-    const val = localStorage.getItem("invoicepro_activities");
+    const val = localStorage.getItem("prabhimone_activities");
     return val ? JSON.parse(val) : initialActivities;
   });
 
   const [expenses, setExpenses] = useState(() => {
-    const val = localStorage.getItem("invoicepro_expenses");
+    const val = localStorage.getItem("prabhimone_expenses");
     return val ? JSON.parse(val) : initialExpenses;
   });
 
-  const [projects, setProjects] = useState(() => {
-    const val = localStorage.getItem("invoicepro_projects");
-    return val ? JSON.parse(val) : initialProjects;
+  const [estimates, setEstimates] = useState(() => {
+    const val = localStorage.getItem("prabhimone_estimates");
+    return val ? JSON.parse(val) : initialEstimates;
+  });
+
+  const [creditNotes, setCreditNotes] = useState(() => {
+    const val = localStorage.getItem("prabhimone_credit_notes");
+    return val ? JSON.parse(val) : initialCreditNotes;
+  });
+
+  const [proformaInvoices, setProformaInvoices] = useState(() => {
+    const val = localStorage.getItem("prabhimone_proforma_invoices");
+    return val ? JSON.parse(val) : initialProformaInvoices;
   });
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    const val = localStorage.getItem("invoicepro_sidebar_collapsed");
+    const val = localStorage.getItem("prabhimone_sidebar_collapsed");
     return val ? JSON.parse(val) : false;
   });
 
@@ -150,39 +230,47 @@ export function AppProvider({ children }) {
 
   // Sync state to local storage
   useEffect(() => {
-    localStorage.setItem("invoicepro_customers", JSON.stringify(customers));
+    localStorage.setItem("prabhimone_customers", JSON.stringify(customers));
   }, [customers]);
 
   useEffect(() => {
-    localStorage.setItem("invoicepro_invoices", JSON.stringify(invoices));
+    localStorage.setItem("prabhimone_invoices", JSON.stringify(invoices));
   }, [invoices]);
 
   useEffect(() => {
-    localStorage.setItem("invoicepro_payments", JSON.stringify(payments));
+    localStorage.setItem("prabhimone_payments", JSON.stringify(payments));
   }, [payments]);
 
   useEffect(() => {
-    localStorage.setItem("invoicepro_settings", JSON.stringify(settings));
+    localStorage.setItem("prabhimone_settings", JSON.stringify(settings));
   }, [settings]);
 
   useEffect(() => {
-    localStorage.setItem("invoicepro_profile", JSON.stringify(profile));
+    localStorage.setItem("prabhimone_profile", JSON.stringify(profile));
   }, [profile]);
 
   useEffect(() => {
-    localStorage.setItem("invoicepro_activities", JSON.stringify(activities));
+    localStorage.setItem("prabhimone_activities", JSON.stringify(activities));
   }, [activities]);
 
   useEffect(() => {
-    localStorage.setItem("invoicepro_expenses", JSON.stringify(expenses));
+    localStorage.setItem("prabhimone_expenses", JSON.stringify(expenses));
   }, [expenses]);
 
   useEffect(() => {
-    localStorage.setItem("invoicepro_projects", JSON.stringify(projects));
-  }, [projects]);
+    localStorage.setItem("prabhimone_estimates", JSON.stringify(estimates));
+  }, [estimates]);
 
   useEffect(() => {
-    localStorage.setItem("invoicepro_sidebar_collapsed", JSON.stringify(sidebarCollapsed));
+    localStorage.setItem("prabhimone_credit_notes", JSON.stringify(creditNotes));
+  }, [creditNotes]);
+
+  useEffect(() => {
+    localStorage.setItem("prabhimone_proforma_invoices", JSON.stringify(proformaInvoices));
+  }, [proformaInvoices]);
+
+  useEffect(() => {
+    localStorage.setItem("prabhimone_sidebar_collapsed", JSON.stringify(sidebarCollapsed));
   }, [sidebarCollapsed]);
 
 
@@ -327,28 +415,73 @@ export function AppProvider({ children }) {
     logActivity(`Expense ${id} deleted`);
   };
 
-  // Projects CRUD
-  const addProject = (project) => {
-    const newProj = {
-      ...project,
-      id: `PROJ-${String(projects.length + 1).padStart(3, "0")}`,
-      hours: Number(project.hours) || 0
+  // Estimates CRUD
+  const addEstimate = (estimate) => {
+    const newEst = {
+      ...estimate,
+      id: `EST-${String(estimates.length + 1).padStart(3, "0")}`
     };
-    setProjects((prev) => [...prev, newProj]);
-    logActivity(`Project ${newProj.name} created`);
-    return newProj;
+    setEstimates((prev) => [newEst, ...prev]);
+    logActivity(`Estimate ${newEst.id} created for ${newEst.customer}`);
+    return newEst;
   };
 
-  const updateProject = (updatedProj) => {
-    setProjects((prev) =>
-      prev.map((proj) => (proj.id === updatedProj.id ? updatedProj : proj))
+  const updateEstimate = (updatedEst) => {
+    setEstimates((prev) =>
+      prev.map((est) => (est.id === updatedEst.id ? updatedEst : est))
     );
-    logActivity(`Project ${updatedProj.name} updated`);
+    logActivity(`Estimate ${updatedEst.id} updated`);
   };
 
-  const deleteProject = (id) => {
-    setProjects((prev) => prev.filter((proj) => proj.id !== id));
-    logActivity(`Project ${id} deleted`);
+  const deleteEstimate = (id) => {
+    setEstimates((prev) => prev.filter((est) => est.id !== id));
+    logActivity(`Estimate ${id} deleted`);
+  };
+
+  // Credit Notes CRUD
+  const addCreditNote = (creditNote) => {
+    const newCN = {
+      ...creditNote,
+      id: `CN-${String(creditNotes.length + 1).padStart(3, "0")}`
+    };
+    setCreditNotes((prev) => [newCN, ...prev]);
+    logActivity(`Credit Note ${newCN.id} created for ${newCN.customer}`);
+    return newCN;
+  };
+
+  const updateCreditNote = (updatedCN) => {
+    setCreditNotes((prev) =>
+      prev.map((cn) => (cn.id === updatedCN.id ? updatedCN : cn))
+    );
+    logActivity(`Credit Note ${updatedCN.id} updated`);
+  };
+
+  const deleteCreditNote = (id) => {
+    setCreditNotes((prev) => prev.filter((cn) => cn.id !== id));
+    logActivity(`Credit Note ${id} deleted`);
+  };
+
+  // Proforma Invoices CRUD
+  const addProformaInvoice = (proformaInvoice) => {
+    const newPI = {
+      ...proformaInvoice,
+      id: `PI-${String(proformaInvoices.length + 1).padStart(3, "0")}`
+    };
+    setProformaInvoices((prev) => [newPI, ...prev]);
+    logActivity(`Proforma Invoice ${newPI.id} created for ${newPI.customer}`);
+    return newPI;
+  };
+
+  const updateProformaInvoice = (updatedPI) => {
+    setProformaInvoices((prev) =>
+      prev.map((pi) => (pi.id === updatedPI.id ? updatedPI : pi))
+    );
+    logActivity(`Proforma Invoice ${updatedPI.id} updated`);
+  };
+
+  const deleteProformaInvoice = (id) => {
+    setProformaInvoices((prev) => prev.filter((pi) => pi.id !== id));
+    logActivity(`Proforma Invoice ${id} deleted`);
   };
 
   return (
@@ -361,7 +494,9 @@ export function AppProvider({ children }) {
         profile,
         activities,
         expenses,
-        projects,
+        estimates,
+        creditNotes,
+        proformaInvoices,
         addCustomer,
         updateCustomer,
         deleteCustomer,
@@ -376,9 +511,15 @@ export function AppProvider({ children }) {
         markAllActivitiesAsRead,
         addExpense,
         deleteExpense,
-        addProject,
-        updateProject,
-        deleteProject,
+        addEstimate,
+        updateEstimate,
+        deleteEstimate,
+        addCreditNote,
+        updateCreditNote,
+        deleteCreditNote,
+        addProformaInvoice,
+        updateProformaInvoice,
+        deleteProformaInvoice,
         sidebarCollapsed,
         setSidebarCollapsed,
         sidebarMobileOpen,

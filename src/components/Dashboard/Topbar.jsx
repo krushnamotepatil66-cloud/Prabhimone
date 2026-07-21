@@ -18,12 +18,16 @@ function Topbar() {
         return "Invoices";
       case "/dashboard/customers":
         return "Customers";
+      case "/dashboard/estimates":
+        return "Estimates & Quotations";
+      case "/dashboard/credit-notes":
+        return "Credit Notes";
+      case "/dashboard/proforma-invoices":
+        return "Proforma Invoices";
       case "/dashboard/payments":
         return "Payments Received";
       case "/dashboard/expenses":
         return "Expenses";
-      case "/dashboard/projects":
-        return "Projects";
       case "/dashboard/reports":
         return "Reports";
       case "/dashboard/settings":
@@ -31,7 +35,7 @@ function Topbar() {
       case "/dashboard/profile":
         return "My Profile";
       default:
-        return "InvoicePro";
+        return "PrabhimOne";
     }
   };
 

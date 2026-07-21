@@ -186,6 +186,9 @@
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
   box-sizing: border-box;
+  align-self: center;
+  width: 60%;
+  min-width: 200px;
 }
 
 .login-btn:hover {

@@ -24,7 +24,7 @@ function ForgotPasswordForm() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1>InvoicePro</h1>
+        <h1>PrabhimOne</h1>
 
         {!isSent ? (
           <>

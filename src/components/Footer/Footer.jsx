@@ -10,7 +10,7 @@ return(
 
 <div>
 
-<h2>InvoicePro</h2>
+<h2>PrabhimOne</h2>
 
 <p>
 Professional invoicing software for freelancers,
@@ -59,7 +59,7 @@ small businesses and enterprises.
 
 <div className="copyright">
 
-© 2026 InvoicePro. All rights reserved.
+© 2026 PrabhimOne. All rights reserved.
 
 </div>
 

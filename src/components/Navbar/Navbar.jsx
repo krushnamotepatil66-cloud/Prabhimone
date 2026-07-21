@@ -10,7 +10,7 @@ function Navbar() {
     <header className="navbar">
       <div className="container navbar-container">
         <div className="logo">
-          <h2>InvoicePro</h2>
+          <h2>PrabhimOne</h2>
         </div>
 
         {/* Hamburger/Close Button for Mobile View */}
@@ -34,8 +34,8 @@ function Navbar() {
           </nav>
 
           <div className="nav-buttons">
-            <Link to="/login" className="login-btn" onClick={() => setMenuOpen(false)}>Login</Link>
-            <Link to="/signup" className="signup-btn" onClick={() => setMenuOpen(false)}>Sign Up</Link>
+            <Link to="/login" className="nav-login-btn" onClick={() => setMenuOpen(false)}>Login</Link>
+            <Link to="/signup" className="nav-signup-btn" onClick={() => setMenuOpen(false)}>Sign Up</Link>
           </div>
         </div>
       </div>

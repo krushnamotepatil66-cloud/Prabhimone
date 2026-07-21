@@ -21,7 +21,7 @@ function SignupForm() {
   return (
     <div className="signup-container">
       <div className="signup-card">
-        <h1>InvoicePro</h1>
+        <h1>PrabhimOne</h1>
         <h2>Create Account</h2>
         <p>Start managing your invoices in minutes.</p>
 
@@ -94,7 +94,7 @@ function SignupForm() {
             <label htmlFor="agree-terms" className="checkbox-label">
               <input id="agree-terms" type="checkbox" required />
               <span>
-                I agree to the InvoicePro{" "}
+                I agree to the PrabhimOne{" "}
                 <a href="#terms" className="terms-link">
                   Terms and Conditions of Service
                 </a>{" "}

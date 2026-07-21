@@ -17,7 +17,7 @@ function DashboardPreview() {
         <div className="preview-dashboard-card">
 
           <aside className="preview-sidebar">
-            <h3>InvoicePro</h3>
+            <h3>PrabhimOne</h3>
 
             <ul>
               <li className="active">Dashboard</li>
