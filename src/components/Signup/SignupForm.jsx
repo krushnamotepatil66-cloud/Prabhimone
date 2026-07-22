@@ -6,6 +6,7 @@ import { FaGoogle, FaApple } from "react-icons/fa";
 function SignupForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("+91 ");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -65,6 +66,8 @@ function SignupForm() {
                 id="signup-phone"
                 type="tel"
                 placeholder="e.g. +91 98765 43210"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 required
               />
             </div>

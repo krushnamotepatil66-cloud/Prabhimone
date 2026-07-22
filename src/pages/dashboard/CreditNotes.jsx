@@ -100,17 +100,31 @@ function CreditNotes() {
 
         {/* Analytics Summary Cards */}
         <div className="sales-summary-cards">
-          <div className="sales-summary-card">
-            <div className="card-label">Total Credit Notes</div>
-            <div className="card-value">{totalCount} (₹{totalValue.toLocaleString("en-IN")})</div>
+          <div className="sales-summary-card total">
+            <div className="sales-card-icon">🧾</div>
+            <div className="sales-card-body">
+              <span className="card-label">Total Credit Notes</span>
+              <span className="card-value">₹{totalValue.toLocaleString("en-IN")}</span>
+              <span className="sales-card-sub">{totalCount} credit notes issued</span>
+            </div>
           </div>
-          <div className="sales-summary-card">
-            <div className="card-label">Open / Unapplied</div>
-            <div className="card-value" style={{ color: "#1d4ed8" }}>{openCount}</div>
+
+          <div className="sales-summary-card outstanding">
+            <div className="sales-card-icon">⏳</div>
+            <div className="sales-card-body">
+              <span className="card-label">Open / Unapplied</span>
+              <span className="card-value">{openCount}</span>
+              <span className="sales-card-sub">Available balance for client</span>
+            </div>
           </div>
-          <div className="sales-summary-card">
-            <div className="card-label">Closed / Refunded</div>
-            <div className="card-value" style={{ color: "#166534" }}>{closedCount}</div>
+
+          <div className="sales-summary-card paid">
+            <div className="sales-card-icon">✅</div>
+            <div className="sales-card-body">
+              <span className="card-label">Closed / Refunded</span>
+              <span className="card-value">{closedCount}</span>
+              <span className="sales-card-sub">Fully applied or refunded</span>
+            </div>
           </div>
         </div>
 

@@ -17,6 +17,7 @@ import {
   Area,
 } from "recharts";
 import "./Reports.css";
+import "../../pages/dashboard/Invoices.css";
 
 function Reports() {
   const { invoices, payments, settings } = useApp();
@@ -103,35 +104,38 @@ function Reports() {
         </div>
 
         {/* Financial KPI Summary Cards */}
-        <div className="stats-row">
-          <div className="stat-card-mini">
-            <p>Total Billed Sales</p>
-            <h2>
-              {settings.currency}
-              {totalBilled.toLocaleString()}
-            </h2>
-            <small className="trend">Gross Invoice Value</small>
+        <div className="invoice-summary-cards">
+          <div className="inv-summary-card total">
+            <div className="inv-card-icon">🧾</div>
+            <div className="inv-card-body">
+              <span className="inv-card-label">Total Billed Sales</span>
+              <span className="inv-card-value">{settings.currency}{totalBilled.toLocaleString()}</span>
+              <span className="inv-card-sub">Gross Invoice Value</span>
+            </div>
           </div>
-          <div className="stat-card-mini">
-            <p>Total Collections</p>
-            <h2 className="positive-collected">
-              {settings.currency}
-              {totalCollected.toLocaleString()}
-            </h2>
-            <small className="trend">Payments Recorded</small>
+          <div className="inv-summary-card paid">
+            <div className="inv-card-icon">✅</div>
+            <div className="inv-card-body">
+              <span className="inv-card-label">Total Collections</span>
+              <span className="inv-card-value">{settings.currency}{totalCollected.toLocaleString()}</span>
+              <span className="inv-card-sub">Payments Recorded</span>
+            </div>
           </div>
-          <div className="stat-card-mini">
-            <p>Net Receivables</p>
-            <h2 className={totalReceivables > 0 ? "negative" : "clean-text"}>
-              {settings.currency}
-              {totalReceivables.toLocaleString()}
-            </h2>
-            <small className="trend">Outstanding Balance</small>
+          <div className="inv-summary-card outstanding">
+            <div className="inv-card-icon">⏳</div>
+            <div className="inv-card-body">
+              <span className="inv-card-label">Net Receivables</span>
+              <span className="inv-card-value">{settings.currency}{totalReceivables.toLocaleString()}</span>
+              <span className="inv-card-sub">Outstanding Balance</span>
+            </div>
           </div>
-          <div className="stat-card-mini">
-            <p>Collection Rate</p>
-            <h2>{collectionRate}%</h2>
-            <small className="trend">Receipts/Billing Ratio</small>
+          <div className="inv-summary-card revenue">
+            <div className="inv-card-icon">📈</div>
+            <div className="inv-card-body">
+              <span className="inv-card-label">Collection Rate</span>
+              <span className="inv-card-value">{collectionRate}%</span>
+              <span className="inv-card-sub">Receipts/Billing Ratio</span>
+            </div>
           </div>
         </div>
 

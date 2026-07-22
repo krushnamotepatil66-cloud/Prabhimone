@@ -48,7 +48,7 @@ function Settings() {
   const { settings, updateSettings } = useApp();
   // Ensure all fields have defaults even if old localStorage lacks new keys
   const defaults = {
-    companyName: "", email: "", phone: "", address: "", city: "", zip: "",
+    companyName: "", email: "", phone: "+91 ", address: "", city: "", zip: "",
     website: "", gstinOrg: "",
     currency: "₹", taxRate: 18, invoicePrefix: "INV-", invoiceAutoNumber: true,
     invoiceDefaultTerms: "Due on Receipt", invoiceDefaultNotes: "", invoiceShowGstin: true,
@@ -122,7 +122,31 @@ function Settings() {
                 <div style={{ width: "80px", height: "80px", background: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed #cbd5e1", borderRadius: "8px", color: "#64748b", fontSize: "12px" }}>No Logo</div>
               )}
               <div>
-                <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ border: "none", padding: "0", background: "transparent" }} />
+                <input
+                  type="file"
+                  id="logo-upload"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  style={{ display: "none" }}
+                />
+                <label
+                  htmlFor="logo-upload"
+                  style={{
+                    display: "inline-block",
+                    padding: "8px 16px",
+                    backgroundColor: "#3b82f6",
+                    color: "white",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontWeight: "500",
+                    fontSize: "14px",
+                    transition: "background-color 0.2s"
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = "#2563eb"}
+                  onMouseOut={(e) => e.target.style.backgroundColor = "#3b82f6"}
+                >
+                  Choose Photo
+                </label>
                 {form.companyLogo && (
                   <button type="button" onClick={() => handleInput("companyLogo", "")} className="btn-secondary" style={{ padding: "6px 12px", height: "auto", marginTop: "8px", display: "block" }}>Remove Logo</button>
                 )}

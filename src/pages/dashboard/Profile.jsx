@@ -97,6 +97,7 @@ function Profile() {
                     type="text"
                     value={form.phone}
                     onChange={(e) => handleInput("phone", e.target.value)}
+                    placeholder="+91 XXXXX XXXXX"
                   />
                 </div>
 

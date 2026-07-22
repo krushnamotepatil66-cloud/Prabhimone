@@ -79,7 +79,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
 
   const [newCustomerData, setNewCustomerData] = useState({
     email: "",
-    phone: "",
+    phone: "+91 ",
     company: "",
     city: "",
     address: ""
@@ -509,6 +509,17 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                               setShowDropdown(true);
                             }}
                             onFocus={() => setShowDropdown(true)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                if (filteredCustomers.length > 0) {
+                                  handleSelectCustomer(filteredCustomers[0]);
+                                } else {
+                                  setShowNewCustomerForm(true);
+                                  setShowDropdown(false);
+                                }
+                              }
+                            }}
                             placeholder="Search customers..."
                             required
                           />
@@ -629,6 +640,17 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                               setShowDropdown(true);
                             }}
                             onFocus={() => setShowDropdown(true)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                if (filteredCustomers.length > 0) {
+                                  handleSelectCustomer(filteredCustomers[0]);
+                                } else {
+                                  setShowNewCustomerForm(true);
+                                  setShowDropdown(false);
+                                }
+                              }
+                            }}
                             placeholder="Search businesses..."
                             required
                           />
@@ -849,14 +871,14 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                 <table className="new-items-grid-table">
                   <thead>
                     <tr>
-                      <th width="4%" className="align-center">#</th>
-                      <th width="28%">Item Name</th>
-                      <th width="12%">HSN / SAC</th>
+                      <th width="3%" className="align-center">#</th>
+                      <th width="21%">Item Name</th>
+                      <th width="8%">HSN / SAC</th>
                       <th width="8%" className="align-center">Qty</th>
                       <th width="8%" className="align-center">Unit</th>
-                      <th width="12%" className="align-right">Price (₹)</th>
-                      <th width="10%" className="align-center">GST %</th>
-                      <th width="10%" className="align-right">Discount (₹)</th>
+                      <th width="8%" className="align-right">Price (₹)</th>
+                      <th width="8%" className="align-center">GST %</th>
+                      <th width="8%" className="align-right">Discount (₹)</th>
                       <th width="14%" className="align-right">Amount (₹)</th>
                       <th width="4%" className="align-center"></th>
                     </tr>
@@ -970,9 +992,6 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                 <div className="action-buttons-flex">
                   <button type="button" className="btn-purple-outline" onClick={addItemRow}>
                     <FiPlus style={{ marginRight: "4px" }} /> Add Item
-                  </button>
-                  <button type="button" className="btn-purple-outline" onClick={addItemRow}>
-                    <FiPlus style={{ marginRight: "4px" }} /> Add Service
                   </button>
                 </div>
                 <div className="total-items-badge">

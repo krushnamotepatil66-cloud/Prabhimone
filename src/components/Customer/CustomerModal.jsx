@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import "../../components/Invoice/CreateInvoiceForm.css"; // Reuse existing popup styles
 import "./CustomerModal.css";
 
 const emptyForm = {
   name: "",
   email: "",
-  phone: "",
+  phone: "+91 ",
   company: "",
   address: "",
   city: "",
@@ -39,80 +40,95 @@ function CustomerModal({ isOpen, onClose, onSave, editingCustomer }) {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <div className="modal-header">
-          <h2>{editingCustomer ? "Edit Customer" : "Add Customer"}</h2>
-          <button className="close-btn" onClick={onClose}>✕</button>
-        </div>
+    <div className="invoice-settings-popup-overlay">
+      <div className="invoice-settings-popup customer-popup-large" style={{ padding: "30px" }}>
+        <h3 style={{ fontSize: "20px", marginBottom: "24px", color: "#1e293b" }}>
+          {editingCustomer ? "Edit Customer" : "Quick Add Customer"}
+        </h3>
 
-        <form onSubmit={handleSubmit} className="customer-form">
-          <div className="form-group">
-            <label>Customer Name *</label>
-            <input
-              type="text"
-              placeholder="e.g. Rahul Sharma"
-              value={form.name}
-              onChange={(e) => handleInput("name", e.target.value)}
-              required
-            />
+        <form onSubmit={handleSubmit}>
+          <div className="quick-cust-form-fields" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Customer Name</label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => handleInput("name", e.target.value)}
+                required
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
+              />
+            </div>
+
+            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Email Address</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => handleInput("email", e.target.value)}
+                placeholder="customer@email.com"
+                required
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
+              />
+            </div>
+
+            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Phone Number</label>
+              <input
+                type="text"
+                value={form.phone}
+                onChange={(e) => handleInput("phone", e.target.value)}
+                placeholder="+91 00000 00000"
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
+              />
+            </div>
+
+            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Company Name</label>
+              <input
+                type="text"
+                value={form.company}
+                onChange={(e) => handleInput("company", e.target.value)}
+                placeholder="Company LLC"
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
+              />
+            </div>
+
+            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>City</label>
+              <input
+                type="text"
+                value={form.city}
+                onChange={(e) => handleInput("city", e.target.value)}
+                placeholder="Pune"
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
+              />
+            </div>
+
+            <div className="form-group full-width-span" style={{ display: "flex", flexDirection: "column", gap: "6px", gridColumn: "1 / -1" }}>
+              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Billing Address</label>
+              <textarea
+                value={form.address}
+                onChange={(e) => handleInput("address", e.target.value)}
+                placeholder="123 Road, St."
+                rows="2"
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none", resize: "vertical" }}
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Email Address *</label>
-            <input
-              type="email"
-              placeholder="e.g. rahul@gmail.com"
-              value={form.email}
-              onChange={(e) => handleInput("email", e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Phone Number</label>
-            <input
-              type="text"
-              placeholder="e.g. +91 98765 43210"
-              value={form.phone}
-              onChange={(e) => handleInput("phone", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Company Name</label>
-            <input
-              type="text"
-              placeholder="e.g. Sharma Tech Solutions"
-              value={form.company}
-              onChange={(e) => handleInput("company", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Address</label>
-            <input
-              type="text"
-              placeholder="e.g. 404 Main St"
-              value={form.address}
-              onChange={(e) => handleInput("address", e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>City</label>
-            <input
-              type="text"
-              placeholder="e.g. Mumbai"
-              value={form.city}
-              onChange={(e) => handleInput("city", e.target.value)}
-            />
-          </div>
-
-          <div className="modal-buttons">
-            <button type="button" onClick={onClose}>Cancel</button>
-            <button type="submit" className="primary-btn">
-              {editingCustomer ? "Update Customer" : "Save Customer"}
+          <div className="popup-actions" style={{ marginTop: "24px", display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{ padding: "10px 20px", background: "#fff", border: "1px solid #e2e8f0", borderRadius: "6px", fontWeight: "600", color: "#0f172a", cursor: "pointer" }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              style={{ padding: "10px 20px", background: "#8b5cf6", border: "none", borderRadius: "6px", fontWeight: "600", color: "#fff", cursor: "pointer" }}
+            >
+              {editingCustomer ? "Update Customer" : "Add Customer"}
             </button>
           </div>
         </form>

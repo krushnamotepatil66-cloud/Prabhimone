@@ -101,21 +101,40 @@ function Estimates() {
 
         {/* Analytics Summary Cards */}
         <div className="sales-summary-cards">
-          <div className="sales-summary-card">
-            <div className="card-label">Total Estimates</div>
-            <div className="card-value">{totalCount} (₹{totalValue.toLocaleString("en-IN")})</div>
+          <div className="sales-summary-card total">
+            <div className="sales-card-icon">🧾</div>
+            <div className="sales-card-body">
+              <span className="card-label">Total Estimates</span>
+              <span className="card-value">₹{totalValue.toLocaleString("en-IN")}</span>
+              <span className="sales-card-sub">{totalCount} estimates total</span>
+            </div>
           </div>
-          <div className="sales-summary-card">
-            <div className="card-label">Sent</div>
-            <div className="card-value">{sentCount}</div>
+
+          <div className="sales-summary-card revenue">
+            <div className="sales-card-icon">📤</div>
+            <div className="sales-card-body">
+              <span className="card-label">Sent</span>
+              <span className="card-value">{sentCount}</span>
+              <span className="sales-card-sub">Pending client response</span>
+            </div>
           </div>
-          <div className="sales-summary-card">
-            <div className="card-label">Accepted</div>
-            <div className="card-value" style={{ color: "#166534" }}>{acceptedCount}</div>
+
+          <div className="sales-summary-card paid">
+            <div className="sales-card-icon">✅</div>
+            <div className="sales-card-body">
+              <span className="card-label">Accepted</span>
+              <span className="card-value">{acceptedCount}</span>
+              <span className="sales-card-sub">Approved by customers</span>
+            </div>
           </div>
-          <div className="sales-summary-card">
-            <div className="card-label">Draft</div>
-            <div className="card-value" style={{ color: "#475569" }}>{draftCount}</div>
+
+          <div className="sales-summary-card outstanding">
+            <div className="sales-card-icon">📝</div>
+            <div className="sales-card-body">
+              <span className="card-label">Draft</span>
+              <span className="card-value">{draftCount}</span>
+              <span className="sales-card-sub">Work in progress</span>
+            </div>
           </div>
         </div>
 

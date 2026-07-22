@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
-import CreateCustomerForm from "../../components/Customer/CreateCustomerForm";
+import CustomerModal from "../../components/Customer/CustomerModal";
 import "./Customers.css";
 
 // Import Shared Layout and Component Styles from Invoices Page
@@ -29,6 +29,17 @@ function Customers() {
   const [selected, setSelected] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [showIEDrawer, setShowIEDrawer] = useState(false);
+  const [ieDrawerTab, setIEDrawerTab] = useState("export"); // "import" or "export"
+  const [exportColumns, setExportColumns] = useState({
+    name: true,
+    company: true,
+    email: true,
+    phone: true,
+    city: true,
+    receivables: true,
+    totalBilled: true,
+  });
 
   const rowsPerPage = 10;
 
@@ -114,25 +125,26 @@ function Customers() {
   };
 
   const handleExportCSV = () => {
-    const headers = [
-      "Customer Name",
-      "Company",
-      "Email",
-      "Phone",
-      "City",
-      "Receivables",
-      "Total Billed"
-    ];
+    const headers = [];
+    if (exportColumns.name) headers.push("Customer Name");
+    if (exportColumns.company) headers.push("Company");
+    if (exportColumns.email) headers.push("Email");
+    if (exportColumns.phone) headers.push("Phone");
+    if (exportColumns.city) headers.push("City");
+    if (exportColumns.receivables) headers.push("Receivables");
+    if (exportColumns.totalBilled) headers.push("Total Billed");
 
-    const rows = filteredCustomers.map((c) => [
-      c.name,
-      c.company || "",
-      c.email,
-      c.phone || "",
-      c.city || "",
-      getCustomerOutstanding(c.name),
-      getCustomerBilled(c.name)
-    ]);
+    const rows = filteredCustomers.map((c) => {
+      const row = [];
+      if (exportColumns.name) row.push(c.name);
+      if (exportColumns.company) row.push(c.company || "");
+      if (exportColumns.email) row.push(c.email);
+      if (exportColumns.phone) row.push(c.phone || "");
+      if (exportColumns.city) row.push(c.city || "");
+      if (exportColumns.receivables) row.push(getCustomerOutstanding(c.name));
+      if (exportColumns.totalBilled) row.push(getCustomerBilled(c.name));
+      return row;
+    });
 
     const csvContent = [
       headers.join(","),
@@ -150,6 +162,79 @@ function Customers() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setShowIEDrawer(false);
+  };
+
+  const handleImportCSV = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target.result;
+      const lines = text.split(/\r?\n/);
+      if (lines.length < 2) {
+        alert("Invalid CSV file. File must contain at least headers and one row.");
+        return;
+      }
+
+      // Parse headers
+      const headers = lines[0].split(",").map(h => h.replace(/^["']|["']$/g, "").trim().toLowerCase());
+      
+      const nameIdx = headers.findIndex(h => h.includes("name") || h === "customer");
+      const emailIdx = headers.findIndex(h => h.includes("email"));
+      const phoneIdx = headers.findIndex(h => h.includes("phone") || h === "mobile");
+      const companyIdx = headers.findIndex(h => h.includes("company") || h === "business");
+      const cityIdx = headers.findIndex(h => h.includes("city"));
+      const addressIdx = headers.findIndex(h => h.includes("address") || h.includes("billing"));
+
+      if (nameIdx === -1) {
+        alert("CSV must contain a column for 'Customer Name' or 'Name'.");
+        return;
+      }
+
+      let addedCount = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        // Comma-separated parsing helper (handling quoted fields)
+        const values = [];
+        let currentVal = "";
+        let inQuotes = false;
+        for (let j = 0; j < line.length; j++) {
+          const char = line[j];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            values.push(currentVal.replace(/^["']|["']$/g, "").trim());
+            currentVal = "";
+          } else {
+            currentVal += char;
+          }
+        }
+        values.push(currentVal.replace(/^["']|["']$/g, "").trim());
+
+        if (values[nameIdx]) {
+          const newCust = {
+            id: `CUST-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            name: values[nameIdx],
+            email: emailIdx !== -1 && values[emailIdx] ? values[emailIdx] : `${values[nameIdx].toLowerCase().replace(/\s+/g, '')}@example.com`,
+            phone: phoneIdx !== -1 && values[phoneIdx] ? values[phoneIdx] : "",
+            company: companyIdx !== -1 && values[companyIdx] ? values[companyIdx] : "",
+            city: cityIdx !== -1 && values[cityIdx] ? values[cityIdx] : "",
+            address: addressIdx !== -1 && values[addressIdx] ? values[addressIdx] : "",
+          };
+          addCustomer(newCust);
+          addedCount++;
+        }
+      }
+      
+      alert(`Import complete! ${addedCount} customer records successfully imported.`);
+      setShowIEDrawer(false);
+    };
+    reader.readAsText(file);
+    e.target.value = "";
   };
 
   // Calculate high-level stats
@@ -162,35 +247,7 @@ function Customers() {
     (c) => invoices.some((inv) => inv.customer === c.name)
   ).length;
 
-  // Render Full-page Customer Creation/Edit View
-  if (isCreating || isEditing) {
-    return (
-      <DashboardLayout>
-        <CreateCustomerForm
-          editingCustomer={isEditing ? editingCustomer : null}
-          onSave={(cust) => {
-            if (isEditing) {
-              updateCustomer(cust);
-              // Update selectedCustomer detail view if active
-              if (selectedCustomer && selectedCustomer.id === cust.id) {
-                setSelectedCustomer(cust);
-              }
-            } else {
-              addCustomer(cust);
-            }
-            setIsCreating(false);
-            setIsEditing(false);
-            setEditingCustomer(null);
-          }}
-          onCancel={() => {
-            setIsCreating(false);
-            setIsEditing(false);
-            setEditingCustomer(null);
-          }}
-        />
-      </DashboardLayout>
-    );
-  }
+
 
   const handleDelete = (id, name, e) => {
     e.stopPropagation();
@@ -276,10 +333,13 @@ function Customers() {
 
             <button
               className="secondary-btn export-btn"
-              onClick={handleExportCSV}
-              title="Export Customers to CSV"
+              onClick={() => {
+                setShowIEDrawer(true);
+                setIEDrawerTab("import"); // default to import, user can toggle in the drawer
+              }}
+              title="Import or Export Customers via CSV"
             >
-              Export CSV
+              Import / Export CSV
             </button>
           </div>
         </div>
@@ -371,6 +431,36 @@ function Customers() {
       ) : (
         /* Full width table & summary cards */
         <>
+          {/* ── Summary Cards ── */}
+          <div className="invoice-summary-cards">
+            <div className="inv-summary-card total">
+              <div className="inv-card-icon">👥</div>
+              <div className="inv-card-body">
+                <span className="inv-card-label">Total Customers</span>
+                <span className="inv-card-value">{totalCustomers}</span>
+                <span className="inv-card-sub">Registered in system</span>
+              </div>
+            </div>
+
+            <div className="inv-summary-card paid">
+              <div className="inv-card-icon">✅</div>
+              <div className="inv-card-body">
+                <span className="inv-card-label">Active Billable</span>
+                <span className="inv-card-value">{activeInvoicingCustomers}</span>
+                <span className="inv-card-sub">With billing history</span>
+              </div>
+            </div>
+
+            <div className="inv-summary-card outstanding">
+              <div className="inv-card-icon">⏳</div>
+              <div className="inv-card-body">
+                <span className="inv-card-label">Total Receivables</span>
+                <span className="inv-card-value">{settings.currency}{totalOutstanding.toLocaleString()}</span>
+                <span className="inv-card-sub">{totalOutstanding > 0 ? "Pending collection" : "All cleared"}</span>
+              </div>
+            </div>
+          </div>
+
           <div className="table-card">
             <table className="invoice-table">
               <thead>
@@ -498,24 +588,164 @@ function Customers() {
             </div>
           </div>
 
-          <div className="summary-grid">
-            <div className="summary-card">
-              <h4>Total Customers</h4>
-              <h2>{totalCustomers}</h2>
+        </>
+      )}
+
+      {/* Customer Modal Popup */}
+      <CustomerModal
+        isOpen={isCreating || isEditing}
+        editingCustomer={isEditing ? editingCustomer : null}
+        onClose={() => {
+          setIsCreating(false);
+          setIsEditing(false);
+          setEditingCustomer(null);
+        }}
+        onSave={(cust) => {
+          if (isEditing) {
+            updateCustomer(cust);
+            // Update selectedCustomer detail view if active
+            if (selectedCustomer && selectedCustomer.id === cust.id) {
+              setSelectedCustomer(cust);
+            }
+          } else {
+            addCustomer(cust);
+          }
+          setIsCreating(false);
+          setIsEditing(false);
+          setEditingCustomer(null);
+        }}
+      />
+      {/* Import / Export Slider Drawer */}
+      {showIEDrawer && (
+        <div className="ie-drawer-overlay" onClick={() => setShowIEDrawer(false)}>
+          <div className="ie-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="ie-drawer-header">
+              <h3>Import / Export Customers</h3>
+              <button className="ie-close-btn" onClick={() => setShowIEDrawer(false)}>✕</button>
             </div>
-            <div className="summary-card">
-              <h4>Active Billable</h4>
-              <h2>{activeInvoicingCustomers}</h2>
+
+            <div className="ie-drawer-tabs">
+              <button
+                className={`ie-tab-btn ${ieDrawerTab === "import" ? "active" : ""}`}
+                onClick={() => setIEDrawerTab("import")}
+              >
+                Import CSV
+              </button>
+              <button
+                className={`ie-tab-btn ${ieDrawerTab === "export" ? "active" : ""}`}
+                onClick={() => setIEDrawerTab("export")}
+              >
+                Export CSV
+              </button>
             </div>
-            <div className="summary-card">
-              <h4>Total Receivables</h4>
-              <h2 style={{ color: totalOutstanding > 0 ? "#ea4335" : "#10b981" }}>
-                {settings.currency}
-                {totalOutstanding.toLocaleString()}
-              </h2>
+
+            {ieDrawerTab === "import" ? (
+              <div className="ie-drawer-body">
+                <p className="ie-section-desc">
+                  Import customer records from a CSV file. The CSV file must include a header row containing at least a <strong>Customer Name</strong> or <strong>Name</strong> column.
+                </p>
+                <label className="ie-upload-zone" htmlFor="csv-file-input">
+                  <span className="ie-upload-icon">📥</span>
+                  <span className="ie-upload-text">Choose CSV File</span>
+                  <span className="ie-upload-subtext">Click here to browse your files</span>
+                  <input
+                    id="csv-file-input"
+                    type="file"
+                    accept=".csv"
+                    onChange={handleImportCSV}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+            ) : (
+              <div className="ie-drawer-body">
+                <p className="ie-section-desc">
+                  Select which columns you want to include in the exported CSV spreadsheet.
+                </p>
+                <div className="ie-columns-config">
+                  <span className="ie-columns-config-title">Configure Columns</span>
+                  <label className="ie-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={exportColumns.name}
+                      onChange={(e) => setExportColumns({ ...exportColumns, name: e.target.checked })}
+                    />
+                    Customer Name
+                  </label>
+                  <label className="ie-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={exportColumns.company}
+                      onChange={(e) => setExportColumns({ ...exportColumns, company: e.target.checked })}
+                    />
+                    Company / Organization
+                  </label>
+                  <label className="ie-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={exportColumns.email}
+                      onChange={(e) => setExportColumns({ ...exportColumns, email: e.target.checked })}
+                    />
+                    Email Address
+                  </label>
+                  <label className="ie-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={exportColumns.phone}
+                      onChange={(e) => setExportColumns({ ...exportColumns, phone: e.target.checked })}
+                    />
+                    Phone Number
+                  </label>
+                  <label className="ie-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={exportColumns.city}
+                      onChange={(e) => setExportColumns({ ...exportColumns, city: e.target.checked })}
+                    />
+                    City
+                  </label>
+                  <label className="ie-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={exportColumns.receivables}
+                      onChange={(e) => setExportColumns({ ...exportColumns, receivables: e.target.checked })}
+                    />
+                    Receivables
+                  </label>
+                  <label className="ie-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={exportColumns.totalBilled}
+                      onChange={(e) => setExportColumns({ ...exportColumns, totalBilled: e.target.checked })}
+                    />
+                    Total Billed
+                  </label>
+                </div>
+              </div>
+            )}
+
+            <div className="ie-drawer-footer">
+              <button
+                type="button"
+                className="secondary-btn"
+                onClick={() => setShowIEDrawer(false)}
+                style={{ border: "1px solid #cbd5e1", padding: "8px 16px", borderRadius: "6px", fontWeight: "600", color: "#475569" }}
+              >
+                Cancel
+              </button>
+              {ieDrawerTab === "export" && (
+                <button
+                  type="button"
+                  className="primary-btn"
+                  onClick={handleExportCSV}
+                  style={{ background: "var(--primary)", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "6px", fontWeight: "600" }}
+                >
+                  Export CSV
+                </button>
+              )}
             </div>
           </div>
-        </>
+        </div>
       )}
     </DashboardLayout>
   );

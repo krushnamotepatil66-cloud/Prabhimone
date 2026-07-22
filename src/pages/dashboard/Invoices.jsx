@@ -25,8 +25,17 @@ function Invoices() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [preselectedPaymentInvoice, setPreselectedPaymentInvoice] = useState(null);
 
-  const { invoices: invoiceList, addInvoice, updateInvoice, deleteInvoice } = useApp();
+  const { invoices: invoiceList, addInvoice, updateInvoice, deleteInvoice, settings } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // Summary card computations
+  const totalRevenue = invoiceList.reduce((sum, inv) => sum + (inv.grandTotal || 0), 0);
+  const paidAmount = invoiceList.filter(inv => inv.status === "Paid").reduce((sum, inv) => sum + (inv.grandTotal || 0), 0);
+  const outstandingAmount = invoiceList.filter(inv => inv.status !== "Paid").reduce((sum, inv) => sum + (inv.grandTotal || 0), 0);
+  const overdueCount = invoiceList.filter(inv => inv.status === "Overdue").length;
+  const currency = settings?.currency || "₹";
+
+  const formatAmount = (val) => `${currency}${val.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   // Monitor URL Query Parameters for quick create redirects (?action=new)
   useEffect(() => {
@@ -175,6 +184,45 @@ function Invoices() {
             }}
             invoices={invoiceList}
           />
+
+          {/* ── Summary Cards ── */}
+          <div className="invoice-summary-cards">
+            <div className="inv-summary-card total">
+              <div className="inv-card-icon">🧾</div>
+              <div className="inv-card-body">
+                <span className="inv-card-label">Total Invoices</span>
+                <span className="inv-card-value">{invoiceList.length}</span>
+                <span className="inv-card-sub">{invoiceList.filter(i => i.status === "Paid").length} paid · {invoiceList.filter(i => i.status === "Pending").length} pending</span>
+              </div>
+            </div>
+
+            <div className="inv-summary-card revenue">
+              <div className="inv-card-icon">📈</div>
+              <div className="inv-card-body">
+                <span className="inv-card-label">Total Revenue</span>
+                <span className="inv-card-value">{formatAmount(totalRevenue)}</span>
+                <span className="inv-card-sub">Across all invoices</span>
+              </div>
+            </div>
+
+            <div className="inv-summary-card paid">
+              <div className="inv-card-icon">✅</div>
+              <div className="inv-card-body">
+                <span className="inv-card-label">Amount Received</span>
+                <span className="inv-card-value">{formatAmount(paidAmount)}</span>
+                <span className="inv-card-sub">{invoiceList.filter(i => i.status === "Paid").length} invoices paid</span>
+              </div>
+            </div>
+
+            <div className="inv-summary-card outstanding">
+              <div className="inv-card-icon">⏳</div>
+              <div className="inv-card-body">
+                <span className="inv-card-label">Outstanding</span>
+                <span className="inv-card-value">{formatAmount(outstandingAmount)}</span>
+                <span className="inv-card-sub">{overdueCount > 0 ? `${overdueCount} overdue` : "No overdue invoices"}</span>
+              </div>
+            </div>
+          </div>
 
           <InvoiceTable
             invoices={invoiceList}

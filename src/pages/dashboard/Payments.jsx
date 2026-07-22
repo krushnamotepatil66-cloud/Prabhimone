@@ -4,6 +4,7 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
 import RecordPaymentForm from "../../components/Payment/RecordPaymentForm";
 import "./Payments.css";
+import "../../pages/dashboard/Invoices.css";
 
 function Payments() {
   const { payments, addPayment, deletePayment, settings } = useApp();
@@ -73,17 +74,23 @@ function Payments() {
         </div>
 
         {/* Stats Row */}
-        <div className="stats-row">
-          <div className="stat-card-mini">
-            <p>Total Collections</p>
-            <h2 className="positive-collected">
-              {settings.currency}
-              {totalCollections.toLocaleString()}
-            </h2>
+        <div className="invoice-summary-cards">
+          <div className="inv-summary-card revenue">
+            <div className="inv-card-icon">📈</div>
+            <div className="inv-card-body">
+              <span className="inv-card-label">Total Collections</span>
+              <span className="inv-card-value">{settings.currency}{totalCollections.toLocaleString("en-IN")}</span>
+              <span className="inv-card-sub">Successfully collected</span>
+            </div>
           </div>
-          <div className="stat-card-mini">
-            <p>Payments Logged</p>
-            <h2>{paymentCount} Receipts</h2>
+          
+          <div className="inv-summary-card total">
+            <div className="inv-card-icon">🧾</div>
+            <div className="inv-card-body">
+              <span className="inv-card-label">Payments Logged</span>
+              <span className="inv-card-value">{paymentCount} Receipts</span>
+              <span className="inv-card-sub">Ledger transactions</span>
+            </div>
           </div>
         </div>
 

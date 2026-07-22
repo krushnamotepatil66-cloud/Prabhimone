@@ -71,7 +71,7 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
 
   const [newCustomerData, setNewCustomerData] = useState({
     email: "",
-    phone: "",
+    phone: "+91 ",
     company: "",
     city: "",
     address: ""
