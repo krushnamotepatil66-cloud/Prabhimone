@@ -12,11 +12,13 @@ z-index:999;
 }
 
 .modal{
-width:500px;
-max-width: 90%;
+width: 95%;
+max-width: 500px;
 background:#fff;
 border-radius:10px;
 padding:25px;
+max-height: 90vh;
+overflow-y: auto;
 }
 
 .modal-header{
@@ -69,8 +71,8 @@ border-radius:6px;
 cursor:pointer;
 }
 .large-modal{
-width:800px;
-max-width:95%;
+width: 95%;
+max-width: 800px;
 }
 
 .product-row{

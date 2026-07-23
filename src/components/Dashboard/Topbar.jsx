@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Topbar.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
-import { FiSettings, FiMenu } from "react-icons/fi";
+import { FiSettings, FiMenu, FiArrowLeft } from "react-icons/fi";
 
 function Topbar() {
   const location = useLocation();
@@ -44,26 +44,31 @@ function Topbar() {
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <button 
-          className="mobile-menu-toggle"
-          onClick={() => setSidebarMobileOpen(true)}
-          title="Open Menu"
-          aria-label="Open menu"
-        >
-          <FiMenu />
-        </button>
+        {location.pathname !== "/dashboard" ? (
+          <button
+            type="button"
+            className="topbar-back-btn"
+            onClick={() => navigate(-1)}
+            title="Go Back"
+            aria-label="Go back"
+          >
+            <FiArrowLeft />
+          </button>
+        ) : (
+          <button 
+            className="mobile-menu-toggle"
+            onClick={() => setSidebarMobileOpen(true)}
+            title="Open Menu"
+            aria-label="Open menu"
+          >
+            <FiMenu />
+          </button>
+        )}
         <h3 className="topbar-title">{getPageTitle(location.pathname)}</h3>
       </div>
 
       <div className="topbar-right">
-        {/* Settings button */}
-        <button
-          className="topbar-action-btn settings-btn-toggle"
-          title="Settings"
-          onClick={() => navigate("/dashboard/settings")}
-        >
-          <FiSettings className="topbar-cog-icon" />
-        </button>
+
 
         {/* Notifications Bell with Badge */}
         <div className="topbar-notifications-container">
@@ -130,7 +135,13 @@ function Topbar() {
           title={`${profile.name} - ${profile.role} (View Profile)`}
           onClick={() => navigate("/dashboard/profile")}
         >
-          <span className="user-avatar">{profile.avatar || "👤"}</span>
+          <span className="user-avatar">
+            {profile.profilePic ? (
+              <img src={profile.profilePic} alt="avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+            ) : (
+              profile.avatar || "👤"
+            )}
+          </span>
           <span className="user-name">{profile.name}</span>
         </div>
       </div>

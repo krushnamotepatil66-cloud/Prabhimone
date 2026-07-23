@@ -85,8 +85,8 @@ function TotalReceivables() {
 
   const formatCurrency = (amount) => {
     return `${settings.currency || "₹"}${amount.toLocaleString("en-IN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     })}`;
   };
 

@@ -40,7 +40,7 @@ const emptyForm = {
       product: "",
       description: "",
       hsn: "",
-      qty: "1",
+      qty: "",
       unit: "Nos",
       price: "",
       discount: "",
@@ -54,12 +54,17 @@ const emptyForm = {
 };
 
 function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
-  const { customers, creditNotes, invoices, addCustomer, settings } = useApp();
+  const { customers, creditNotes, invoices, addCustomer, settings, products, addProduct } = useApp();
   const [form, setForm] = useState(emptyForm);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
   const [isEditingParty, setIsEditingParty] = useState(false);
   const dropdownRef = useRef(null);
+
+  const [activeProductDropdownIndex, setActiveProductDropdownIndex] = useState(null);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [addingProductRowIndex, setAddingProductRowIndex] = useState(null);
+  const [focusedSuggestionIndex, setFocusedSuggestionIndex] = useState(0);
 
   // Additional calculation states
   const [additionalCharges, setAdditionalCharges] = useState("");
@@ -87,6 +92,9 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
+      }
+      if (!event.target.closest('.product-dropdown-container')) {
+        setActiveProductDropdownIndex(null);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -135,7 +143,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
             discountType: item.discountType || "Flat",
             tax: String(item.tax !== undefined ? item.tax : 18)
           }))
-          : [{ product: "Returned Goods Credit", description: "", hsn: "", qty: "1", unit: "Nos", price: String(parseAmount(editingCreditNote.amount)), discount: "", discountType: "Flat", tax: "18" }],
+          : [{ product: "Returned Goods Credit", description: "", hsn: "", qty: "", unit: "Nos", price: String(parseAmount(editingCreditNote.amount)), discount: "", discountType: "Flat", tax: "18" }],
         notes: editingCreditNote.notes || "",
         internalNote: editingCreditNote.internalNote || "",
         termsAndConditions: editingCreditNote.termsAndConditions || settings.creditNoteTermsAndConditions || defaultTermsAndConditions,
@@ -209,7 +217,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
           product: "",
           description: "",
           hsn: "",
-          qty: "1",
+          qty: "",
           unit: "Nos",
           price: "",
           discount: "",
@@ -738,26 +746,10 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
               <div className="flex-header-row">
                 <div className="card-title-flex">
                   <span className="card-header-icon"><FiPackage /></span>
-                  <h2>Items</h2>
+                  <h2>Products</h2>
                 </div>
 
-                <div className="search-items-row">
-                  <div className="search-bar-input-stack">
-                    <span className="search-icon"><FiSearch /></span>
-                    <input
-                      type="text"
-                      placeholder="Search items by name / SKU"
-                    />
-                    <span className="barcode-scanner-icon">📷</span>
-                  </div>
-                  <button
-                    type="button"
-                    className="btn-purple-outline"
-                    onClick={addItemRow}
-                  >
-                    + Add Item
-                  </button>
-                </div>
+                
               </div>
             </div>
 
@@ -782,14 +774,92 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                       const rowAmount = calculateItemTotal(item);
                       return (
                         <tr key={index}>
-                          <td>
+                          <td className="product-dropdown-container" style={{ position: "relative" }}>
                             <input
                               type="text"
                               value={item.product}
-                              onChange={(e) => handleItemChange(index, "product", e.target.value)}
-                              placeholder="Product / Service name"
+                              onChange={(e) => {
+                                handleItemChange(index, "product", e.target.value);
+                                setActiveProductDropdownIndex(index);
+                                setFocusedSuggestionIndex(0);
+                              }}
+                              onFocus={() => {
+                                setActiveProductDropdownIndex(index);
+                                setFocusedSuggestionIndex(0);
+                              }}
+                              onKeyDown={(e) => {
+                                const filtered = products.filter((p) =>
+                                  p.name.toLowerCase().includes((item.product || "").toLowerCase())
+                                );
+                                const totalOptions = filtered.length + 1;
+
+                                if (e.key === "ArrowDown") {
+                                  e.preventDefault();
+                                  setFocusedSuggestionIndex((prev) => (prev + 1) % totalOptions);
+                                } else if (e.key === "ArrowUp") {
+                                  e.preventDefault();
+                                  setFocusedSuggestionIndex((prev) => (prev - 1 + totalOptions) % totalOptions);
+                                } else if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  if (focusedSuggestionIndex >= 0 && focusedSuggestionIndex < filtered.length) {
+                                    const p = filtered[focusedSuggestionIndex];
+                                    handleItemChange(index, "product", p.name);
+                                    handleItemChange(index, "description", p.description || "");
+                                    handleItemChange(index, "hsn", p.hsnSac || "");
+                                    handleItemChange(index, "unit", p.unit || "Nos");
+                                    handleItemChange(index, "price", p.price || 0);
+                                    setActiveProductDropdownIndex(null);
+                                  } else if (focusedSuggestionIndex === filtered.length) {
+                                    setAddingProductRowIndex(index);
+                                    setShowProductModal(true);
+                                    setActiveProductDropdownIndex(null);
+                                  }
+                                } else if (e.key === "Escape") {
+                                  setActiveProductDropdownIndex(null);
+                                }
+                              }}
+                              placeholder="Product name"
                               required
                             />
+                            {activeProductDropdownIndex === index && (
+                              <div className="autocomplete-suggestions" style={{ top: "100%", left: "0", width: "100%", minWidth: "250px", zIndex: 100 }}>
+                                {products
+                                  .filter((p) => p.name.toLowerCase().includes((item.product || "").toLowerCase()))
+                                  .map((p, pIdx) => (
+                                    <div
+                                      key={p.id || pIdx}
+                                      className="suggestion-row"
+                                      style={{
+                                        backgroundColor: focusedSuggestionIndex === pIdx ? "var(--primary-purple-light)" : ""
+                                      }}
+                                      onClick={() => {
+                                        handleItemChange(index, "product", p.name);
+                                        handleItemChange(index, "description", p.description || "");
+                                        handleItemChange(index, "hsn", p.hsnSac || "");
+                                        handleItemChange(index, "unit", p.unit || "Nos");
+                                        handleItemChange(index, "price", p.price || 0);
+                                        setActiveProductDropdownIndex(null);
+                                      }}
+                                    >
+                                      <div>{p.name}</div>
+                                      {p.price && <div className="subtext">₹{Number(p.price).toLocaleString()}</div>}
+                                    </div>
+                                  ))}
+                                <div
+                                  className="suggestion-row create-option"
+                                  style={{
+                                    backgroundColor: focusedSuggestionIndex === products.filter((p) => p.name.toLowerCase().includes((item.product || "").toLowerCase())).length ? "var(--primary-purple-light)" : ""
+                                  }}
+                                  onClick={() => {
+                                    setAddingProductRowIndex(index);
+                                    setShowProductModal(true);
+                                    setActiveProductDropdownIndex(null);
+                                  }}
+                                >
+                                  + Quick Add Product
+                                </div>
+                              </div>
+                            )}
                           </td>
                           <td>
                             <input
@@ -878,11 +948,11 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
               <div className="table-bottom-actions-row">
                 <div className="action-buttons-flex">
                   <button type="button" className="btn-purple-outline" onClick={addItemRow}>
-                    <FiPlus style={{ marginRight: "4px" }} /> Add Item
+                    <FiPlus style={{ marginRight: "4px" }} /> Add Product
                   </button>
                 </div>
                 <div className="total-items-badge">
-                  Total Items: <span className="font-semibold">{form.items.length}</span>
+                  Total Products: <span className="font-semibold">{form.items.length}</span>
                 </div>
               </div>
             </div>
@@ -1238,6 +1308,26 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
           </div>
         </div>
       )}
+      <ProductModal
+        isOpen={showProductModal}
+        initialName={addingProductRowIndex !== null ? form.items[addingProductRowIndex].product : ""}
+        onClose={() => {
+          setShowProductModal(false);
+          setAddingProductRowIndex(null);
+        }}
+        onSave={(prod) => {
+          const newProd = addProduct(prod);
+          if (addingProductRowIndex !== null) {
+            handleItemChange(addingProductRowIndex, "product", newProd.name);
+            handleItemChange(addingProductRowIndex, "description", newProd.description || "");
+            handleItemChange(addingProductRowIndex, "hsn", newProd.hsnSac || "");
+            handleItemChange(addingProductRowIndex, "unit", newProd.unit || "Nos");
+            handleItemChange(addingProductRowIndex, "price", newProd.price || 0);
+          }
+          setShowProductModal(false);
+          setAddingProductRowIndex(null);
+        }}
+      />
     </div>
   );
 }

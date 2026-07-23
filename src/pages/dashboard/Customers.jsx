@@ -335,11 +335,22 @@ function Customers() {
               className="secondary-btn export-btn"
               onClick={() => {
                 setShowIEDrawer(true);
-                setIEDrawerTab("import"); // default to import, user can toggle in the drawer
+                setIEDrawerTab("export");
               }}
-              title="Import or Export Customers via CSV"
+              title="Export Customers via CSV"
             >
-              Import / Export CSV
+              Export CSV
+            </button>
+
+            <button
+              className="secondary-btn export-btn"
+              onClick={() => {
+                setShowIEDrawer(true);
+                setIEDrawerTab("import");
+              }}
+              title="Import Customers via CSV"
+            >
+              Import CSV
             </button>
           </div>
         </div>
@@ -465,16 +476,7 @@ function Customers() {
             <table className="invoice-table">
               <thead>
                 <tr>
-                  <th width="40">
-                    <input
-                      type="checkbox"
-                      checked={
-                        currentCustomers.length > 0 &&
-                        selected.length === currentCustomers.length
-                      }
-                      onChange={handleSelectAll}
-                    />
-                  </th>
+
                   <th>Customer</th>
                   <th>Company</th>
                   <th>Contact Info</th>
@@ -503,13 +505,7 @@ function Customers() {
                         className={`invoice-row ${isSelectedRow ? "selected-row" : ""}`}
                         style={{ cursor: "pointer" }}
                       >
-                        <td onClick={(e) => e.stopPropagation()}>
-                          <input
-                            type="checkbox"
-                            checked={selected.includes(customer.id)}
-                            onChange={(e) => handleSelect(e, customer.id)}
-                          />
-                        </td>
+
                         <td>
                           <div className="customer-avatar-name">
                             <span className="avatar-placeholder">
@@ -561,7 +557,7 @@ function Customers() {
 
             <div className="table-footer">
               <span className="selected-count">
-                Selected: {selected.length} of {filteredCustomers.length}
+                Total: {filteredCustomers.length} customers
               </span>
 
               <div className="pagination">

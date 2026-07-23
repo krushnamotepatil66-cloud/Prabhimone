@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaCheckCircle, FaEnvelope } from "react-icons/fa";
+import { FaCheckCircle, FaEnvelope, FaArrowLeft } from "react-icons/fa";
 import "../Login/LoginForm.css";
 
 function VerifyOTPForm() {
@@ -110,7 +110,32 @@ function VerifyOTPForm() {
 
   return (
     <div className="login-container">
-      <div className="login-card">
+      <div className="login-card" style={{ position: "relative" }}>
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          title="Go Back"
+          aria-label="Go back"
+          style={{
+            position: "absolute",
+            top: "20px",
+            left: "20px",
+            background: "#f1f5f9",
+            border: "none",
+            fontSize: "16px",
+            color: "#475569",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "32px",
+            height: "32px",
+            borderRadius: "50%",
+            transition: "all 0.2s"
+          }}
+        >
+          <FaArrowLeft />
+        </button>
         <h1>PrabhimOne</h1>
 
         {!isVerified ? (

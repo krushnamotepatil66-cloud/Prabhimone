@@ -25,6 +25,7 @@ const menu = [
     children: [
       { name: "Invoices", icon: FiFileText, path: "/dashboard/invoices" },
       { name: "Customers", icon: FiUsers, path: "/dashboard/customers" },
+      { name: "Products", icon: FiTag, path: "/dashboard/products" },
       { name: "Estimates", icon: FiFileText, path: "/dashboard/estimates" },
       { name: "Credit Notes", icon: FiFileText, path: "/dashboard/credit-notes" },
       { name: "Proforma Invoices", icon: FiFileText, path: "/dashboard/proforma-invoices" },
@@ -41,7 +42,8 @@ function Sidebar() {
   const location = useLocation();
   const {
     sidebarMobileOpen,
-    setSidebarMobileOpen
+    setSidebarMobileOpen,
+    profile
   } = useApp();
   const [expandedMenus, setExpandedMenus] = useState(["Sales"]); // Sales open by default
 
@@ -69,8 +71,16 @@ function Sidebar() {
       className={`sidebar ${sidebarMobileOpen ? "mobile-open" : ""}`}
     >
       <div className="logo-section">
-        <div className="logo-details">
-          <span className="logo-icon">💼</span>
+        <div className="logo-details" style={{ display: "flex", alignItems: "center" }}>
+          {profile.profilePic ? (
+            <img 
+              src={profile.profilePic} 
+              alt="logo" 
+              style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", marginRight: "8px" }} 
+            />
+          ) : (
+            <span className="logo-icon">{profile.avatar || "💼"}</span>
+          )}
           <span className="logo-text">PrabhimOne</span>
         </div>
         

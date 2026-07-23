@@ -113,14 +113,47 @@ function Profile() {
               </div>
 
               <div className="form-group">
-                <label>Choose Avatar Icon</label>
+                <label>Choose Avatar Icon or Upload Profile Picture</label>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "12px", marginTop: "6px" }}>
+                  <label className="secondary-btn" style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "8px 16px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "13px", fontWeight: "600", color: "#475569" }}>
+                    Upload Photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            handleInput("profilePic", reader.result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      style={{ display: "none" }}
+                    />
+                  </label>
+                  {form.profilePic && (
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      onClick={() => handleInput("profilePic", "")}
+                      style={{ background: "#fee2e2", color: "#ef4444", border: "1px solid #fca5a5", padding: "8px 16px", borderRadius: "6px", cursor: "pointer", fontSize: "13px", fontWeight: "600" }}
+                    >
+                      Remove Photo
+                    </button>
+                  )}
+                </div>
                 <div className="avatar-options-grid">
                   {avatarsList.map((emoji) => (
                     <button
                       key={emoji}
                       type="button"
-                      className={`avatar-option-btn ${form.avatar === emoji ? "active-avatar" : ""}`}
-                      onClick={() => handleInput("avatar", emoji)}
+                      className={`avatar-option-btn ${form.avatar === emoji && !form.profilePic ? "active-avatar" : ""}`}
+                      onClick={() => {
+                        handleInput("avatar", emoji);
+                        handleInput("profilePic", "");
+                      }}
                     >
                       {emoji}
                     </button>
@@ -213,8 +246,12 @@ function Profile() {
 
           {/* Right Column: Visual Summary */}
           <div className="profile-side-card">
-            <div className="profile-visual-avatar">
-              <span className="big-profile-emoji">{form.avatar}</span>
+            <div className="profile-visual-avatar" style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "15px" }}>
+              {form.profilePic ? (
+                <img src={form.profilePic} alt="Profile" style={{ width: "96px", height: "96px", borderRadius: "50%", objectFit: "cover", border: "2px solid #8b5cf6" }} />
+              ) : (
+                <span className="big-profile-emoji" style={{ margin: 0 }}>{form.avatar}</span>
+              )}
             </div>
             <h2>{form.name}</h2>
             <span className="profile-badge-role">{form.role}</span>

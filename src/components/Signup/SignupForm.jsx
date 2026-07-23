@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./SignupForm.css";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle, FaApple } from "react-icons/fa";
+import { FaGoogle, FaApple, FaArrowLeft } from "react-icons/fa";
 
 function SignupForm() {
   const navigate = useNavigate();
@@ -21,7 +21,32 @@ function SignupForm() {
 
   return (
     <div className="signup-container">
-      <div className="signup-card">
+      <div className="signup-card" style={{ position: "relative" }}>
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          title="Go Back"
+          aria-label="Go back"
+          style={{
+            position: "absolute",
+            top: "20px",
+            left: "20px",
+            background: "#f1f5f9",
+            border: "none",
+            fontSize: "16px",
+            color: "#475569",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "32px",
+            height: "32px",
+            borderRadius: "50%",
+            transition: "all 0.2s"
+          }}
+        >
+          <FaArrowLeft />
+        </button>
         <h1>PrabhimOne</h1>
         <h2>Create Account</h2>
         <p>Start managing your invoices in minutes.</p>

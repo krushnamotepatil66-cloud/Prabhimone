@@ -10,6 +10,14 @@ const initialCustomers = [
   { id: "CUST-005", name: "Vikas Kumar", email: "vikas@gmail.com", phone: "+91 92345 67890", company: "Vikas Retailers Ltd", city: "Delhi", address: "A-12 Connaught Place" }
 ];
 
+const initialProducts = [
+  { id: "PROD-001", name: "Web Development Consultation", type: "Service", price: 1200, unit: "Hour", description: "Expert consulting for web dev" },
+  { id: "PROD-002", name: "UI/UX Design Review", type: "Service", price: 2500, unit: "Project", description: "Comprehensive UI review" },
+  { id: "PROD-003", name: "SEO Auditing & Reporting", type: "Service", price: 3700, unit: "Project", description: "Detailed SEO audit" },
+  { id: "PROD-004", name: "Database Optimization", type: "Service", price: 5400, unit: "Project", description: "Optimize database queries and indexing" },
+  { id: "PROD-005", name: "Cloud Server Setup", type: "Service", price: 2900, unit: "Project", description: "Initial setup of AWS/Azure infrastructure" }
+];
+
 const initialInvoices = [
   {
     id: "INV-001",
@@ -135,7 +143,8 @@ const initialProfile = {
   phone: "+91 99887 76655",
   role: "Administrator",
   avatar: "👨‍💻",
-  theme: "light"
+  theme: "light",
+  profilePic: ""
 };
 
 const initialActivities = [
@@ -173,6 +182,11 @@ export function AppProvider({ children }) {
   const [customers, setCustomers] = useState(() => {
     const val = localStorage.getItem("prabhimone_customers");
     return val ? JSON.parse(val) : initialCustomers;
+  });
+
+  const [products, setProducts] = useState(() => {
+    const val = localStorage.getItem("prabhimone_products");
+    return val ? JSON.parse(val) : initialProducts;
   });
 
   const [invoices, setInvoices] = useState(() => {
@@ -232,6 +246,10 @@ export function AppProvider({ children }) {
   useEffect(() => {
     localStorage.setItem("prabhimone_customers", JSON.stringify(customers));
   }, [customers]);
+
+  useEffect(() => {
+    localStorage.setItem("prabhimone_products", JSON.stringify(products));
+  }, [products]);
 
   useEffect(() => {
     localStorage.setItem("prabhimone_invoices", JSON.stringify(invoices));
@@ -319,6 +337,32 @@ export function AppProvider({ children }) {
     setCustomers((prev) => prev.filter((c) => c.id !== id));
     if (cust) {
       logActivity(`Customer ${cust.name} deleted`);
+    }
+  };
+
+  // Products CRUD
+  const addProduct = (product) => {
+    const newProd = {
+      ...product,
+      id: `PROD-${String(products.length + 1).padStart(3, "0")}`
+    };
+    setProducts((prev) => [...prev, newProd]);
+    logActivity(`Product ${newProd.name} added`);
+    return newProd;
+  };
+
+  const updateProduct = (updatedProd) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === updatedProd.id ? updatedProd : p))
+    );
+    logActivity(`Product ${updatedProd.name} updated`);
+  };
+
+  const deleteProduct = (id) => {
+    const prod = products.find((p) => p.id === id);
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+    if (prod) {
+      logActivity(`Product ${prod.name} deleted`);
     }
   };
 
@@ -488,6 +532,7 @@ export function AppProvider({ children }) {
     <AppContext.Provider
       value={{
         customers,
+        products,
         invoices,
         payments,
         settings,
@@ -500,6 +545,9 @@ export function AppProvider({ children }) {
         addCustomer,
         updateCustomer,
         deleteCustomer,
+        addProduct,
+        updateProduct,
+        deleteProduct,
         addInvoice,
         updateInvoice,
         deleteInvoice,

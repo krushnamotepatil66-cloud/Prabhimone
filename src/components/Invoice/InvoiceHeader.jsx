@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useApp } from "../../context/AppContext";
 import { exportInvoicesToCSV } from "../../utils/exportInvoices";
 import "./InvoiceHeader.css";
+
 
 function InvoiceHeader({
   search,
@@ -10,6 +12,7 @@ function InvoiceHeader({
   onCreate,
   invoices,
 }) {
+  const { addInvoice } = useApp();
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
   const statusOptions = {
@@ -84,6 +87,80 @@ function InvoiceHeader({
           >
             Export CSV
           </button>
+          
+          <label className="secondary-btn export-btn" style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", margin: 0 }}>
+            Import CSV
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                  const text = event.target.result;
+                  const lines = text.split(/\r?\n/);
+                  if (lines.length < 2) {
+                    alert("Invalid CSV file. File must contain at least headers and one row.");
+                    return;
+                  }
+
+                  const headers = lines[0].split(",").map(h => h.replace(/^["']|["']$/g, "").trim().toLowerCase());
+                  
+                  const idIdx = headers.findIndex(h => h === "id" || h.includes("invoice"));
+                  const customerIdx = headers.findIndex(h => h.includes("customer") || h === "name");
+                  const amountIdx = headers.findIndex(h => h.includes("amount") || h.includes("total"));
+                  const statusIdx = headers.findIndex(h => h.includes("status"));
+                  const dateIdx = headers.findIndex(h => h.includes("date"));
+
+                  if (customerIdx === -1) {
+                    alert("CSV must contain a column for 'Customer' or 'Name'.");
+                    return;
+                  }
+
+                  let addedCount = 0;
+                  for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+
+                    const values = [];
+                    let currentVal = "";
+                    let inQuotes = false;
+                    for (let j = 0; j < line.length; j++) {
+                      const char = line[j];
+                      if (char === '"') {
+                        inQuotes = !inQuotes;
+                      } else if (char === ',' && !inQuotes) {
+                        values.push(currentVal.replace(/^["']|["']$/g, "").trim());
+                        currentVal = "";
+                      } else {
+                        currentVal += char;
+                      }
+                    }
+                    values.push(currentVal.replace(/^["']|["']$/g, "").trim());
+
+                    if (values[customerIdx]) {
+                      const newInv = {
+                        id: idIdx !== -1 && values[idIdx] ? values[idIdx] : `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                        customer: values[customerIdx],
+                        amount: amountIdx !== -1 && values[amountIdx] ? values[amountIdx] : "₹0.00",
+                        status: statusIdx !== -1 && values[statusIdx] ? values[statusIdx] : "Pending",
+                        date: dateIdx !== -1 && values[dateIdx] ? values[dateIdx] : new Date().toISOString().split("T")[0],
+                        items: [{ product: "Imported Service", qty: 1, price: 0 }]
+                      };
+                      addInvoice(newInv);
+                      addedCount++;
+                    }
+                  }
+                  alert(`Import complete! ${addedCount} invoices successfully imported.`);
+                };
+                reader.readAsText(file);
+                e.target.value = "";
+              }}
+              style={{ display: "none" }}
+            />
+          </label>
         </div>
       </div>
     </div>

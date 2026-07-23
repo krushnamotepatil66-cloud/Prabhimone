@@ -1,16 +1,40 @@
 import { useState } from "react";
 import "./Navbar.css";
-import { Link } from "react-router-dom";
-import { FiMenu, FiX } from "react-icons/fi";
+import { Link, useNavigate } from "react-router-dom";
+import { FiMenu, FiX, FiArrowLeft } from "react-icons/fi";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <header className="navbar">
       <div className="container navbar-container">
-        <div className="logo">
-          <h2>PrabhimOne</h2>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <button 
+            type="button"
+            className="navbar-back-btn" 
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+            title="Go back"
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: "20px",
+              color: "#334155",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "6px",
+              borderRadius: "6px"
+            }}
+          >
+            <FiArrowLeft />
+          </button>
+          <div className="logo">
+            <h2>PrabhimOne</h2>
+          </div>
         </div>
 
         {/* Hamburger/Close Button for Mobile View */}
