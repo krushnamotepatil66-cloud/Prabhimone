@@ -174,7 +174,7 @@ function CreateInvoiceModal({
             <option value="Overdue">Overdue</option>
           </select>
 
-          <h3>Products</h3>
+          <h3>Items</h3>
 
           {form.items.map((item, index) => (
             <div
@@ -183,7 +183,7 @@ function CreateInvoiceModal({
             >
               <input
                 type="text"
-                placeholder="Product"
+                placeholder="Item"
                 value={item.product}
                 onChange={(e) =>
                   handleItemChange(
@@ -235,7 +235,7 @@ function CreateInvoiceModal({
             className="add-item-btn"
             onClick={addItem}
           >
-            + Add Product
+            + Add Item
           </button>
 
           <h3>

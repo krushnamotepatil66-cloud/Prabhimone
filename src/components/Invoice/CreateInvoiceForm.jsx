@@ -852,7 +852,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
               <div className="flex-header-row">
                 <div className="card-title-flex">
                   <span className="card-header-icon"><FiPackage /></span>
-                  <h2>Products</h2>
+                  <h2>Items</h2>
                 </div>
 
                 
@@ -865,7 +865,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                   <thead>
                     <tr>
                       <th width="3%" className="align-center">#</th>
-                      <th width="21%">Product Name</th>
+                      <th width="21%">Item Name</th>
                       <th width="8%">HSN / SAC</th>
                       <th width="8%" className="align-center">Qty</th>
                       <th width="8%" className="align-center">Unit</th>
@@ -916,8 +916,14 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                                         handleItemChange(index, "product", p.name);
                                         handleItemChange(index, "description", p.description || "");
                                         handleItemChange(index, "hsn", p.hsnSac || "");
-                                        handleItemChange(index, "unit", p.unit || "");
+                                        handleItemChange(index, "unit", p.unit || "Nos");
                                         handleItemChange(index, "price", p.price || 0);
+                                        if (p.tax !== undefined && p.tax !== null && p.tax !== "") {
+                                          handleItemChange(index, "tax", p.tax);
+                                        }
+                                        if (p.discountOnSales !== undefined && p.discountOnSales !== null && p.discountOnSales !== "") {
+                                          handleItemChange(index, "discount", p.discountOnSales);
+                                        }
                                         setActiveProductDropdownIndex(null);
                                       } else if (focusedSuggestionIndex === filtered.length) {
                                         setAddingProductRowIndex(index);
@@ -928,7 +934,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                                       setActiveProductDropdownIndex(null);
                                     }
                                   }}
-                                  placeholder="Product name"
+                                  placeholder="Item name"
                                   className="item-title-input"
                                   required
                                   style={{ width: "100%" }}
@@ -948,8 +954,14 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                                             handleItemChange(index, "product", p.name);
                                             handleItemChange(index, "description", p.description || "");
                                             handleItemChange(index, "hsn", p.hsnSac || "");
-                                            handleItemChange(index, "unit", p.unit || "");
+                                            handleItemChange(index, "unit", p.unit || "Nos");
                                             handleItemChange(index, "price", p.price || 0);
+                                            if (p.tax !== undefined && p.tax !== null && p.tax !== "") {
+                                              handleItemChange(index, "tax", p.tax);
+                                            }
+                                            if (p.discountOnSales !== undefined && p.discountOnSales !== null && p.discountOnSales !== "") {
+                                              handleItemChange(index, "discount", p.discountOnSales);
+                                            }
                                             setActiveProductDropdownIndex(null);
                                           }}
                                         >
@@ -968,7 +980,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                                         setActiveProductDropdownIndex(null);
                                       }}
                                     >
-                                      + Quick Add Product
+                                      + Quick Add Item
                                     </div>
                                   </div>
                                 )}
@@ -1065,11 +1077,11 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
               <div className="table-bottom-actions-row">
                 <div className="action-buttons-flex">
                   <button type="button" className="btn-purple-outline" onClick={addItemRow}>
-                    <FiPlus style={{ marginRight: "4px" }} /> Add Product
+                    <FiPlus style={{ marginRight: "4px" }} /> Add Item
                   </button>
                 </div>
                 <div className="total-items-badge">
-                  Total Products: <span className="font-semibold">{form.items.length}</span>
+                  Total Items: <span className="font-semibold">{form.items.length}</span>
                 </div>
               </div>
             </div>
@@ -1094,6 +1106,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                     onChange={(e) => handleInput("notes", e.target.value)}
                     placeholder="Add any notes or special instructions..."
                     rows="3"
+                    style={{ resize: "none" }}
                   />
                 </div>
 
@@ -1104,6 +1117,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                     onChange={(e) => handleInput("internalNote", e.target.value)}
                     placeholder="For internal use only..."
                     rows="3"
+                    style={{ resize: "none" }}
                   />
                 </div>
               </div>
@@ -1114,7 +1128,8 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                   value={form.termsAndConditions}
                   onChange={(e) => handleInput("termsAndConditions", e.target.value)}
                   className="terms-conditions-display"
-                  rows="4"
+                  rows="8"
+                  style={{ resize: "none" }}
                 />
               </div>
             </div>
@@ -1231,18 +1246,13 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                 <button type="button" className="btn-action-preview" onClick={(e) => handleSubmitForm(e, null, false)}>
                   Save &amp; Preview
                 </button>
-                <div className="btn-action-send-group">
-                  <button
-                    type="button"
-                    className="btn-action-send-main"
-                    onClick={(e) => handleSubmitForm(e, null, true)}
-                  >
-                    Save &amp; Print
-                  </button>
-                  <button type="button" className="btn-action-send-arrow" onClick={(e) => handleSubmitForm(e, null, true)}>
-                    <FiChevronDown />
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="btn-action-send-single"
+                  onClick={(e) => handleSubmitForm(e, null, true)}
+                >
+                  Save &amp; Print
+                </button>
               </div>
             </div>
           </div>
@@ -1406,6 +1416,12 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
             handleItemChange(addingProductRowIndex, "hsn", newProd.hsnSac || "");
             handleItemChange(addingProductRowIndex, "unit", newProd.unit || "Nos");
             handleItemChange(addingProductRowIndex, "price", newProd.price || 0);
+            if (newProd.tax !== undefined && newProd.tax !== null && newProd.tax !== "") {
+              handleItemChange(addingProductRowIndex, "tax", newProd.tax);
+            }
+            if (newProd.discountOnSales !== undefined && newProd.discountOnSales !== null && newProd.discountOnSales !== "") {
+              handleItemChange(addingProductRowIndex, "discount", newProd.discountOnSales);
+            }
           }
           setShowProductModal(false);
           setAddingProductRowIndex(null);

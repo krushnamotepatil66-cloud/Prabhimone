@@ -340,31 +340,35 @@ export function AppProvider({ children }) {
     }
   };
 
-  // Products CRUD
-  const addProduct = (product) => {
-    const newProd = {
-      ...product,
-      id: `PROD-${String(products.length + 1).padStart(3, "0")}`
+  // Items / Products CRUD
+  const addItem = (item) => {
+    const newItem = {
+      ...item,
+      id: `ITEM-${String(products.length + 1).padStart(3, "0")}`
     };
-    setProducts((prev) => [...prev, newProd]);
-    logActivity(`Product ${newProd.name} added`);
-    return newProd;
+    setProducts((prev) => [...prev, newItem]);
+    logActivity(`Item ${newItem.name} added`);
+    return newItem;
   };
 
-  const updateProduct = (updatedProd) => {
+  const updateItem = (updatedItem) => {
     setProducts((prev) =>
-      prev.map((p) => (p.id === updatedProd.id ? updatedProd : p))
+      prev.map((p) => (p.id === updatedItem.id ? updatedItem : p))
     );
-    logActivity(`Product ${updatedProd.name} updated`);
+    logActivity(`Item ${updatedItem.name} updated`);
   };
 
-  const deleteProduct = (id) => {
-    const prod = products.find((p) => p.id === id);
+  const deleteItem = (id) => {
+    const item = products.find((p) => p.id === id);
     setProducts((prev) => prev.filter((p) => p.id !== id));
-    if (prod) {
-      logActivity(`Product ${prod.name} deleted`);
+    if (item) {
+      logActivity(`Item ${item.name} deleted`);
     }
   };
+
+  const addProduct = addItem;
+  const updateProduct = updateItem;
+  const deleteProduct = deleteItem;
 
   // Invoices CRUD
   const addInvoice = (invoice) => {
@@ -533,6 +537,7 @@ export function AppProvider({ children }) {
       value={{
         customers,
         products,
+        items: products,
         invoices,
         payments,
         settings,
@@ -548,6 +553,9 @@ export function AppProvider({ children }) {
         addProduct,
         updateProduct,
         deleteProduct,
+        addItem,
+        updateItem,
+        deleteItem,
         addInvoice,
         updateInvoice,
         deleteInvoice,

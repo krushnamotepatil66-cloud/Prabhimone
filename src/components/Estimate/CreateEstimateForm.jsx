@@ -833,7 +833,7 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
               <div className="flex-header-row">
                 <div className="card-title-flex">
                   <span className="card-header-icon"><FiPackage /></span>
-                  <h2>Products</h2>
+                  <h2>Items</h2>
                 </div>
                 
                 
@@ -845,7 +845,7 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                 <table className="new-items-grid-table">
                   <thead>
                     <tr>
-                      <th style={{ width: "25%" }}>PRODUCT / SERVICE</th>
+                      <th style={{ width: "25%" }}>ITEM / SERVICE</th>
                       <th style={{ width: "20%" }}>DESCRIPTION</th>
                       <th style={{ width: "10%", textAlign: "center" }}>QTY</th>
                       <th style={{ width: "10%", textAlign: "center" }}>UNIT</th>
@@ -895,6 +895,12 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                                     handleItemChange(index, "hsn", p.hsnSac || "");
                                     handleItemChange(index, "unit", p.unit || "Nos");
                                     handleItemChange(index, "price", p.price || 0);
+                                    if (p.tax !== undefined && p.tax !== null && p.tax !== "") {
+                                      handleItemChange(index, "tax", p.tax);
+                                    }
+                                    if (p.discountOnSales !== undefined && p.discountOnSales !== null && p.discountOnSales !== "") {
+                                      handleItemChange(index, "discount", p.discountOnSales);
+                                    }
                                     setActiveProductDropdownIndex(null);
                                   } else if (focusedSuggestionIndex === filtered.length) {
                                     setAddingProductRowIndex(index);
@@ -925,6 +931,12 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                                         handleItemChange(index, "hsn", p.hsnSac || "");
                                         handleItemChange(index, "unit", p.unit || "Nos");
                                         handleItemChange(index, "price", p.price || 0);
+                                        if (p.tax !== undefined && p.tax !== null && p.tax !== "") {
+                                          handleItemChange(index, "tax", p.tax);
+                                        }
+                                        if (p.discountOnSales !== undefined && p.discountOnSales !== null && p.discountOnSales !== "") {
+                                          handleItemChange(index, "discount", p.discountOnSales);
+                                        }
                                         setActiveProductDropdownIndex(null);
                                       }}
                                     >
@@ -943,7 +955,7 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                                     setActiveProductDropdownIndex(null);
                                   }}
                                 >
-                                  + Quick Add Product
+                                  + Quick Add Item
                                 </div>
                               </div>
                             )}
@@ -1036,11 +1048,11 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
               <div className="table-bottom-actions-row">
                 <div className="action-buttons-flex">
                   <button type="button" className="btn-purple-outline" onClick={addItemRow}>
-                    <FiPlus style={{ marginRight: "4px" }} /> Add Product
+                    <FiPlus style={{ marginRight: "4px" }} /> Add Item
                   </button>
                 </div>
                 <div className="total-items-badge">
-                  Total Products: <span className="font-semibold">{form.items.length}</span>
+                  Total Items: <span className="font-semibold">{form.items.length}</span>
                 </div>
               </div>
             </div>
@@ -1062,6 +1074,7 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                     onChange={(e) => handleInput("notes", e.target.value)}
                     placeholder="Add any notes or special instructions..."
                     rows="3"
+                    style={{ resize: "none" }}
                   />
                 </div>
                 
@@ -1072,6 +1085,7 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                     onChange={(e) => handleInput("internalNote", e.target.value)}
                     placeholder="For internal use only..."
                     rows="3"
+                    style={{ resize: "none" }}
                   />
                 </div>
               </div>
@@ -1082,7 +1096,8 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                   value={form.termsAndConditions}
                   onChange={(e) => handleInput("termsAndConditions", e.target.value)}
                   className="terms-conditions-display"
-                  rows="4"
+                  rows="8"
+                  style={{ resize: "none" }}
                 />
               </div>
             </div>
@@ -1419,6 +1434,12 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
             handleItemChange(addingProductRowIndex, "hsn", newProd.hsnSac || "");
             handleItemChange(addingProductRowIndex, "unit", newProd.unit || "Nos");
             handleItemChange(addingProductRowIndex, "price", newProd.price || 0);
+            if (newProd.tax !== undefined && newProd.tax !== null && newProd.tax !== "") {
+              handleItemChange(addingProductRowIndex, "tax", newProd.tax);
+            }
+            if (newProd.discountOnSales !== undefined && newProd.discountOnSales !== null && newProd.discountOnSales !== "") {
+              handleItemChange(addingProductRowIndex, "discount", newProd.discountOnSales);
+            }
           }
           setShowProductModal(false);
           setAddingProductRowIndex(null);

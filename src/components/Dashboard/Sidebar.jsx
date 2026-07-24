@@ -19,13 +19,13 @@ import {
 
 const menu = [
   { name: "Dashboard", icon: FiGrid, path: "/dashboard" },
+  { name: "Customers", icon: FiUsers, path: "/dashboard/customers" },
+  { name: "Items", icon: FiTag, path: "/dashboard/items" },
   {
     name: "Sales",
     icon: FiShoppingBag,
     children: [
       { name: "Invoices", icon: FiFileText, path: "/dashboard/invoices" },
-      { name: "Customers", icon: FiUsers, path: "/dashboard/customers" },
-      { name: "Products", icon: FiTag, path: "/dashboard/products" },
       { name: "Estimates", icon: FiFileText, path: "/dashboard/estimates" },
       { name: "Credit Notes", icon: FiFileText, path: "/dashboard/credit-notes" },
       { name: "Proforma Invoices", icon: FiFileText, path: "/dashboard/proforma-invoices" },

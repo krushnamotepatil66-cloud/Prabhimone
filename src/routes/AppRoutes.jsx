@@ -9,7 +9,7 @@ import Verify from "../pages/Verify";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Invoices from "../pages/dashboard/Invoices";
 import Customers from "../pages/dashboard/Customers";
-import Products from "../pages/dashboard/Products";
+import Items from "../pages/dashboard/Items";
 import Estimates from "../pages/dashboard/Estimates";
 import CreditNotes from "../pages/dashboard/CreditNotes";
 import ProformaInvoices from "../pages/dashboard/ProformaInvoices";
@@ -31,7 +31,8 @@ function AppRoutes() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/dashboard/invoices" element={<Invoices />} />
       <Route path="/dashboard/customers" element={<Customers />} />
-      <Route path="/dashboard/products" element={<Products />} />
+      <Route path="/dashboard/items" element={<Items />} />
+      <Route path="/dashboard/products" element={<Items />} />
       <Route path="/dashboard/estimates" element={<Estimates />} />
       <Route path="/dashboard/credit-notes" element={<CreditNotes />} />
       <Route path="/dashboard/proforma-invoices" element={<ProformaInvoices />} />
