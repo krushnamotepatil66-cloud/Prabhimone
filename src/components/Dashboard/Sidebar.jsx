@@ -72,15 +72,7 @@ function Sidebar() {
     >
       <div className="logo-section">
         <div className="logo-details" style={{ display: "flex", alignItems: "center" }}>
-          {profile.profilePic ? (
-            <img 
-              src={profile.profilePic} 
-              alt="logo" 
-              style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", marginRight: "8px" }} 
-            />
-          ) : (
-            <span className="logo-icon">{profile.avatar || "💼"}</span>
-          )}
+          <span className="logo-icon">💼</span>
           <span className="logo-text">PrabhimOne</span>
         </div>
         

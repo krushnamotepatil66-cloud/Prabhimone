@@ -96,9 +96,7 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                 🛠️ Service
               </label>
             </div>
-          </div>
-
-          <div className="quick-cust-form-fields" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                    <div className="quick-cust-form-fields" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
             {/* Item Name */}
             <div className="form-group full-width-span" style={{ display: "flex", flexDirection: "column", gap: "6px", gridColumn: "1 / -1" }}>
               <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>
@@ -110,7 +108,7 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                 onChange={(e) => handleInput("name", e.target.value)}
                 placeholder="e.g. Wireless Keyboard / Web Dev Consultation"
                 required
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "4px", outline: "none" }}
               />
             </div>
 
@@ -124,7 +122,7 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                 value={form.hsnSac}
                 onChange={(e) => handleInput("hsnSac", e.target.value)}
                 placeholder={form.type === "Service" ? "e.g. 9983" : "e.g. 8471"}
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "4px", outline: "none" }}
               />
             </div>
 
@@ -136,7 +134,7 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                 value={form.unit}
                 onChange={(e) => handleInput("unit", e.target.value)}
                 placeholder={form.type === "Service" ? "Hour, Project, etc." : "Pcs, Box, Nos, Kg"}
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "4px", outline: "none" }}
               />
             </div>
 
@@ -149,16 +147,15 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                 display: "flex",
                 alignItems: "center",
                 border: "1px solid #cbd5e1",
-                borderRadius: "6px",
+                borderRadius: "4px",
                 overflow: "hidden",
                 background: "#fff"
               }}>
-                <span style={{ padding: "0 2px 0 10px", color: "#64748b", fontWeight: "500", fontSize: "14px" }}>₹</span>
                 <input
                   type="number"
                   value={form.price}
                   onChange={(e) => handleInput("price", e.target.value)}
-                  placeholder="ex: ₹200"
+                  placeholder="ex: 200"
                   required
                   min="0"
                   step="any"
@@ -166,10 +163,11 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                     flex: 1,
                     border: "none",
                     outline: "none",
-                    padding: "10px 6px",
+                    padding: "10px 12px",
                     fontSize: "14px",
                     background: "transparent",
-                    width: "100%"
+                    width: "100%",
+                    borderRadius: "0px"
                   }}
                 />
                 <select
@@ -184,7 +182,8 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                     fontWeight: "500",
                     color: "#475569",
                     outline: "none",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    borderRadius: "0px"
                   }}
                 >
                   <option value="With Tax">With Tax</option>
@@ -200,26 +199,26 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                 display: "flex",
                 alignItems: "center",
                 border: "1px solid #cbd5e1",
-                borderRadius: "6px",
+                borderRadius: "4px",
                 overflow: "hidden",
                 background: "#fff"
               }}>
-                <span style={{ padding: "0 2px 0 10px", color: "#64748b", fontWeight: "500", fontSize: "14px" }}>₹</span>
                 <input
                   type="number"
                   value={form.purchasePrice}
                   onChange={(e) => handleInput("purchasePrice", e.target.value)}
-                  placeholder="ex: ₹150"
+                  placeholder="ex: 150"
                   min="0"
                   step="any"
                   style={{
                     flex: 1,
                     border: "none",
                     outline: "none",
-                    padding: "10px 6px",
+                    padding: "10px 12px",
                     fontSize: "14px",
                     background: "transparent",
-                    width: "100%"
+                    width: "100%",
+                    borderRadius: "0px"
                   }}
                 />
                 <select
@@ -234,7 +233,8 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                     fontWeight: "500",
                     color: "#475569",
                     outline: "none",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    borderRadius: "0px"
                   }}
                 >
                   <option value="With Tax">With Tax</option>
@@ -250,7 +250,7 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                 display: "flex",
                 alignItems: "center",
                 border: "1px solid #cbd5e1",
-                borderRadius: "6px",
+                borderRadius: "4px",
                 overflow: "hidden",
                 background: "#fff"
               }}>
@@ -268,7 +268,8 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                     padding: "10px 12px",
                     fontSize: "14px",
                     background: "transparent",
-                    width: "100%"
+                    width: "100%",
+                    borderRadius: "0px"
                   }}
                 />
                 <select
@@ -283,7 +284,8 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                     fontWeight: "600",
                     color: "#475569",
                     outline: "none",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    borderRadius: "0px"
                   }}
                 >
                   <option value="%">%</option>
@@ -299,7 +301,7 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                 display: "flex",
                 alignItems: "center",
                 border: "1px solid #cbd5e1",
-                borderRadius: "6px",
+                borderRadius: "4px",
                 overflow: "hidden",
                 background: "#fff"
               }}>
@@ -318,7 +320,8 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                     padding: "10px 12px",
                     fontSize: "14px",
                     background: "transparent",
-                    width: "100%"
+                    width: "100%",
+                    borderRadius: "0px"
                   }}
                 />
                 <span style={{
@@ -327,7 +330,8 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                   padding: "10px 14px",
                   fontSize: "13px",
                   fontWeight: "600",
-                  color: "#475569"
+                  color: "#475569",
+                  borderRadius: "0px"
                 }}>%</span>
               </div>
             </div>
@@ -340,10 +344,10 @@ function ItemModal({ isOpen, onClose, onSave, editingProduct, editingItem, initi
                 onChange={(e) => handleInput("description", e.target.value)}
                 rows="2"
                 placeholder="Item notes, specifications or details..."
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none", resize: "vertical" }}
+                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "4px", outline: "none", resize: "vertical" }}
               />
             </div>
-          </div>
+          </div>      </div>
 
           <div className="popup-actions" style={{ marginTop: "24px", display: "flex", gap: "12px", justifyContent: "flex-end" }}>
             <button

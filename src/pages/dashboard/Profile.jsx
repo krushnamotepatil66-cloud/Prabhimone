@@ -1,11 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
+import { clearTokens } from "../../api/client";
+import { FiLogOut } from "react-icons/fi";
 import "./Profile.css";
 
 const avatarsList = ["👨‍💻", "👩‍💻", "🧑‍💼", "🚀", "💼", "⭐", "🎨", "🤖"];
 
 function Profile() {
+  const navigate = useNavigate();
   const { profile, updateProfile } = useApp();
   const [form, setForm] = useState(profile);
   const [passwordForm, setPasswordForm] = useState({
@@ -45,6 +49,11 @@ function Profile() {
     setTimeout(() => {
       setShowToast(false);
     }, 3000);
+  };
+
+  const handleLogout = () => {
+    clearTokens();
+    navigate("/login");
   };
 
   return (
@@ -267,6 +276,30 @@ function Profile() {
                 <strong>Configured</strong>
               </div>
             </div>
+
+            <button 
+              onClick={handleLogout} 
+              style={{
+                width: "100%",
+                marginTop: "20px",
+                padding: "10px",
+                backgroundColor: "#fee2e2",
+                color: "#dc2626",
+                border: "1px solid #f87171",
+                borderRadius: "6px",
+                fontWeight: "600",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+              onMouseOver={(e) => { e.currentTarget.style.backgroundColor = "#fecaca"; }}
+              onMouseOut={(e) => { e.currentTarget.style.backgroundColor = "#fee2e2"; }}
+            >
+              <FiLogOut /> Logout
+            </button>
           </div>
         </div>
       </div>

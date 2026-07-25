@@ -807,12 +807,21 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                                     handleItemChange(index, "description", p.description || "");
                                     handleItemChange(index, "hsn", p.hsnSac || "");
                                     handleItemChange(index, "unit", p.unit || "Nos");
-                                    handleItemChange(index, "price", p.price || 0);
+                                    
+                                    let finalPrice = Number(p.price) || 0;
+                                    if (p.salesTaxType === "With Tax") {
+                                      const tRate = Number(p.tax) || 0;
+                                      finalPrice = finalPrice / (1 + (tRate / 100));
+                                      finalPrice = Number(finalPrice.toFixed(2));
+                                    }
+                                    handleItemChange(index, "price", finalPrice);
+                                    
                                     if (p.tax !== undefined && p.tax !== null && p.tax !== "") {
                                       handleItemChange(index, "tax", p.tax);
                                     }
                                     if (p.discountOnSales !== undefined && p.discountOnSales !== null && p.discountOnSales !== "") {
                                       handleItemChange(index, "discount", p.discountOnSales);
+                                      handleItemChange(index, "discountType", p.discountType || "Flat");
                                     }
                                     setActiveProductDropdownIndex(null);
                                   } else if (focusedSuggestionIndex === filtered.length) {
@@ -843,12 +852,21 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                                         handleItemChange(index, "description", p.description || "");
                                         handleItemChange(index, "hsn", p.hsnSac || "");
                                         handleItemChange(index, "unit", p.unit || "Nos");
-                                        handleItemChange(index, "price", p.price || 0);
+                                        
+                                        let finalPrice = Number(p.price) || 0;
+                                        if (p.salesTaxType === "With Tax") {
+                                          const tRate = Number(p.tax) || 0;
+                                          finalPrice = finalPrice / (1 + (tRate / 100));
+                                          finalPrice = Number(finalPrice.toFixed(2));
+                                        }
+                                        handleItemChange(index, "price", finalPrice);
+                                        
                                         if (p.tax !== undefined && p.tax !== null && p.tax !== "") {
                                           handleItemChange(index, "tax", p.tax);
                                         }
                                         if (p.discountOnSales !== undefined && p.discountOnSales !== null && p.discountOnSales !== "") {
                                           handleItemChange(index, "discount", p.discountOnSales);
+                                          handleItemChange(index, "discountType", p.discountType || "Flat");
                                         }
                                         setActiveProductDropdownIndex(null);
                                       }}
@@ -927,13 +945,23 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                             </div>
                           </td>
                           <td>
-                            <input
-                              type="text"
-                              value={item.discount}
-                              onChange={(e) => handleItemChange(index, "discount", e.target.value)}
-                              className="align-right"
-                              placeholder="0"
-                            />
+                            <div className="discount-input-wrapper" style={{ display: "flex", alignItems: "center", background: "#fff", border: "1px solid #e2e8f0", borderRadius: "6px", overflow: "hidden", width: "100%", minWidth: "75px" }}>
+                              <input
+                                type="text"
+                                value={item.discount}
+                                onChange={(e) => handleItemChange(index, "discount", e.target.value)}
+                                className="align-right discount-input"
+                                style={{ flex: 1, minWidth: "30px", width: "100%", border: "none", outline: "none", padding: "6px", fontSize: "13px" }}
+                              />
+                              <select
+                                value={item.discountType === "%" ? "%" : "Flat"}
+                                onChange={(e) => handleItemChange(index, "discountType", e.target.value)}
+                                style={{ flexShrink: 0, width: "auto", border: "none", borderLeft: "1px solid #e2e8f0", background: "#f8fafc", padding: "6px 2px", fontSize: "12px", fontWeight: "600", color: "#64748b", outline: "none", cursor: "pointer" }}
+                              >
+                                <option value="Flat">₹</option>
+                                <option value="%">%</option>
+                              </select>
+                            </div>
                           </td>
                           <td className="align-right row-final-amount font-semibold">
                             ₹{rowAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

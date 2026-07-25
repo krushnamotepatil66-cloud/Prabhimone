@@ -123,6 +123,20 @@
   border-radius: 50%;
 }
 
+.paid-watermark {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 8rem;
+  font-weight: 900;
+  color: rgba(34, 197, 94, 0.12);
+  text-transform: uppercase;
+  letter-spacing: 0.5rem;
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* Paper Document simulated sheet */
 .paper-document-scroll-container {
   flex: 1;
@@ -134,6 +148,7 @@
 }
 
 .invoice-paper-sheet {
+  position: relative;
   background-color: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid #e2e8f0;
@@ -515,10 +530,10 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm;
+    margin: 0;
   }
 
-  /* Hide all app framework UI (sidebar, headers, split lists, toolbars, buttons) */
+  /* Hide everything in the app */
   body * {
     visibility: hidden !important;
   }
@@ -529,22 +544,32 @@
     visibility: visible !important;
   }
 
-  .invoice-paper-sheet {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
+  html, body {
+    width: 210mm;
+    height: 297mm;
     margin: 0 !important;
-    padding: 12mm 15mm !important;
-    box-shadow: none !important;
-    border: 1px solid #cbd5e1 !important;
-    background: #ffffff !important;
-    box-sizing: border-box !important;
-    page-break-inside: avoid !important;
+    padding: 0 !important;
+    overflow: hidden !important;
   }
 
-  /* Preserve header & summary background colors in PDF/print */
+  .invoice-paper-sheet {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    max-width: 210mm !important;
+    margin: 0 !important;
+    padding: 14mm 15mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  /* Preserve colors in print */
   .paper-items-table th,
   .final-total-box {
     background-color: #a855f7 !important;
@@ -552,4 +577,17 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+
+  .paper-items-table .total-row td {
+    background-color: #f8fafc !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Adjust font sizes for A4 */
+  .org-name { font-size: 15px !important; }
+  .org-sub { font-size: 11px !important; }
+  .paper-items-table { font-size: 11px !important; }
+  .summary-meta-grid { font-size: 12px !important; }
+  .tax-invoice-title { font-size: 18px !important; }
 }

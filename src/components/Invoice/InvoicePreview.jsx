@@ -4,15 +4,15 @@ import { numberToWords } from "../../utils/numberToWords";
 import "./InvoicePreview.css";
 
 function InvoicePreview({ invoice, onClose, onEdit, onDelete, onRecordPayment }) {
-  const { settings } = useApp();
+  const { settings, profile } = useApp();
   if (!invoice) return null;
 
   const handlePrint = () => {
     window.print();
   };
 
-  const handleDownload = () => {
-    generateInvoicePDF(invoice, settings);
+  const handleDownload = async () => {
+    await generateInvoicePDF(invoice, settings);
   };
 
   const parseAmount = (amtStr) => Number(String(amtStr).replace(/[^0-9.-]/g, "")) || 0;
@@ -258,14 +258,27 @@ function InvoicePreview({ invoice, onClose, onEdit, onDelete, onRecordPayment })
                 <div className="final-total-label">Total:</div>
                 <div className="final-total-value">{formatVal(totalAmount)}</div>
               </div>
+              
+              {invoice.status === "Paid" && (
+                <div className="summary-meta-grid" style={{ marginTop: "12px", marginBottom: 0 }}>
+                  <div className="summary-label">Amount Paid:</div>
+                  <div className="summary-val">{formatVal(totalAmount)}</div>
+                  <div className="summary-label">Balance Due:</div>
+                  <div className="summary-val">{formatVal(0)}</div>
+                </div>
+              )}
             </div>
           </div>
           
           <div className="paper-footer">
-            <div className="footer-left">
+            <div className="footer-left" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+              {invoice.status === "Paid" && (
+                <img src="/paid-stamp.png" alt="Paid Stamp" style={{ width: "120px", marginBottom: "10px", opacity: 0.85, mixBlendMode: "multiply" }} />
+              )}
               <p>Thanks for doing business with us!</p>
             </div>
             <div className="footer-right">
+              <p className="auth-signatory-name" style={{ fontWeight: 600, color: "#1e293b", marginBottom: "4px", marginTop: "2.5rem" }}>{profile?.name || "Business Owner"}</p>
               <p className="auth-signatory-title">Authorized Signatory</p>
             </div>
           </div>

@@ -170,10 +170,21 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
       setMarkAsFullyPaid(editingInvoice.status === "Paid");
       setIsEditingParty(false);
     } else {
-      // Start with empty invoice id (auto-generated on save if blank)
+      let nextInvoiceId = "";
+      if (settings.invoiceAutoNumber !== false) {
+        const prefix = settings.invoicePrefix || "INV-";
+        const matching = invoices.filter(inv => (inv.id || "").startsWith(prefix));
+        if (matching.length > 0) {
+          const numbers = matching.map(inv => parseInt((inv.id || "").slice(prefix.length), 10) || 0);
+          nextInvoiceId = `${prefix}${String(Math.max(...numbers) + 1).padStart(3, "0")}`;
+        } else {
+          nextInvoiceId = `${prefix}001`;
+        }
+      }
+
       setForm({
         ...emptyForm,
-        invoiceId: "",
+        invoiceId: nextInvoiceId,
         date: new Date().toISOString().split("T")[0],
         dueDate: new Date().toISOString().split("T")[0],
         termsAndConditions: settings.invoiceTermsAndConditions || defaultTermsAndConditions,
@@ -183,7 +194,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
       setMarkAsFullyPaid(false);
       setIsEditingParty(true);
     }
-  }, [editingInvoice, invoices.length, settings.invoiceTermsAndConditions]);
+  }, [editingInvoice, invoices, settings]);
 
   const handleInput = (field, value) => {
     setForm((prev) => ({
@@ -401,7 +412,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
     const paidVal = Number(amountReceived) || 0;
 
     // Auto-generate invoice id if left blank
-    const finalInvoiceId = form.invoiceId.trim() || `INV-${String(invoices.length + 1).padStart(6, "0")}`;
+    const finalInvoiceId = form.invoiceId.trim() || `INV-${String(invoices.length + 1).padStart(3, "0")}`;
 
     const savedInvoiceData = {
       id: finalInvoiceId,
@@ -409,7 +420,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
       date: form.date,
       terms: form.paymentTerms,
       dueDate: form.dueDate,
-      status: forceStatus || (editingInvoice ? editingInvoice.status : (markAsFullyPaid || paidVal >= grandTotal ? "Paid" : "Pending")),
+      status: forceStatus || (markAsFullyPaid || paidVal >= grandTotal ? "Paid" : (editingInvoice && editingInvoice.status !== "Paid" ? editingInvoice.status : "Pending")),
       amount: `${settings.currency || "₹"}${grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       grandTotal: grandTotal,
       subtotal: subtotal,
@@ -871,7 +882,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                       <th width="8%" className="align-center">Unit</th>
                       <th width="8%" className="align-right">Price (₹)</th>
                       <th width="8%" className="align-center">GST %</th>
-                      <th width="8%" className="align-right">Discount (₹)</th>
+                      <th width="11%" className="align-right">Discount</th>
                       <th width="14%" className="align-right">Amount (₹)</th>
                       <th width="4%" className="align-center"></th>
                     </tr>
@@ -917,12 +928,21 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                                         handleItemChange(index, "description", p.description || "");
                                         handleItemChange(index, "hsn", p.hsnSac || "");
                                         handleItemChange(index, "unit", p.unit || "Nos");
-                                        handleItemChange(index, "price", p.price || 0);
+                                        
+                                        let finalPrice = Number(p.price) || 0;
+                                        if (p.salesTaxType === "With Tax") {
+                                          const tRate = Number(p.tax) || 0;
+                                          finalPrice = finalPrice / (1 + (tRate / 100));
+                                          finalPrice = Number(finalPrice.toFixed(2));
+                                        }
+                                        handleItemChange(index, "price", finalPrice);
+                                        
                                         if (p.tax !== undefined && p.tax !== null && p.tax !== "") {
                                           handleItemChange(index, "tax", p.tax);
                                         }
                                         if (p.discountOnSales !== undefined && p.discountOnSales !== null && p.discountOnSales !== "") {
                                           handleItemChange(index, "discount", p.discountOnSales);
+                                          handleItemChange(index, "discountType", p.discountType || "Flat");
                                         }
                                         setActiveProductDropdownIndex(null);
                                       } else if (focusedSuggestionIndex === filtered.length) {
@@ -955,12 +975,21 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                                             handleItemChange(index, "description", p.description || "");
                                             handleItemChange(index, "hsn", p.hsnSac || "");
                                             handleItemChange(index, "unit", p.unit || "Nos");
-                                            handleItemChange(index, "price", p.price || 0);
+                                            
+                                            let finalPrice = Number(p.price) || 0;
+                                            if (p.salesTaxType === "With Tax") {
+                                              const tRate = Number(p.tax) || 0;
+                                              finalPrice = finalPrice / (1 + (tRate / 100));
+                                              finalPrice = Number(finalPrice.toFixed(2));
+                                            }
+                                            handleItemChange(index, "price", finalPrice);
+                                            
                                             if (p.tax !== undefined && p.tax !== null && p.tax !== "") {
                                               handleItemChange(index, "tax", p.tax);
                                             }
                                             if (p.discountOnSales !== undefined && p.discountOnSales !== null && p.discountOnSales !== "") {
                                               handleItemChange(index, "discount", p.discountOnSales);
+                                              handleItemChange(index, "discountType", p.discountType || "Flat");
                                             }
                                             setActiveProductDropdownIndex(null);
                                           }}
@@ -1045,12 +1074,23 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                             </div>
                           </td>
                           <td>
-                            <input
-                              type="text"
-                              value={item.discount}
-                              onChange={(e) => handleItemChange(index, "discount", e.target.value)}
-                              className="align-right"
-                            />
+                            <div className="discount-input-wrapper" style={{ display: "flex", alignItems: "center", background: "#fff", border: "1px solid #e2e8f0", borderRadius: "6px", overflow: "hidden", width: "100%", minWidth: "75px" }}>
+                              <input
+                                type="text"
+                                value={item.discount}
+                                onChange={(e) => handleItemChange(index, "discount", e.target.value)}
+                                className="align-right discount-input"
+                                style={{ flex: 1, minWidth: "30px", width: "100%", border: "none", outline: "none", padding: "6px", fontSize: "13px" }}
+                              />
+                              <select
+                                value={item.discountType === "%" ? "%" : "Flat"}
+                                onChange={(e) => handleItemChange(index, "discountType", e.target.value)}
+                                style={{ flexShrink: 0, width: "auto", border: "none", borderLeft: "1px solid #e2e8f0", background: "#f8fafc", padding: "6px 2px", fontSize: "12px", fontWeight: "600", color: "#64748b", outline: "none", cursor: "pointer" }}
+                              >
+                                <option value="Flat">₹</option>
+                                <option value="%">%</option>
+                              </select>
+                            </div>
                           </td>
                           <td className="align-right row-final-amount font-semibold">
                             ₹{rowAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
