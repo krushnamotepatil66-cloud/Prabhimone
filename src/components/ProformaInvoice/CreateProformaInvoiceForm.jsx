@@ -17,6 +17,7 @@ import {
   FiHelpCircle,
   FiChevronDown 
 } from "react-icons/fi";
+import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../utils/validation";
 
 const defaultTermsAndConditions = `1. This proforma invoice is sent for approval before final billing.
 2. Prices and rates listed are subject to terms of agreement.
@@ -347,6 +348,14 @@ function CreateProformaInvoiceForm({ editingProformaInvoice, onSave, onCancel })
       alert("Please select a customer.");
       return;
     }
+    if (form.email && !isValidEmail(form.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (form.mobileNumber && !isValidMobile(form.mobileNumber)) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
     if (form.items.some((item) => !item.product || Number(item.price) <= 0)) {
       alert("Please ensure all items have a description and pricing details.");
       return;
@@ -489,7 +498,7 @@ function CreateProformaInvoiceForm({ editingProformaInvoice, onSave, onCancel })
                         type="text" 
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                        placeholder="+91 00000 00000"
+                        placeholder="ex. +91-9876543210"
                       />
                     </div>
                   </div>
@@ -612,7 +621,7 @@ function CreateProformaInvoiceForm({ editingProformaInvoice, onSave, onCancel })
                         type="text" 
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                        placeholder="+91 00000 00000"
+                        placeholder="ex. +91-9876543210"
                         required
                       />
                     </div>
@@ -752,7 +761,7 @@ function CreateProformaInvoiceForm({ editingProformaInvoice, onSave, onCancel })
                         type="text" 
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                        placeholder="+91 00000 00000"
+                        placeholder="ex. +91-9876543210"
                         required
                       />
                     </div>

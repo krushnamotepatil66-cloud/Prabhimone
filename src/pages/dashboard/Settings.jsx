@@ -1,6 +1,7 @@
 import { useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
+import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../utils/validation";
 import "./Settings.css";
 import {
   FiSettings,
@@ -48,13 +49,21 @@ function Settings() {
   const { settings, updateSettings } = useApp();
   // Ensure all fields have defaults even if old localStorage lacks new keys
   const defaults = {
-    companyName: "", email: "", phone: "+91 ", address: "", city: "", zip: "",
-    website: "", gstinOrg: "",
-    currency: "₹", taxRate: 18, invoicePrefix: "INV-", invoiceAutoNumber: true,
-    invoiceDefaultTerms: "Due on Receipt", invoiceDefaultNotes: "", invoiceShowGstin: true,
-    invoiceTermsAndConditions: "1. Goods once sold will not be taken back or exchanged\n2. For warranty, retain cash memo\n3. Please check breakage and damage against delivery\n4. For order need to pay 50% advance amount\n5. All disputes are subject to PUNE jurisdiction only",
-    estimatePrefix: "EST-", estimateAutoNumber: true, estimateValidityDays: 30,
-    estimateDefaultNotes: "", estimateDefaultTerms: "1. This estimate is valid for 30 days from the date of issue.\n2. Any changes in specifications or quantities will alter the final pricing.",
+    companyName: "Prabhim Technologies (OPC) Pvt. Ltd.",
+    email: "info@prabhimtechnologies.in",
+    phone: "+91-9403301412",
+    address: "FL-1002 A, Utsav Residency Phase 1, Awhalwadi Road,",
+    city: "Wagholi, Pune, 412202, India",
+    state: "Maharashtra",
+    gstin: "27AAPCP6019G1Z5",
+    currency: "₹",
+    companyLogo: "",
+    website: "",
+    gstinOrg: "27AAPCP6019G1Z5",
+    invoicePrefix: "INV-", autoNumber: true, paymentTerms: "Due on Receipt",
+    invoiceTermsAndConditions: "1. Goods once sold will not be taken back or exchanged.\n2. Payment due on receipt unless otherwise agreed.\n3. Interest @18% p.a. will be charged on overdue invoices.\n4. For order need to pay 50% advance amount\n5. All disputes are subject to PUNE jurisdiction only",
+    invoiceDefaultNotes: "Thank you for doing business with us!",
+    estimatePrefix: "EST-", estimateAutoNumber: true, estimateValidityDays: 30, estimateDefaultNotes: "",
     estimateTermsAndConditions: "1. This estimate is valid for 30 days from the date of issue.\n2. Any changes in specifications or quantities will alter the final pricing.\n3. Work will commence only upon approval of this estimate.\n4. All disputes are subject to PUNE jurisdiction only.",
     creditNotePrefix: "CN-", creditNoteAutoNumber: true, creditNoteDefaultNotes: "",
     creditNoteTermsAndConditions: "1. Credit balance must be applied to future invoices within 180 days.\n2. Refunds on credit notes are subject to review.\n3. Original invoice details must accompany any disputes.",
@@ -74,10 +83,22 @@ function Settings() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleInput = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    let finalVal = value;
+    if (field === "phone") {
+      finalVal = sanitizeMobileInput(value);
+    }
+    setForm((prev) => ({ ...prev, [field]: finalVal }));
   };
 
   const handleSave = () => {
+    if (form.email && !isValidEmail(form.email)) {
+      alert("Please enter a valid business email address.");
+      return;
+    }
+    if (form.phone && !isValidMobile(form.phone)) {
+      alert("Please enter a valid 10-digit business phone number.");
+      return;
+    }
     updateSettings(form);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);

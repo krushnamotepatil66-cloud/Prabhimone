@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaApple, FaArrowLeft } from "react-icons/fa";
 import { authApi } from "../../api/client";
 
+import { isRequiredEmailValid } from "../../utils/validation";
+
 function LoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -14,6 +16,10 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (!isRequiredEmailValid(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
     setLoading(true);
     try {
       await authApi.login(email, password);

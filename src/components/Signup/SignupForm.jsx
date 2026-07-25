@@ -4,12 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaApple, FaArrowLeft } from "react-icons/fa";
 import { authApi } from "../../api/client";
 
+import { isRequiredEmailValid, isValidMobile, sanitizeMobileInput } from "../../utils/validation";
+
 function SignupForm() {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("+91");
+  const [phone, setPhone] = useState("+91-");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,6 +20,15 @@ function SignupForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!isRequiredEmailValid(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (phone && !isValidMobile(phone)) {
+      setError("Please enter a valid 10-digit mobile number.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -148,9 +159,9 @@ function SignupForm() {
               <input
                 id="signup-phone"
                 type="tel"
-                placeholder="e.g. +91 98765 43210"
+                placeholder="ex. +91-9876543210"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => setPhone(sanitizeMobileInput(e.target.value))}
                 autoComplete="off"
                 required
               />

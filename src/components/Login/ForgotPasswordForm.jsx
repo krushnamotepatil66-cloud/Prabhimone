@@ -3,15 +3,22 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaArrowLeft } from "react-icons/fa";
 import "./LoginForm.css";
 
+import { isRequiredEmailValid } from "../../utils/validation";
+
 function ForgotPasswordForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSent, setIsSent] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!email) return;
+    setError("");
+    if (!isRequiredEmailValid(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -59,6 +66,20 @@ function ForgotPasswordForm() {
               Enter your email address below, and we'll send you a link to reset
               your password.
             </p>
+
+            {error && (
+              <div style={{
+                background: "#fef2f2",
+                color: "#991b1b",
+                padding: "10px 14px",
+                borderRadius: "6px",
+                fontSize: "13px",
+                marginBottom: "16px",
+                border: "1px solid #fecaca"
+              }}>
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit}>
               <div className="input-group">

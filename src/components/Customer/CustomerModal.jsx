@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import "./CustomerModal.css";
 
+import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../utils/validation";
+
 const emptyForm = {
   name: "",
   email: "",
   company: "",
-  phone: "",
+  phone: "+91-",
   gstin: "",
   address: "",
   state: "",
@@ -30,6 +32,7 @@ function CustomerModal({ isOpen, onClose, onSave, editingCustomer, initialName =
       setForm({
         ...emptyForm,
         name: initialName || "",
+        phone: "+91-",
       });
     }
   }, [editingCustomer, initialName, isOpen]);
@@ -37,15 +40,31 @@ function CustomerModal({ isOpen, onClose, onSave, editingCustomer, initialName =
   if (!isOpen) return null;
 
   const handleInput = (field, value) => {
+    let finalValue = value;
+    if (field === "phone") {
+      finalValue = sanitizeMobileInput(value);
+    }
     setForm((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: finalValue,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(form);
+    if (form.email && !isValidEmail(form.email)) {
+      alert("Please enter a valid email address (e.g. customer@gmail.com).");
+      return;
+    }
+    if (form.phone && form.phone !== "+91-" && !isValidMobile(form.phone)) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    const cleanForm = {
+      ...form,
+      phone: form.phone === "+91-" ? "" : form.phone,
+    };
+    onSave(cleanForm);
     onClose();
   };
 
@@ -98,7 +117,7 @@ function CustomerModal({ isOpen, onClose, onSave, editingCustomer, initialName =
                   type="text"
                   value={form.phone}
                   onChange={(e) => handleInput("phone", e.target.value)}
-                  placeholder="ex. 9876543210"
+                  placeholder="ex. +91-9876543210"
                 />
               </div>
               <div className="form-group-custom half-width">

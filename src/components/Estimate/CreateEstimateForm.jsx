@@ -17,6 +17,7 @@ import {
   FiHelpCircle,
   FiChevronDown 
 } from "react-icons/fi";
+import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../utils/validation";
 
 const defaultTermsAndConditions = `1. This estimate is valid for 30 days from the date of issue.
 2. Any changes in specifications or quantities will alter the final pricing.
@@ -348,6 +349,14 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
       alert("Please select a customer.");
       return;
     }
+    if (form.email && !isValidEmail(form.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (form.mobileNumber && !isValidMobile(form.mobileNumber)) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
     if (form.items.some((item) => !item.product || Number(item.price) <= 0)) {
       alert("Please ensure all items have a description and pricing details.");
       return;
@@ -490,7 +499,7 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                         type="text" 
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                        placeholder="+91 00000 00000"
+                        placeholder="ex. +91-9876543210"
                       />
                     </div>
                   </div>
@@ -613,7 +622,7 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                         type="text" 
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                        placeholder="+91 00000 00000"
+                        placeholder="ex. +91-9876543210"
                         required
                       />
                     </div>
@@ -753,7 +762,7 @@ function CreateEstimateForm({ editingEstimate, onSave, onCancel }) {
                         type="text" 
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                        placeholder="+91 00000 00000"
+                        placeholder="ex. +91-9876543210"
                         required
                       />
                     </div>

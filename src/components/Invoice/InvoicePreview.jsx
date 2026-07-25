@@ -104,10 +104,12 @@ function InvoicePreview({ invoice, onClose, onEdit, onDelete, onRecordPayment, i
         <div className="bill-to-section">
           <h4 className="box-title">Bill To</h4>
           <p className="bill-customer-name">{invoice.customer}</p>
-          <p className="bill-customer-sub">Client details registered in database</p>
-          <p className="bill-customer-sub">Contact No</p>
-          <p className="bill-customer-sub">GSTN: XXXXXXXX</p>
-          <p className="bill-customer-sub">State : Maharashtra</p>
+          {invoice.billingAddress && <p className="bill-customer-sub">{invoice.billingAddress}</p>}
+          {invoice.state && <p className="bill-customer-sub">State: {invoice.state}</p>}
+          {invoice.placeOfSupply && <p className="bill-customer-sub">Place of Supply: {invoice.placeOfSupply}</p>}
+          {invoice.mobileNumber && <p className="bill-customer-sub">📞 {invoice.mobileNumber}</p>}
+          {invoice.email && <p className="bill-customer-sub">✉ {invoice.email}</p>}
+          {invoice.gstin && <p className="bill-customer-sub">GSTIN: {invoice.gstin}</p>}
         </div>
 
         <div className="invoice-details-section">
@@ -116,9 +118,21 @@ function InvoicePreview({ invoice, onClose, onEdit, onDelete, onRecordPayment, i
             <div className="meta-label">Invoice No.:</div>
             <div className="meta-value bold-text">{invoice.id}</div>
             <div className="meta-label">PO No:</div>
-            <div className="meta-value">-</div>
+            <div className="meta-value">{invoice.referenceNo || "-"}</div>
             <div className="meta-label">Date:</div>
             <div className="meta-value">{invoice.date}</div>
+            {invoice.dueDate && (
+              <>
+                <div className="meta-label">Due Date:</div>
+                <div className="meta-value">{invoice.dueDate}</div>
+              </>
+            )}
+            {invoice.salesPerson && (
+              <>
+                <div className="meta-label">Sales Person:</div>
+                <div className="meta-value">{invoice.salesPerson}</div>
+              </>
+            )}
           </div>
         </div>
       </div>

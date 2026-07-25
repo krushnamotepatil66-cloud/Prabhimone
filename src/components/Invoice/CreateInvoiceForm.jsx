@@ -26,6 +26,8 @@ const defaultTermsAndConditions = `1. Goods once sold will not be taken back or 
 4. For order need to pay 50% advance amount
 5. All disputes are subject to PUNE jurisdiction only`;
 
+import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../utils/validation";
+
 const emptyForm = {
   customer: "",
   customerType: "Customer",
@@ -198,9 +200,13 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
   }, [editingInvoice, invoices, settings]);
 
   const handleInput = (field, value) => {
+    let finalValue = value;
+    if (field === "mobileNumber") {
+      finalValue = sanitizeMobileInput(value);
+    }
     setForm((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: finalValue,
     }));
   };
 
@@ -230,6 +236,21 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
       setIsEditingParty(true);
       setIsCashSaleDefault(false);
     }
+  };
+
+  const handleCustomerSelect = (c) => {
+    setForm((prev) => ({
+      ...prev,
+      customer: c.name,
+      mobileNumber: c.phone || prev.mobileNumber,
+      gstin: c.gstin || prev.gstin,
+      email: c.email || prev.email,
+      billingAddress: c.address || prev.billingAddress,
+    }));
+    setShowDropdown(false);
+    setShowNewCustomerForm(false);
+    setIsEditingParty(false);
+    setIsCashSaleDefault(false);
   };
 
   const handleItemChange = (index, field, value) => {
@@ -388,6 +409,14 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
     if (e) e.preventDefault();
     if (!form.customer) {
       alert("Please select a customer.");
+      return;
+    }
+    if (form.email && !isValidEmail(form.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (form.mobileNumber && !isValidMobile(form.mobileNumber)) {
+      alert("Please enter a valid 10-digit mobile number.");
       return;
     }
     if (form.items.some((item) => !item.product || Number(item.price) <= 0)) {
@@ -578,7 +607,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                           type="text"
                           value={form.mobileNumber}
                           onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                          placeholder="+91 00000 00000"
+                          placeholder="ex. +91-9876543210"
                         />
                       </div>
                     </div>
@@ -648,7 +677,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                 </div>
               )}
 
-              {/* â•â•â• Business Layout â•â•â• */}
+              {/* â• â• â•  Business Layout â• â• â•  */}
               {form.customerType === "Business" && (
                 <div className="customer-details-block-layout">
                   <div className="details-section-row">
@@ -712,7 +741,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
                           type="text"
                           value={form.mobileNumber}
                           onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                          placeholder="+91 00000 00000"
+                          placeholder="ex. +91-9876543210"
                           required
                         />
                       </div>

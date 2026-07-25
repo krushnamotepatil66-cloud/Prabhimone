@@ -362,7 +362,17 @@ function Customers() {
           <div className="customer-details-drawer" style={{ width: "100%", position: "static", maxHeight: "none", boxShadow: "none" }}>
             <div className="drawer-header">
               <h3>Customer Overview</h3>
-              <button className="close-drawer-btn" onClick={() => setSelectedCustomer(null)}>✕</button>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <button
+                  className="btn-icon edit-btn"
+                  title="Edit Customer"
+                  onClick={() => { setEditingCustomer(selectedCustomer); setIsEditing(true); }}
+                  style={{ padding: "6px 14px", fontSize: "13px" }}
+                >
+                  ✏️ Edit
+                </button>
+                <button className="close-drawer-btn" onClick={() => setSelectedCustomer(null)}>✕</button>
+              </div>
             </div>
 
             <div className="drawer-body">
@@ -370,24 +380,157 @@ function Customers() {
                 <div className="large-avatar">{selectedCustomer.name.charAt(0)}</div>
                 <h2>{selectedCustomer.name}</h2>
                 <p>{selectedCustomer.company || "No Company Specified"}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center", marginTop: "10px" }}>
+                  {selectedCustomer.gstin && (
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: "5px",
+                      background: "#f0fdf4", border: "1px solid #86efac",
+                      borderRadius: "6px", padding: "4px 12px",
+                      fontSize: "12px", fontWeight: 600, color: "#16a34a", letterSpacing: "0.5px"
+                    }}>
+                      🏷️ GSTIN: {selectedCustomer.gstin}
+                    </div>
+                  )}
+                  {selectedCustomer.state && (
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: "5px",
+                      background: "#eff6ff", border: "1px solid #93c5fd",
+                      borderRadius: "6px", padding: "4px 12px",
+                      fontSize: "12px", fontWeight: 600, color: "#2563eb", letterSpacing: "0.5px"
+                    }}>
+                      🗺️ {selectedCustomer.state}
+                    </div>
+                  )}
+                  {selectedCustomer.pincode && (
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: "5px",
+                      background: "#fefce8", border: "1px solid #fde047",
+                      borderRadius: "6px", padding: "4px 12px",
+                      fontSize: "12px", fontWeight: 600, color: "#a16207", letterSpacing: "0.5px"
+                    }}>
+                      📮 {selectedCustomer.pincode}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="drawer-info-grid">
-                <div className="info-block">
-                  <label>Email</label>
-                  <p>{selectedCustomer.email}</p>
+              {/* Contact & General Details */}
+              <h4 style={{ color: "#334155", fontWeight: 600, marginBottom: "10px", marginTop: "4px" }}>General & Contact Information</h4>
+              <div className="drawer-info-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "14px" }}>
+                {selectedCustomer.email && (
+                  <div className="info-block">
+                    <label>Email Address</label>
+                    <p>{selectedCustomer.email}</p>
+                  </div>
+                )}
+                {selectedCustomer.phone && (
+                  <div className="info-block">
+                    <label>Mobile / Phone</label>
+                    <p>{selectedCustomer.phone}</p>
+                  </div>
+                )}
+                {selectedCustomer.company && (
+                  <div className="info-block">
+                    <label>Company Name</label>
+                    <p>{selectedCustomer.company}</p>
+                  </div>
+                )}
+                {selectedCustomer.gstin && (
+                  <div className="info-block">
+                    <label>GSTIN</label>
+                    <p>{selectedCustomer.gstin}</p>
+                  </div>
+                )}
+                {selectedCustomer.state && (
+                  <div className="info-block">
+                    <label>State</label>
+                    <p>{selectedCustomer.state}</p>
+                  </div>
+                )}
+                {selectedCustomer.pincode && (
+                  <div className="info-block">
+                    <label>Pincode</label>
+                    <p>{selectedCustomer.pincode}</p>
+                  </div>
+                )}
+              </div>
+
+              <hr className="drawer-divider" />
+
+              {/* Billing & Shipping Addresses side by side */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+                {/* Billing Address */}
+                <div>
+                  <h4 style={{ color: "#334155", fontWeight: 600, marginBottom: "10px", paddingBottom: "6px", borderBottom: "1px solid #e2e8f0" }}>
+                    📍 Billing Address
+                  </h4>
+                  {selectedCustomer.address || selectedCustomer.city || selectedCustomer.state || selectedCustomer.pincode ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      {selectedCustomer.address && (
+                        <div className="info-block" style={{ margin: 0 }}>
+                          <label>Street</label>
+                          <p>{selectedCustomer.address}</p>
+                        </div>
+                      )}
+                      {selectedCustomer.city && (
+                        <div className="info-block" style={{ margin: 0 }}>
+                          <label>City</label>
+                          <p>{selectedCustomer.city}</p>
+                        </div>
+                      )}
+                      {selectedCustomer.state && (
+                        <div className="info-block" style={{ margin: 0 }}>
+                          <label>State</label>
+                          <p>{selectedCustomer.state}</p>
+                        </div>
+                      )}
+                      {selectedCustomer.pincode && (
+                        <div className="info-block" style={{ margin: 0 }}>
+                          <label>Pincode</label>
+                          <p>{selectedCustomer.pincode}</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p style={{ color: "#94a3b8", fontStyle: "italic", fontSize: "13px" }}>No billing address saved</p>
+                  )}
                 </div>
-                <div className="info-block">
-                  <label>Phone</label>
-                  <p>{selectedCustomer.phone || "—"}</p>
-                </div>
-                <div className="info-block">
-                  <label>Address</label>
-                  <p>{selectedCustomer.address || "—"}</p>
-                </div>
-                <div className="info-block">
-                  <label>City</label>
-                  <p>{selectedCustomer.city || "—"}</p>
+
+                {/* Shipping Address */}
+                <div>
+                  <h4 style={{ color: "#334155", fontWeight: 600, marginBottom: "10px", paddingBottom: "6px", borderBottom: "1px solid #e2e8f0" }}>
+                    🚚 Shipping Address
+                  </h4>
+                  {selectedCustomer.shippingSameAsBilling === false ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      {selectedCustomer.shippingAddress && (
+                        <div className="info-block" style={{ margin: 0 }}>
+                          <label>Street</label>
+                          <p>{selectedCustomer.shippingAddress}</p>
+                        </div>
+                      )}
+                      {selectedCustomer.shippingCity && (
+                        <div className="info-block" style={{ margin: 0 }}>
+                          <label>City</label>
+                          <p>{selectedCustomer.shippingCity}</p>
+                        </div>
+                      )}
+                      {selectedCustomer.shippingState && (
+                        <div className="info-block" style={{ margin: 0 }}>
+                          <label>State</label>
+                          <p>{selectedCustomer.shippingState}</p>
+                        </div>
+                      )}
+                      {selectedCustomer.shippingPincode && (
+                        <div className="info-block" style={{ margin: 0 }}>
+                          <label>Pincode</label>
+                          <p>{selectedCustomer.shippingPincode}</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p style={{ color: "#64748b", fontSize: "13px" }}>Same as billing address</p>
+                  )}
                 </div>
               </div>
 

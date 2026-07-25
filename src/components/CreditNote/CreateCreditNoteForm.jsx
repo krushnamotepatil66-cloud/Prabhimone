@@ -17,6 +17,7 @@ import {
   FiHelpCircle,
   FiChevronDown
 } from "react-icons/fi";
+import { isValidEmail, isValidMobile, sanitizeMobileInput } from "../../utils/validation";
 
 const defaultTermsAndConditions = `1. Credit balance must be applied to future invoices within 180 days.
 2. Refunds on credit notes are subject to review.
@@ -307,6 +308,14 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
       alert("Please select a customer.");
       return;
     }
+    if (form.email && !isValidEmail(form.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (form.mobileNumber && !isValidMobile(form.mobileNumber)) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
     if (form.items.some((item) => !item.product || Number(item.price) <= 0)) {
       alert("Please ensure all items have a description and pricing details.");
       return;
@@ -448,7 +457,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                         type="text"
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                        placeholder="+91 00000 00000"
+                        placeholder="ex. +91-9876543210"
                       />
                     </div>
                   </div>
@@ -556,7 +565,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                         type="text"
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                        placeholder="+91 00000 00000"
+                        placeholder="ex. +91-9876543210"
                         required
                       />
                     </div>
@@ -681,7 +690,7 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                         type="text"
                         value={form.mobileNumber}
                         onChange={(e) => handleInput("mobileNumber", e.target.value)}
-                        placeholder="+91 00000 00000"
+                        placeholder="ex. +91-9876543210"
                         required
                       />
                     </div>

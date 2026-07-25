@@ -8,10 +8,20 @@ import "./Profile.css";
 
 const avatarsList = ["👨‍💻", "👩‍💻", "🧑‍💼", "🚀", "💼", "⭐", "🎨", "🤖"];
 
+import { isRequiredEmailValid, isValidMobile, sanitizeMobileInput } from "../../utils/validation";
+
 function Profile() {
   const navigate = useNavigate();
   const { profile, updateProfile } = useApp();
-  const [form, setForm] = useState(profile);
+  const [form, setForm] = useState({
+    name: profile.name || "Aditya B.",
+    email: profile.email || "aditya@example.com",
+    phone: profile.phone || "+91-9403301412",
+    role: profile.role || "Admin / Business Owner",
+    designation: profile.designation || "Director",
+    avatarUrl: profile.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    timeZone: profile.timeZone || "(GMT+05:30) India Standard Time",
+  });
   const [passwordForm, setPasswordForm] = useState({
     oldPass: "",
     newPass: "",
@@ -21,14 +31,26 @@ function Profile() {
   const [toastMessage, setToastMessage] = useState("");
 
   const handleInput = (field, value) => {
+    let finalVal = value;
+    if (field === "phone") {
+      finalVal = sanitizeMobileInput(value);
+    }
     setForm((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: finalVal,
     }));
   };
 
   const handleSaveProfile = (e) => {
     e.preventDefault();
+    if (!isRequiredEmailValid(form.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (form.phone && !isValidMobile(form.phone)) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
     updateProfile(form);
     showSuccess("✓ Personal details updated successfully!");
   };
@@ -106,7 +128,7 @@ function Profile() {
                     type="text"
                     value={form.phone}
                     onChange={(e) => handleInput("phone", e.target.value)}
-                    placeholder="+91 XXXXX XXXXX"
+                    placeholder="ex. +91-9876543210"
                   />
                 </div>
 
