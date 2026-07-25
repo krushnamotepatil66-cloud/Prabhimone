@@ -1,17 +1,24 @@
 import { useState, useEffect } from "react";
-import "../../components/Invoice/CreateInvoiceForm.css"; // Reuse existing popup styles
 import "./CustomerModal.css";
 
 const emptyForm = {
   name: "",
   email: "",
-  phone: "+91",
   company: "",
+  phone: "",
+  gstin: "",
   address: "",
+  state: "",
+  pincode: "",
   city: "",
+  shippingSameAsBilling: true,
+  shippingAddress: "",
+  shippingState: "",
+  shippingPincode: "",
+  shippingCity: "",
 };
 
-function CustomerModal({ isOpen, onClose, onSave, editingCustomer }) {
+function CustomerModal({ isOpen, onClose, onSave, editingCustomer, initialName = "" }) {
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
@@ -20,9 +27,12 @@ function CustomerModal({ isOpen, onClose, onSave, editingCustomer }) {
     if (editingCustomer) {
       setForm(editingCustomer);
     } else {
-      setForm(emptyForm);
+      setForm({
+        ...emptyForm,
+        name: initialName || "",
+      });
     }
-  }, [editingCustomer, isOpen]);
+  }, [editingCustomer, initialName, isOpen]);
 
   if (!isOpen) return null;
 
@@ -40,96 +50,175 @@ function CustomerModal({ isOpen, onClose, onSave, editingCustomer }) {
   };
 
   return (
-    <div className="invoice-settings-popup-overlay">
-      <div className="invoice-settings-popup customer-popup-large" style={{ padding: "30px" }}>
-        <h3 style={{ fontSize: "20px", marginBottom: "24px", color: "#1e293b" }}>
-          {editingCustomer ? "Edit Customer" : "Quick Add Customer"}
-        </h3>
+    <div className="modal-overlay">
+      <div className={`party-modal ${!form.shippingSameAsBilling ? "large-modal" : ""}`}>
+        <div className="modal-header-custom">
+          <h2>{editingCustomer ? "Edit Customer" : "Add New Customer"}</h2>
+          <button className="close-btn-custom" onClick={onClose}>✕</button>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="quick-cust-form-fields" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Customer Name</label>
+        <form onSubmit={handleSubmit} className="party-form">
+          <div className="form-body">
+            <div className="form-group-custom">
               <input
                 type="text"
+                className="name-input"
                 value={form.name}
                 onChange={(e) => handleInput("name", e.target.value)}
+                placeholder="Name"
                 required
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
               />
             </div>
-
-            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Email Address</label>
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => handleInput("email", e.target.value)}
-                placeholder="customer@email.com"
-                required
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
-              />
+            
+            <div className="form-row-custom">
+              <div className="form-group-custom half-width">
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => handleInput("email", e.target.value)}
+                  placeholder="ex. customer@gmail.com"
+                />
+              </div>
+              <div className="form-group-custom half-width">
+                <label>Company Name</label>
+                <input
+                  type="text"
+                  value={form.company}
+                  onChange={(e) => handleInput("company", e.target.value)}
+                  placeholder="ex. Acme Technologies"
+                />
+              </div>
             </div>
 
-            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Phone Number</label>
-              <input
-                type="text"
-                value={form.phone}
-                onChange={(e) => handleInput("phone", e.target.value)}
-                placeholder="+91 00000 00000"
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
-              />
+            <div className="form-row-custom">
+              <div className="form-group-custom half-width">
+                <label>Mobile Number</label>
+                <input
+                  type="text"
+                  value={form.phone}
+                  onChange={(e) => handleInput("phone", e.target.value)}
+                  placeholder="ex. 9876543210"
+                />
+              </div>
+              <div className="form-group-custom half-width">
+                <label>GSTIN</label>
+                <input
+                  type="text"
+                  value={form.gstin}
+                  onChange={(e) => handleInput("gstin", e.target.value)}
+                  placeholder="ex. 27AAAAA0000A1Z5"
+                />
+              </div>
             </div>
 
-            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Company Name</label>
-              <input
-                type="text"
-                value={form.company}
-                onChange={(e) => handleInput("company", e.target.value)}
-                placeholder="Company LLC"
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
-              />
-            </div>
+            <div className="address-section">
+              <div className={`addresses-grid ${!form.shippingSameAsBilling ? "two-columns" : ""}`}>
+                {/* Billing Address */}
+                <div className="billing-address-container">
+                  <label className="billing-label">BILLING ADDRESS <span className="required-star">*</span></label>
+                  <textarea
+                    value={form.address}
+                    onChange={(e) => handleInput("address", e.target.value)}
+                    placeholder="ex. 123 Main Street, Industrial Area"
+                    rows="3"
+                    className="billing-textarea"
+                  />
 
-            <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>City</label>
-              <input
-                type="text"
-                value={form.city}
-                onChange={(e) => handleInput("city", e.target.value)}
-                placeholder="Pune"
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none" }}
-              />
-            </div>
+                  <div className="form-row-custom">
+                    <div className="form-group-custom half-width">
+                      <label className="billing-label">STATE</label>
+                      <input
+                        type="text"
+                        value={form.state}
+                        onChange={(e) => handleInput("state", e.target.value)}
+                        placeholder="ex. Maharashtra"
+                      />
+                    </div>
+                    <div className="form-group-custom half-width">
+                      <label className="billing-label">PINCODE</label>
+                      <input
+                        type="text"
+                        value={form.pincode}
+                        onChange={(e) => handleInput("pincode", e.target.value)}
+                        placeholder="ex. 400001"
+                      />
+                    </div>
+                  </div>
 
-            <div className="form-group full-width-span" style={{ display: "flex", flexDirection: "column", gap: "6px", gridColumn: "1 / -1" }}>
-              <label style={{ fontSize: "13px", fontWeight: "600", color: "#64748b" }}>Billing Address</label>
-              <textarea
-                value={form.address}
-                onChange={(e) => handleInput("address", e.target.value)}
-                placeholder="123 Road, St."
-                rows="2"
-                style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", outline: "none", resize: "vertical" }}
-              />
+                  <div className="form-group-custom">
+                    <label className="billing-label">CITY</label>
+                    <input
+                      type="text"
+                      value={form.city}
+                      onChange={(e) => handleInput("city", e.target.value)}
+                      placeholder="ex. Mumbai"
+                    />
+                  </div>
+                </div>
+
+                {/* Shipping Address */}
+                {!form.shippingSameAsBilling && (
+                  <div className="billing-address-container">
+                    <label className="billing-label">SHIPPING ADDRESS <span className="required-star">*</span></label>
+                    <textarea
+                      value={form.shippingAddress}
+                      onChange={(e) => handleInput("shippingAddress", e.target.value)}
+                      placeholder="ex. 123 Main Street, Industrial Area"
+                      rows="3"
+                      className="billing-textarea"
+                    />
+
+                    <div className="form-row-custom">
+                      <div className="form-group-custom half-width">
+                        <label className="billing-label">STATE</label>
+                        <input
+                          type="text"
+                          value={form.shippingState}
+                          onChange={(e) => handleInput("shippingState", e.target.value)}
+                          placeholder="ex. Maharashtra"
+                        />
+                      </div>
+                      <div className="form-group-custom half-width">
+                        <label className="billing-label">PINCODE</label>
+                        <input
+                          type="text"
+                          value={form.shippingPincode}
+                          onChange={(e) => handleInput("shippingPincode", e.target.value)}
+                          placeholder="ex. 400001"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group-custom">
+                      <label className="billing-label">CITY</label>
+                      <input
+                        type="text"
+                        value={form.shippingCity}
+                        onChange={(e) => handleInput("shippingCity", e.target.value)}
+                        placeholder="ex. Mumbai"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="checkbox-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={form.shippingSameAsBilling}
+                  onChange={(e) => handleInput("shippingSameAsBilling", e.target.checked)}
+                />
+                Shipping address same as billing address
+              </label>
             </div>
           </div>
 
-          <div className="popup-actions" style={{ marginTop: "24px", display: "flex", gap: "12px", justifyContent: "flex-end" }}>
-            <button
-              type="button"
-              onClick={onClose}
-              style={{ padding: "10px 20px", background: "#fff", border: "1px solid #e2e8f0", borderRadius: "6px", fontWeight: "600", color: "#0f172a", cursor: "pointer" }}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              style={{ padding: "10px 20px", background: "#8b5cf6", border: "none", borderRadius: "6px", fontWeight: "600", color: "#fff", cursor: "pointer" }}
-            >
-              {editingCustomer ? "Update Customer" : "Add Customer"}
-            </button>
+          <div className="modal-footer-custom">
+            <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
+            <button type="submit" className="btn-save">Save</button>
           </div>
         </form>
       </div>

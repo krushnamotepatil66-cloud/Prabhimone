@@ -47,15 +47,13 @@ function Invoices() {
     }
   }, [searchParams, setSearchParams]);
 
+  const [autoOpenPrintModal, setAutoOpenPrintModal] = useState(false);
+
   const handleAddInvoice = (invoice, shouldPrint) => {
     addInvoice(invoice);
     setIsCreating(false);
     setPreviewInvoice(invoice);
-    if (shouldPrint) {
-      setTimeout(() => {
-        window.print();
-      }, 400);
-    }
+    setAutoOpenPrintModal(!!shouldPrint);
   };
 
   const handleUpdateInvoice = (updatedInvoice, shouldPrint) => {
@@ -63,11 +61,7 @@ function Invoices() {
     setIsEditing(false);
     setEditingInvoice(null);
     setPreviewInvoice(updatedInvoice);
-    if (shouldPrint) {
-      setTimeout(() => {
-        window.print();
-      }, 400);
-    }
+    setAutoOpenPrintModal(!!shouldPrint);
   };
 
   const handleDeleteInvoice = (id) => {
@@ -161,7 +155,11 @@ function Invoices() {
           <div className="split-preview-panel">
             <InvoicePreview
               invoice={previewInvoice}
-              onClose={() => setPreviewInvoice(null)}
+              initialOpenPrintModal={autoOpenPrintModal}
+              onClose={() => {
+                setPreviewInvoice(null);
+                setAutoOpenPrintModal(false);
+              }}
               onEdit={(inv) => {
                 setEditingInvoice(inv);
                 setIsEditing(true);

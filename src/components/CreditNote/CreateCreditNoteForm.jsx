@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useApp } from "../../context/AppContext";
+import CustomerModal from "../Customer/CustomerModal";
 import "../Invoice/CreateInvoiceForm.css";
 import {
   FiUser,
@@ -501,6 +502,20 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
                             setShowDropdown(true);
                           }}
                           onFocus={() => setShowDropdown(true)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              const exactMatch = filteredCustomers.find(
+                                (c) => c.name.trim().toLowerCase() === form.customer.trim().toLowerCase()
+                              );
+                              if (exactMatch) {
+                                handleSelectCustomer(exactMatch);
+                              } else {
+                                setShowNewCustomerForm(true);
+                                setShowDropdown(false);
+                              }
+                            }
+                          }}
                           placeholder="Search existing customers..."
                           required
                         />
@@ -1256,101 +1271,26 @@ function CreateCreditNoteForm({ editingCreditNote, onSave, onCancel }) {
       )}
 
       {/* Quick Customer Addition Inline Frame */}
-      {showNewCustomerForm && (
-        <div className="invoice-settings-popup-overlay">
-          <div className="invoice-settings-popup customer-popup-large">
-            <h3>Quick Add Customer</h3>
-
-            <div className="quick-cust-form-fields">
-              <div className="form-group">
-                <label>Customer Name</label>
-                <input
-                  type="text"
-                  value={form.customer}
-                  onChange={(e) => handleInput("customer", e.target.value)}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Email Address</label>
-                <input
-                  type="email"
-                  value={newCustomerData.email}
-                  onChange={(e) => handleNewCustomerDataChange("email", e.target.value)}
-                  placeholder="customer@email.com"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Phone Number</label>
-                <input
-                  type="text"
-                  value={newCustomerData.phone}
-                  onChange={(e) => handleNewCustomerDataChange("phone", e.target.value)}
-                  placeholder="+91 00000 00000"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Company Name</label>
-                <input
-                  type="text"
-                  value={newCustomerData.company}
-                  onChange={(e) => handleNewCustomerDataChange("company", e.target.value)}
-                  placeholder="Company LLC"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>City</label>
-                <input
-                  type="text"
-                  value={newCustomerData.city}
-                  onChange={(e) => handleNewCustomerDataChange("city", e.target.value)}
-                  placeholder="Pune"
-                />
-              </div>
-
-              <div className="form-group full-width-span">
-                <label>Billing Address</label>
-                <textarea
-                  value={newCustomerData.address}
-                  onChange={(e) => handleNewCustomerDataChange("address", e.target.value)}
-                  placeholder="123 Road, St."
-                  rows="2"
-                />
-              </div>
-            </div>
-
-            <div className="popup-actions" style={{ marginTop: "18px", display: "flex", gap: "10px", justifyContent: "flex-end" }}>
-              <button
-                type="button"
-                className="btn-header-secondary"
-                onClick={() => setShowNewCustomerForm(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn-header-primary-main"
-                style={{ padding: "8px 16px", borderRadius: "6px" }}
-                onClick={() => {
-                  handleSelectCustomer({
-                    name: form.customer,
-                    email: newCustomerData.email,
-                    phone: newCustomerData.phone,
-                    company: newCustomerData.company,
-                    address: `${newCustomerData.address}, ${newCustomerData.city}`,
-                  });
-                  setShowNewCustomerForm(false);
-                }}
-              >
-                Add Customer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CustomerModal
+        isOpen={showNewCustomerForm}
+        onClose={() => setShowNewCustomerForm(false)}
+        initialName={form.customer}
+        onSave={(newCust) => {
+          if (addCustomer) addCustomer(newCust);
+          handleSelectCustomer({
+            name: newCust.name,
+            email: newCust.email,
+            phone: newCust.phone,
+            company: newCust.company,
+            address: newCust.address,
+            gstin: newCust.gstin,
+            state: newCust.state,
+            city: newCust.city,
+            pincode: newCust.pincode,
+          });
+          setShowNewCustomerForm(false);
+        }}
+      />
       <ProductModal
         isOpen={showProductModal}
         initialName={addingProductRowIndex !== null ? form.items[addingProductRowIndex].product : ""}

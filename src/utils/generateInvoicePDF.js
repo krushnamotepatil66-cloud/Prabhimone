@@ -13,21 +13,50 @@ async function generateInvoicePDF(invoice, settings = {}) {
   }
 
   try {
-    // A4 dimensions in points (1 pt = 1/72 inch)
-    // 210mm × 297mm  →  595.28pt × 841.89pt
-    const A4_WIDTH_PX  = 794;  // 210mm at 96 dpi ≈ 794px
-    const A4_HEIGHT_PX = 1123; // 297mm at 96 dpi ≈ 1123px
+    // A4 at 96 dpi = 794px wide
+    const A4_WIDTH_PX = 794;
 
-    const canvas = await html2canvas(sheet, {
-      scale: 2,               // 2× for crisp text on retina
+    // Create an off-screen wrapper at exact A4 width so content is truly centered
+    const wrapper = document.createElement("div");
+    wrapper.style.cssText = `
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      width: ${A4_WIDTH_PX}px;
+      background: #ffffff;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    `;
+
+    // Clone the sheet and force it to fill the A4 width with equal margins
+    const clone = sheet.cloneNode(true);
+    clone.style.cssText = `
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 24px 32px;
+      box-sizing: border-box;
+      background: #ffffff;
+      border: none;
+      box-shadow: none;
+      border-radius: 0;
+    `;
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    const canvas = await html2canvas(wrapper, {
+      scale: 2,
       useCORS: true,
       backgroundColor: "#ffffff",
-      width: sheet.scrollWidth,
-      height: sheet.scrollHeight,
-      windowWidth: sheet.scrollWidth,
-      windowHeight: sheet.scrollHeight,
+      width: A4_WIDTH_PX,
+      height: wrapper.scrollHeight,
+      windowWidth: A4_WIDTH_PX,
+      windowHeight: wrapper.scrollHeight,
       logging: false,
     });
+
+    document.body.removeChild(wrapper);
 
     const imgData = canvas.toDataURL("image/png");
 
@@ -40,25 +69,24 @@ async function generateInvoicePDF(invoice, settings = {}) {
     const pageWidth  = doc.internal.pageSize.getWidth();   // 210 mm
     const pageHeight = doc.internal.pageSize.getHeight();  // 297 mm
 
-    // Scale canvas to fit the full A4 width
-    const canvasWidthMM  = (canvas.width  / 2) * 25.4 / 96; // canvas is 2×, convert px → mm
+    // canvas is 2× scale — convert back to logical px then to mm
+    const canvasWidthMM  = (canvas.width  / 2) * 25.4 / 96;
     const canvasHeightMM = (canvas.height / 2) * 25.4 / 96;
 
     const scale = pageWidth / canvasWidthMM;
     const renderedHeight = canvasHeightMM * scale;
 
-    // If content is taller than one A4 page, tile across multiple pages
-    let positionMM = 0;
-    let remaining  = renderedHeight;
-
-    doc.addImage(imgData, "PNG", 0, positionMM, pageWidth, renderedHeight);
+    // Place image starting at x=0 so it fills the full A4 width perfectly
+    doc.addImage(imgData, "PNG", 0, 0, pageWidth, renderedHeight);
 
     // Add extra pages for very long invoices
+    let remaining = renderedHeight;
+    let offsetMM  = 0;
     while (remaining > pageHeight) {
       doc.addPage();
-      positionMM -= pageHeight;
-      remaining  -= pageHeight;
-      doc.addImage(imgData, "PNG", 0, positionMM, pageWidth, renderedHeight);
+      offsetMM  -= pageHeight;
+      remaining -= pageHeight;
+      doc.addImage(imgData, "PNG", 0, offsetMM, pageWidth, renderedHeight);
     }
 
     const filename = `${invoice.id || "Invoice"}.pdf`;
@@ -69,4 +97,4 @@ async function generateInvoicePDF(invoice, settings = {}) {
   }
 }
 
-export default generateInvoicePDF;
+export default generateInvoicePDF;
