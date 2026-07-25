@@ -85,7 +85,7 @@ function CreateInvoiceForm({ editingInvoice, onSave, onCancel }) {
 
   const [newCustomerData, setNewCustomerData] = useState({
     email: "",
-    phone: "+91 ",
+    phone: "+91",
     company: "",
     city: "",
     address: ""

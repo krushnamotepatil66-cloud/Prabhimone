@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { customerApi, productApi, invoiceApi } from "../api/client";
 
 const AppContext = createContext();
 
@@ -241,6 +242,72 @@ export function AppProvider({ children }) {
 
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
 
+  // ─── Load live data from backend on mount ───────────────────────────────────
+  useEffect(() => {
+    // Load Customers
+    customerApi.list({ page_size: 100 })
+      .then((res) => {
+        if (res?.data?.results?.length) {
+          const mapped = res.data.results.map((c) => ({
+            id: c.id,
+            name: c.display_name || `${c.first_name} ${c.last_name}`.trim(),
+            email: c.email,
+            phone: c.primary_phone,
+            company: c.company_name,
+            city: c.billing_city,
+            address: [c.billing_address_line_1, c.billing_address_line_2].filter(Boolean).join(", "),
+            gstNumber: c.gst_number,
+            panNumber: c.pan_number,
+            _apiId: c.id,
+          }));
+          setCustomers(mapped);
+        }
+      })
+      .catch(() => { /* silently use local state if backend unavailable */ });
+
+    // Load Products
+    productApi.list({ page_size: 100 })
+      .then((res) => {
+        if (res?.data?.results?.length) {
+          const mapped = res.data.results.map((p) => ({
+            id: p.id,
+            name: p.name,
+            type: p.product_type === "goods" ? "Product" : "Service",
+            price: parseFloat(p.selling_price) || 0,
+            purchasePrice: parseFloat(p.purchase_price) || 0,
+            unit: p.unit_abbreviation || "pcs",
+            hsn: p.hsn_sac_code,
+            gst: parseFloat(p.gst_tax_rate) || 0,
+            sku: p.sku,
+            description: p.description,
+            _apiId: p.id,
+          }));
+          setProducts(mapped);
+        }
+      })
+      .catch(() => {});
+
+    // Load Invoices
+    invoiceApi.list({ page_size: 100 })
+      .then((res) => {
+        if (res?.data?.results?.length) {
+          const mapped = res.data.results.map((inv) => ({
+            id: inv.invoice_number || inv.id,
+            customer: inv.customer_name,
+            date: inv.invoice_date,
+            dueDate: inv.due_date,
+            amount: `₹${parseFloat(inv.grand_total).toLocaleString("en-IN")}`,
+            status: inv.status?.charAt(0).toUpperCase() + inv.status?.slice(1) || "Draft",
+            currency: inv.currency,
+            _apiId: inv.id,
+          }));
+          setInvoices(mapped);
+        }
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   // Sync state to local storage
   useEffect(() => {
@@ -305,17 +372,45 @@ export function AppProvider({ children }) {
   };
 
   // Customers CRUD
-  const addCustomer = (customer) => {
+  const addCustomer = async (customer) => {
+    // Optimistic local update first
     const newCust = {
       ...customer,
       id: `CUST-${String(customers.length + 1).padStart(3, "0")}`
     };
     setCustomers((prev) => [...prev, newCust]);
     logActivity(`Customer ${newCust.name} added`);
+
+    // Sync to backend
+    try {
+      const res = await customerApi.create({
+        customer_type: customer.type === "business" ? "business" : "individual",
+        display_name: customer.name,
+        company_name: customer.company || "",
+        first_name: customer.name?.split(" ")[0] || customer.name,
+        last_name: customer.name?.split(" ").slice(1).join(" ") || "",
+        email: customer.email || "",
+        primary_phone: customer.phone || "",
+        billing_address_line_1: customer.address || "",
+        billing_city: customer.city || "",
+        billing_country: "India",
+        gst_number: customer.gstNumber || "",
+        pan_number: customer.panNumber || "",
+        currency: "INR",
+      });
+      // Update local id with real backend id
+      if (res?.data?.id) {
+        setCustomers((prev) =>
+          prev.map((c) => (c.id === newCust.id ? { ...c, _apiId: res.data.id } : c))
+        );
+      }
+    } catch (err) {
+      console.warn("Customer sync to backend failed:", err.message);
+    }
     return newCust;
   };
 
-  const updateCustomer = (updatedCust) => {
+  const updateCustomer = async (updatedCust) => {
     setCustomers((prev) =>
       prev.map((c) => (c.id === updatedCust.id ? updatedCust : c))
     );
@@ -330,39 +425,104 @@ export function AppProvider({ children }) {
       })
     );
     logActivity(`Customer ${updatedCust.name} updated`);
+
+    // Sync to backend
+    const apiId = updatedCust._apiId || updatedCust.id;
+    try {
+      await customerApi.update(apiId, {
+        display_name: updatedCust.name,
+        company_name: updatedCust.company || "",
+        email: updatedCust.email || "",
+        primary_phone: updatedCust.phone || "",
+        billing_address_line_1: updatedCust.address || "",
+        billing_city: updatedCust.city || "",
+        gst_number: updatedCust.gstNumber || "",
+        pan_number: updatedCust.panNumber || "",
+      }, true);
+    } catch (err) {
+      console.warn("Customer update sync failed:", err.message);
+    }
   };
 
-  const deleteCustomer = (id) => {
+  const deleteCustomer = async (id) => {
     const cust = customers.find((c) => c.id === id);
     setCustomers((prev) => prev.filter((c) => c.id !== id));
     if (cust) {
       logActivity(`Customer ${cust.name} deleted`);
+      const apiId = cust._apiId || cust.id;
+      try {
+        await customerApi.delete(apiId);
+      } catch (err) {
+        console.warn("Customer delete sync failed:", err.message);
+      }
     }
   };
 
   // Items / Products CRUD
-  const addItem = (item) => {
+  const addItem = async (item) => {
     const newItem = {
       ...item,
       id: `ITEM-${String(products.length + 1).padStart(3, "0")}`
     };
     setProducts((prev) => [...prev, newItem]);
     logActivity(`Item ${newItem.name} added`);
+
+    // Sync to backend
+    try {
+      const res = await productApi.create({
+        name: item.name,
+        product_type: item.type === "Service" ? "service" : "goods",
+        hsn_sac_code: item.hsn || "",
+        gst_tax_rate: parseFloat(item.gst) || 0,
+        selling_price: parseFloat(item.salesPrice || item.price) || 0,
+        purchase_price: parseFloat(item.purchasePrice) || 0,
+        description: item.description || "",
+        sku: item.sku || "",
+        track_inventory: false,
+      });
+      if (res?.data?.id) {
+        setProducts((prev) =>
+          prev.map((p) => (p.id === newItem.id ? { ...p, _apiId: res.data.id } : p))
+        );
+      }
+    } catch (err) {
+      console.warn("Item sync to backend failed:", err.message);
+    }
     return newItem;
   };
 
-  const updateItem = (updatedItem) => {
+  const updateItem = async (updatedItem) => {
     setProducts((prev) =>
       prev.map((p) => (p.id === updatedItem.id ? updatedItem : p))
     );
     logActivity(`Item ${updatedItem.name} updated`);
+
+    const apiId = updatedItem._apiId || updatedItem.id;
+    try {
+      await productApi.update(apiId, {
+        name: updatedItem.name,
+        selling_price: parseFloat(updatedItem.salesPrice || updatedItem.price) || 0,
+        purchase_price: parseFloat(updatedItem.purchasePrice) || 0,
+        gst_tax_rate: parseFloat(updatedItem.gst) || 0,
+        hsn_sac_code: updatedItem.hsn || "",
+        description: updatedItem.description || "",
+      }, true);
+    } catch (err) {
+      console.warn("Item update sync failed:", err.message);
+    }
   };
 
-  const deleteItem = (id) => {
+  const deleteItem = async (id) => {
     const item = products.find((p) => p.id === id);
     setProducts((prev) => prev.filter((p) => p.id !== id));
     if (item) {
       logActivity(`Item ${item.name} deleted`);
+      const apiId = item._apiId || item.id;
+      try {
+        await productApi.delete(apiId);
+      } catch (err) {
+        console.warn("Item delete sync failed:", err.message);
+      }
     }
   };
 
@@ -371,28 +531,87 @@ export function AppProvider({ children }) {
   const deleteProduct = deleteItem;
 
   // Invoices CRUD
-  const addInvoice = (invoice) => {
+  const addInvoice = async (invoice) => {
     const newInv = {
       ...invoice,
       id: `INV-${String(invoices.length + 1).padStart(3, "0")}`
     };
     setInvoices((prev) => [newInv, ...prev]);
     logActivity(`Invoice ${newInv.id} created for ${newInv.customer}`);
+
+    // Sync to backend
+    try {
+      const customer = customers.find(
+        (c) => c.name === invoice.customer || c.id === invoice.customerId
+      );
+      const apiCustomerId = customer?._apiId || customer?.id;
+
+      if (apiCustomerId) {
+        const payload = {
+          customer: apiCustomerId,
+          invoice_date: invoice.date || new Date().toISOString().split("T")[0],
+          due_date: invoice.dueDate || "",
+          currency: invoice.currency || "INR",
+          notes: invoice.notes || "",
+          terms_and_conditions: invoice.termsAndConditions || "",
+          items: (invoice.items || []).map((it) => ({
+            product: it._apiId || it.id,
+            quantity: parseFloat(it.qty) || 1,
+            unit_price: parseFloat(it.price) || null,
+            tax: parseFloat(it.tax) || null,
+            discount: parseFloat(it.discount) || 0,
+          })),
+        };
+        const res = await invoiceApi.create(payload);
+        if (res?.data?.id) {
+          setInvoices((prev) =>
+            prev.map((inv) =>
+              inv.id === newInv.id
+                ? { ...inv, _apiId: res.data.id, id: res.data.invoice_number || inv.id }
+                : inv
+            )
+          );
+        }
+      }
+    } catch (err) {
+      console.warn("Invoice sync to backend failed:", err.message);
+    }
     return newInv;
   };
 
-  const updateInvoice = (updatedInv) => {
+  const updateInvoice = async (updatedInv) => {
     setInvoices((prev) =>
       prev.map((inv) => (inv.id === updatedInv.id ? updatedInv : inv))
     );
     logActivity(`Invoice ${updatedInv.id} updated`);
+
+    const apiId = updatedInv._apiId || updatedInv.id;
+    try {
+      await invoiceApi.update(apiId, {
+        due_date: updatedInv.dueDate || "",
+        notes: updatedInv.notes || "",
+        terms_and_conditions: updatedInv.termsAndConditions || "",
+      });
+    } catch (err) {
+      console.warn("Invoice update sync failed:", err.message);
+    }
   };
 
-  const deleteInvoice = (id) => {
+  const deleteInvoice = async (id) => {
+    const inv = invoices.find((i) => i.id === id);
     setInvoices((prev) => prev.filter((inv) => inv.id !== id));
     // Also delete any associated payments
     setPayments((prev) => prev.filter((p) => p.invoiceId !== id));
     logActivity(`Invoice ${id} deleted`);
+
+    if (inv) {
+      const apiId = inv._apiId || inv.id;
+      try {
+        await invoiceApi.delete(apiId);
+      } catch (err) {
+        console.warn("Invoice delete sync failed:", err.message);
+      }
+    }
   };
 
   // Payments CRUD

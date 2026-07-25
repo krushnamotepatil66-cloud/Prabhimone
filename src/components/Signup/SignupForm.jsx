@@ -2,21 +2,57 @@ import { useState } from "react";
 import "./SignupForm.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaApple, FaArrowLeft } from "react-icons/fa";
+import { authApi } from "../../api/client";
 
 function SignupForm() {
   const navigate = useNavigate();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("+91 ");
+  const [phone, setPhone] = useState("+91");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Redirect to OTP verification page with email state
-    navigate("/verify", { state: { email } });
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await authApi.register({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        phone,
+        password,
+        password_confirm: confirmPassword,
+      });
+      // On success, navigate to OTP verification
+      navigate("/verify", { state: { email } });
+    } catch (err) {
+      if (err.message?.includes("Failed to fetch") || err.message?.includes("NetworkError")) {
+        setError("Cannot connect to server. Please contact your backend developer to start the server.");
+      } else {
+        setError(err.message || "Registration failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSocialSignup = (platform) => {
-    // Redirect to OTP verification page
-    navigate("/verify", { state: { email: `${platform.toLowerCase()}user@example.com` } });
+  const handleSocialSignup = () => {
+    setError("Social signup is not available yet.");
   };
 
   return (
@@ -51,24 +87,45 @@ function SignupForm() {
         <h2>Create Account</h2>
         <p>Start managing your invoices in minutes.</p>
 
-        <form onSubmit={handleSubmit}>
+        {error && (
+          <div style={{
+            background: "#fef2f2",
+            border: "1px solid #fecaca",
+            color: "#dc2626",
+            padding: "10px 14px",
+            borderRadius: "8px",
+            fontSize: "13px",
+            marginBottom: "16px",
+            lineHeight: "1.5"
+          }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} autoComplete="off">
           <div className="signup-grid">
             <div className="input-group">
-              <label htmlFor="signup-name">Full Name</label>
+              <label htmlFor="signup-firstname">First Name</label>
               <input
-                id="signup-name"
+                id="signup-firstname"
                 type="text"
-                placeholder="e.g. Aditya Kumar"
+                placeholder="e.g. Aditya"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                autoComplete="off"
                 required
               />
             </div>
 
             <div className="input-group">
-              <label htmlFor="signup-business">Business Name</label>
+              <label htmlFor="signup-lastname">Last Name</label>
               <input
-                id="signup-business"
+                id="signup-lastname"
                 type="text"
-                placeholder="e.g. Acme Corporation"
+                placeholder="e.g. Kumar"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                autoComplete="off"
                 required
               />
             </div>
@@ -81,6 +138,7 @@ function SignupForm() {
                 placeholder="e.g. aditya@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="off"
                 required
               />
             </div>
@@ -93,6 +151,7 @@ function SignupForm() {
                 placeholder="e.g. +91 98765 43210"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                autoComplete="off"
                 required
               />
             </div>
@@ -102,7 +161,10 @@ function SignupForm() {
               <input
                 id="signup-password"
                 type="password"
-                placeholder="At least 6 characters"
+                placeholder="At least 8 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
                 required
               />
             </div>
@@ -112,7 +174,10 @@ function SignupForm() {
               <input
                 id="signup-confirm-password"
                 type="password"
-                placeholder="At least 6  characters"
+                placeholder="Repeat your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
                 required
               />
             </div>
@@ -134,8 +199,8 @@ function SignupForm() {
             </label>
           </div>
 
-          <button type="submit" className="signup-btn">
-            Create Account
+          <button type="submit" className="signup-btn" disabled={loading}>
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
@@ -145,7 +210,7 @@ function SignupForm() {
           <button
             type="button"
             className="social-btn google-btn"
-            onClick={() => handleSocialSignup("Google")}
+            onClick={handleSocialSignup}
           >
             <FaGoogle />
             <span>Google</span>
@@ -154,7 +219,7 @@ function SignupForm() {
           <button
             type="button"
             className="social-btn apple-btn"
-            onClick={() => handleSocialSignup("Apple")}
+            onClick={handleSocialSignup}
           >
             <FaApple />
             <span>Apple</span>

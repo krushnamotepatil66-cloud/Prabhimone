@@ -8,7 +8,7 @@ const emptyForm = {
   lastName: "",
   company: "",
   email: "",
-  phone: "+91 ",
+  phone: "+91",
   workPhone: "",
   website: "",
   gstTreatment: "Consumer",

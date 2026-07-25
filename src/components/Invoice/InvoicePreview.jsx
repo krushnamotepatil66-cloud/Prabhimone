@@ -12,7 +12,7 @@ function InvoicePreview({ invoice, onClose, onEdit, onDelete, onRecordPayment })
   };
 
   const handleDownload = () => {
-    generateInvoicePDF(invoice);
+    generateInvoicePDF(invoice, settings);
   };
 
   const parseAmount = (amtStr) => Number(String(amtStr).replace(/[^0-9.-]/g, "")) || 0;

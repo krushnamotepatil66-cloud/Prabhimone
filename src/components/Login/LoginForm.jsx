@@ -1,19 +1,36 @@
 import "./LoginForm.css";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaApple, FaArrowLeft } from "react-icons/fa";
+import { authApi } from "../../api/client";
 
 function LoginForm() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate successful login and navigate to dashboard
-    navigate("/dashboard");
+    setError("");
+    setLoading(true);
+    try {
+      await authApi.login(email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      if (err.message?.includes("Failed to fetch") || err.message?.includes("NetworkError")) {
+        setError("Cannot connect to server. Please check your internet or contact your backend developer.");
+      } else {
+        setError(err.message || "Invalid email or password.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSocialLogin = (platform) => {
-    // Simulate social login and navigate to dashboard
-    navigate("/dashboard");
+  const handleSocialLogin = () => {
+    setError("Social login is not available yet.");
   };
 
   return (
@@ -45,8 +62,23 @@ function LoginForm() {
           <FaArrowLeft />
         </button>
         <h1>PrabhimOne</h1>
-        <h2>Welcome </h2>
+        <h2>Welcome</h2>
         <p>Sign in to continue managing your business.</p>
+
+        {error && (
+          <div style={{
+            background: "#fef2f2",
+            border: "1px solid #fecaca",
+            color: "#dc2626",
+            padding: "10px 14px",
+            borderRadius: "8px",
+            fontSize: "13px",
+            marginBottom: "16px",
+            lineHeight: "1.5"
+          }}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="input-group">
@@ -55,6 +87,8 @@ function LoginForm() {
               id="login-email"
               type="email"
               placeholder="e.g. aditya@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -65,6 +99,8 @@ function LoginForm() {
               id="login-password"
               type="password"
               placeholder="At least 6 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
@@ -77,8 +113,8 @@ function LoginForm() {
             <Link to="/forgot-password">Forgot Password?</Link>
           </div>
 
-          <button type="submit" className="login-btn">
-            Login
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Signing in..." : "Login"}
           </button>
         </form>
 
@@ -88,7 +124,7 @@ function LoginForm() {
           <button
             type="button"
             className="social-btn google-btn"
-            onClick={() => handleSocialLogin("Google")}
+            onClick={handleSocialLogin}
           >
             <FaGoogle />
             <span>Google</span>
@@ -97,7 +133,7 @@ function LoginForm() {
           <button
             type="button"
             className="social-btn apple-btn"
-            onClick={() => handleSocialLogin("Apple")}
+            onClick={handleSocialLogin}
           >
             <FaApple />
             <span>Apple</span>

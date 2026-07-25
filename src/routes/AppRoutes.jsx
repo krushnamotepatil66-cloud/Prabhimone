@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
@@ -22,25 +23,27 @@ import Profile from "../pages/dashboard/Profile";
 function AppRoutes() {
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verify" element={<Verify />} />
 
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/dashboard/invoices" element={<Invoices />} />
-      <Route path="/dashboard/customers" element={<Customers />} />
-      <Route path="/dashboard/items" element={<Items />} />
-      <Route path="/dashboard/products" element={<Items />} />
-      <Route path="/dashboard/estimates" element={<Estimates />} />
-      <Route path="/dashboard/credit-notes" element={<CreditNotes />} />
-      <Route path="/dashboard/proforma-invoices" element={<ProformaInvoices />} />
-      <Route path="/dashboard/payments" element={<Payments />} />
-      <Route path="/dashboard/expenses" element={<Expenses />} />
-      <Route path="/dashboard/reports" element={<Reports />} />
-      <Route path="/dashboard/settings" element={<Settings />} />
-      <Route path="/dashboard/profile" element={<Profile />} />
+      {/* Protected dashboard routes — requires JWT token */}
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/dashboard/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
+      <Route path="/dashboard/customers" element={<ProtectedRoute><Customers /></ProtectedRoute>} />
+      <Route path="/dashboard/items" element={<ProtectedRoute><Items /></ProtectedRoute>} />
+      <Route path="/dashboard/products" element={<ProtectedRoute><Items /></ProtectedRoute>} />
+      <Route path="/dashboard/estimates" element={<ProtectedRoute><Estimates /></ProtectedRoute>} />
+      <Route path="/dashboard/credit-notes" element={<ProtectedRoute><CreditNotes /></ProtectedRoute>} />
+      <Route path="/dashboard/proforma-invoices" element={<ProtectedRoute><ProformaInvoices /></ProtectedRoute>} />
+      <Route path="/dashboard/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
+      <Route path="/dashboard/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
+      <Route path="/dashboard/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+      <Route path="/dashboard/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route path="/dashboard/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     </Routes>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaCheckCircle, FaEnvelope, FaArrowLeft } from "react-icons/fa";
 import "../Login/LoginForm.css";
+import { authApi } from "../../api/client";
 
 function VerifyOTPForm() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ function VerifyOTPForm() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [error, setError] = useState("");
 
   const [emailCooldown, setEmailCooldown] = useState(30);
   const [emailMsg, setEmailMsg] = useState("");
@@ -28,10 +30,15 @@ function VerifyOTPForm() {
     return () => clearInterval(timer);
   }, [emailCooldown]);
 
-  const handleResendEmail = () => {
+  const handleResendEmail = async () => {
     if (emailCooldown > 0) return;
     setEmailCooldown(30);
-    setEmailMsg("A fresh code has been sent to your email!");
+    try {
+      await authApi.resendOtp(email, "registration");
+      setEmailMsg("A fresh code has been sent to your email!");
+    } catch (err) {
+      setEmailMsg("Failed to resend. Please try again.");
+    }
     setTimeout(() => setEmailMsg(""), 3500);
   };
 
@@ -87,23 +94,29 @@ function VerifyOTPForm() {
     if (targetInput) targetInput.focus();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
     if (enteredOtp.length !== 6) return;
 
     setIsVerifying(true);
-
-    // Simulate API code verification
-    setTimeout(() => {
-      setIsVerifying(false);
+    setError("");
+    try {
+      await authApi.verifyEmail({ email, otp: enteredOtp });
       setIsVerified(true);
-
-      // Auto redirect to dashboard after 2.5 seconds
+      // Auto redirect to login after 2.5 seconds
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/login");
       }, 2500);
-    }, 1800);
+    } catch (err) {
+      if (err.message?.includes("Failed to fetch") || err.message?.includes("NetworkError")) {
+        setError("Cannot connect to server. Please check your connection.");
+      } else {
+        setError(err.message || "Invalid OTP. Please try again.");
+      }
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const isOtpComplete = otp.every((digit) => digit !== "");
@@ -146,6 +159,21 @@ function VerifyOTPForm() {
               <br />
               <strong style={{ color: "#1e293b", wordBreak: "break-all" }}>{email}</strong>
             </p>
+
+            {error && (
+              <div style={{
+                background: "#fef2f2",
+                border: "1px solid #fecaca",
+                color: "#dc2626",
+                padding: "10px 14px",
+                borderRadius: "8px",
+                fontSize: "13px",
+                marginBottom: "12px",
+                lineHeight: "1.5"
+              }}>
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit}>
               {/* Email OTP Field */}
@@ -202,7 +230,7 @@ function VerifyOTPForm() {
               Your email has been successfully verified and account is activated.
             </p>
             <p className="success-note">
-              Preparing your dashboard... Redirecting shortly.
+              Redirecting to login... Please sign in.
             </p>
             <div className="otp-spinner-ring">
               <div></div>

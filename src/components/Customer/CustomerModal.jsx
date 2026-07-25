@@ -5,7 +5,7 @@ import "./CustomerModal.css";
 const emptyForm = {
   name: "",
   email: "",
-  phone: "+91 ",
+  phone: "+91",
   company: "",
   address: "",
   city: "",
