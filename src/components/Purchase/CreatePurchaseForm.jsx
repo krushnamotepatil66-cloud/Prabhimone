@@ -100,7 +100,11 @@ function CreatePurchaseForm({ onSave, onCancel, title = "New Purchase Order", su
     }
     
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (Object.keys(newErrors).length > 0) {
+      alert("Please fill in all required fields (Vendor, Category, Date, and Item Name).");
+      return false;
+    }
+    return true;
   };
 
   const calculateTotals = () => {
@@ -165,9 +169,13 @@ function CreatePurchaseForm({ onSave, onCancel, title = "New Purchase Order", su
     e.preventDefault();
     if (validateForm()) {
       const totals = calculateTotals();
+      const isBill = title.toLowerCase().includes("bill");
+      const isOrder = title.toLowerCase().includes("order");
+      const prefix = isBill ? "BILL-" : isOrder ? "PO-" : "PUR-";
+      
       onSave({
         ...formData,
-        id: formData.purchaseNo ? formData.purchaseNo.trim() : `PO-${Math.floor(Math.random() * 10000)}`,
+        id: formData.purchaseNo ? formData.purchaseNo.trim() : `${prefix}${Math.floor(Math.random() * 10000)}`,
         items,
         amount: totals.subTotal,
         tax: totals.totalTax,
@@ -308,7 +316,6 @@ function CreatePurchaseForm({ onSave, onCancel, title = "New Purchase Order", su
                     value={formData.purchaseNo || ""}
                     onChange={(e) => setFormData({ ...formData, purchaseNo: e.target.value })}
                     placeholder={title.includes("Bill") ? "BILL-001" : title.includes("Order") ? "PO-001" : "PUR-001"}
-                    required
                   />
                   <button type="button" className="input-side-settings-btn" onClick={() => setShowSettingsModal(true)}>
                     <FiSettings />
@@ -434,7 +441,6 @@ function CreatePurchaseForm({ onSave, onCancel, title = "New Purchase Order", su
                                   }}
                                   placeholder="Item name"
                                   className="item-title-input"
-                                  required
                                   style={{ width: "100%" }}
                                 />
                                 {activeProductDropdownIndex === index && (
