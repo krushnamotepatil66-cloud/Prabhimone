@@ -5,7 +5,7 @@ import { useApp } from "../../context/AppContext";
 import CreatePurchaseForm from "../../components/Purchase/CreatePurchaseForm";
 import {
   FiSearch, FiTrash2, FiPlusCircle, FiShoppingCart,
-  FiDollarSign, FiClock, FiCheckCircle, FiAlertCircle, FiEye, FiEdit3
+  FiDollarSign, FiClock, FiCheckCircle, FiEye, FiEdit3
 } from "react-icons/fi";
 import { isFeatureAllowed } from "../../utils/subscriptionLimits";
 import UpgradeGate from "../../components/Subscription/UpgradeGate";
