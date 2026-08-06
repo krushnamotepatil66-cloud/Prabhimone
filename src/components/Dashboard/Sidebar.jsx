@@ -59,7 +59,12 @@ function Sidebar() {
     setSidebarMobileOpen,
     profile
   } = useApp();
-  const [expandedMenus, setExpandedMenus] = useState(["Sales", "Purchases"]); // Sales & Purchases open by default
+  const [expandedMenus, setExpandedMenus] = useState(() => {
+    // Keep submenus closed by default on login unless currently visiting a child route
+    return menu
+      .filter((item) => item.children && item.children.some((child) => location.pathname === child.path))
+      .map((item) => item.name);
+  });
 
   const handleLinkClick = () => {
     if (sidebarMobileOpen) {
