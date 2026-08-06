@@ -748,6 +748,13 @@ export function AppProvider({ children }) {
     return newPur;
   };
 
+  const updatePurchase = (updatedPurchase) => {
+    setPurchases((prev) =>
+      prev.map((p) => (p.id === updatedPurchase.id ? updatedPurchase : p))
+    );
+    logActivity(`Purchase ${updatedPurchase.id} updated`);
+  };
+
   const deletePurchase = (id) => {
     setPurchases((prev) => prev.filter((p) => p.id !== id));
     logActivity(`Purchase ${id} deleted`);
@@ -833,6 +840,7 @@ export function AppProvider({ children }) {
         updateProformaInvoice,
         deleteProformaInvoice,
         addPurchase,
+        updatePurchase,
         deletePurchase,
         addVendor,
         updateVendor,

@@ -5,7 +5,7 @@ import { useApp } from "../../context/AppContext";
 import CreatePurchaseForm from "../../components/Purchase/CreatePurchaseForm";
 import {
   FiSearch, FiTrash2, FiPlusCircle, FiShoppingCart,
-  FiDollarSign, FiClock, FiCheckCircle, FiEye, FiClipboard
+  FiDollarSign, FiClock, FiCheckCircle, FiAlertCircle, FiEye, FiEdit3
 } from "react-icons/fi";
 import "./Purchases.css";
 import { isFeatureAllowed } from "../../utils/subscriptionLimits";
@@ -19,10 +19,12 @@ const STATUS_COLORS = {
 };
 
 function PurchaseOrders() {
-  const { purchases = [], addPurchase, deletePurchase, settings } = useApp();
+  const { purchases = [], addPurchase, updatePurchase, deletePurchase, settings } = useApp();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
   const [viewItem, setViewItem] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -68,8 +70,14 @@ function PurchaseOrders() {
   };
 
   const handleSave = (data) => {
-    addPurchase(data);
+    if (isEditing) {
+      updatePurchase(data);
+    } else {
+      addPurchase(data);
+    }
     setIsCreating(false);
+    setIsEditing(false);
+    setEditingItem(null);
   };
 
 
@@ -99,14 +107,19 @@ function PurchaseOrders() {
     );
   }
 
-  if (isCreating) {
+  if (isCreating || isEditing) {
     return (
       <DashboardLayout>
         <CreatePurchaseForm
-          title="New Purchase Order"
-          submitText="Save Purchase Order"
+          title={isEditing ? "Edit Purchase Order" : "New Purchase Order"}
+          submitText={isEditing ? "Update Purchase Order" : "Save Purchase Order"}
+          initialData={isEditing ? editingItem : null}
           onSave={handleSave}
-          onCancel={() => setIsCreating(false)}
+          onCancel={() => {
+            setIsCreating(false);
+            setIsEditing(false);
+            setEditingItem(null);
+          }}
         />
       </DashboardLayout>
     );
@@ -213,11 +226,10 @@ function PurchaseOrders() {
               <table className="pur-table">
                 <thead>
                   <tr>
-                    <th>Purchase ID</th>
+                    <th>PO ID</th>
                     <th>Date</th>
                     <th>Vendor</th>
                     <th>Category</th>
-                    <th>Reference</th>
                     <th>Status</th>
                     <th className="align-right">Amount</th>
                     <th className="align-right">Tax</th>
@@ -245,7 +257,6 @@ function PurchaseOrders() {
                         <td>
                           <span className="pur-category">{p.category || "—"}</span>
                         </td>
-                        <td className="pur-reference">{p.reference || "—"}</td>
                         <td>
                           <span
                             className="pur-status-chip"
@@ -263,6 +274,16 @@ function PurchaseOrders() {
                         <td className="align-right pur-total">{fmt(p.total)}</td>
                         <td className="align-center">
                           <div className="pur-actions">
+                            <button
+                              className="pur-action-btn edit"
+                              title="Edit"
+                              onClick={() => {
+                                setEditingItem(p);
+                                setIsEditing(true);
+                              }}
+                            >
+                              <FiEdit3 size={14} />
+                            </button>
                             <button
                               className="pur-action-btn view"
                               title="View Details"

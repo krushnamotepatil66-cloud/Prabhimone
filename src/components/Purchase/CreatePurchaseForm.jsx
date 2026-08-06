@@ -6,7 +6,7 @@ import VendorModal from "./VendorModal";
 import "../Invoice/CreateInvoiceForm.css";
 import "./CreatePurchaseForm.css";
 
-function CreatePurchaseForm({ onSave, onCancel, title = "New Purchase Order", submitText = "Save Purchase Order" }) {
+function CreatePurchaseForm({ onSave, onCancel, title = "New Purchase Order", submitText = "Save Purchase Order", initialData = null }) {
   const { settings, products, addProduct, vendors, addVendor, purchases } = useApp();
 
   const getDefaultTerms = (docTitle, s) => {
@@ -15,22 +15,41 @@ function CreatePurchaseForm({ onSave, onCancel, title = "New Purchase Order", su
     return s.purchaseOrderTermsAndConditions || "";
   };
 
-  const [formData, setFormData] = useState({
-    purchaseNo: "",
-    vendor: "",
-    date: new Date().toISOString().split("T")[0],
-    category: "",
-    reference: "",
-    paymentMode: "Bank Transfer",
-    status: "Pending",
-    notes: "",
-    internalNote: "",
-    termsAndConditions: getDefaultTerms(title, settings),
+  const [formData, setFormData] = useState(() => {
+    if (initialData) {
+      return {
+        purchaseNo: initialData.id,
+        vendor: initialData.vendor || "",
+        date: initialData.date || new Date().toISOString().split("T")[0],
+        category: initialData.category || "",
+        reference: initialData.reference || "",
+        paymentMode: initialData.paymentMode || "Bank Transfer",
+        status: initialData.status || "Pending",
+        notes: initialData.notes || "",
+        internalNote: initialData.internalNote || "",
+        termsAndConditions: initialData.termsAndConditions || getDefaultTerms(title, settings),
+      };
+    }
+    return {
+      purchaseNo: "",
+      vendor: "",
+      date: new Date().toISOString().split("T")[0],
+      category: "",
+      reference: "",
+      paymentMode: "Bank Transfer",
+      status: "Pending",
+      notes: "",
+      internalNote: "",
+      termsAndConditions: getDefaultTerms(title, settings),
+    };
   });
   
-  const [items, setItems] = useState([
-    { product: "", description: "", hsn: "", qty: "1", unit: "Nos", price: "0", discount: "", discountType: "Flat", tax: "0" }
-  ]);
+  const [items, setItems] = useState(() => {
+    if (initialData && initialData.items && initialData.items.length > 0) {
+      return initialData.items;
+    }
+    return [{ product: "", description: "", hsn: "", qty: "1", unit: "Nos", price: "0", discount: "", discountType: "Flat", tax: "0" }];
+  });
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const [activeProductDropdownIndex, setActiveProductDropdownIndex] = useState(null);
