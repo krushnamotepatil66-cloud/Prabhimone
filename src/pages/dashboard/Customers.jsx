@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
 import CustomerModal from "../../components/Customer/CustomerModal";
+import { checkLimit } from "../../utils/subscriptionLimits";
+import UpgradeGate from "../../components/Subscription/UpgradeGate";
 import "./Customers.css";
 
 // Import Shared Layout and Component Styles from Invoices Page
@@ -30,7 +32,8 @@ function Customers() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showIEDrawer, setShowIEDrawer] = useState(false);
-  const [ieDrawerTab, setIEDrawerTab] = useState("export"); // "import" or "export"
+  const [ieDrawerTab, setIEDrawerTab] = useState("export");
+  const [showUpgradeGate, setShowUpgradeGate] = useState(false);
   const [exportColumns, setExportColumns] = useState({
     name: true,
     company: true,
@@ -270,6 +273,16 @@ function Customers() {
 
   return (
     <DashboardLayout>
+      {/* Subscription Upgrade Gate */}
+      <UpgradeGate
+        isOpen={showUpgradeGate}
+        onClose={() => setShowUpgradeGate(false)}
+        title="Customer Limit Reached"
+        description={`You've reached your customer limit on the ${(settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan) || "Free"} plan. Upgrade to add more customers.`}
+        currentPlan={(settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan) || "Free"}
+        requiredPlan="Professional"
+        usage={{ used: customers.length, limit: checkLimit((settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan), settings?.subscriptionStatus, "customers", customers.length).limit }}
+      />
       {/* Header matching Invoice Header exactly */}
       <div className="invoice-header">
         <div className="invoice-header-left">
@@ -324,6 +337,9 @@ function Customers() {
               type="button"
               className="primary-btn add-invoice-btn"
               onClick={() => {
+                const planName = settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan;
+                const limit = checkLimit(planName, settings?.subscriptionStatus, "customers", customers.length);
+                if (!limit.allowed) { setShowUpgradeGate(true); return; }
                 setEditingCustomer(null);
                 setIsCreating(true);
               }}

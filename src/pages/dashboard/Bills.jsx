@@ -10,6 +10,8 @@ import {
 } from "react-icons/fi";
 import "./Purchases.css";
 import "./Bills.css";
+import { isFeatureAllowed } from "../../utils/subscriptionLimits";
+import UpgradeGate from "../../components/Subscription/UpgradeGate";
 
 const STATUS_COLORS = {
   Paid:    { bg: "#dcfce7", color: "#15803d", border: "#86efac" },
@@ -338,6 +340,32 @@ function Bills() {
     setImportToast(`✅ Successfully imported ${bills.length} bill${bills.length > 1 ? "s" : ""}!`);
     setTimeout(() => setImportToast(null), 4000);
   };
+
+  const planName = settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan;
+  const purchasesAllowed = isFeatureAllowed(planName, settings?.subscriptionStatus, "purchases");
+
+  if (!purchasesAllowed) {
+    return (
+      <DashboardLayout>
+        <div style={{ padding: "48px 32px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>🔒</div>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1e293b", marginBottom: 8 }}>Bills Unlocked on Professional+</h2>
+          <p style={{ color: "#64748b", lineHeight: 1.7, marginBottom: 28 }}>
+            Track vendor bills and payments. This feature is available from the <strong>Professional</strong> plan and above.
+          </p>
+          <UpgradeGate
+            isOpen={true}
+            onClose={null}
+            title="Feature Locked"
+            description="Bills and vendor management are available on the Professional plan."
+            currentPlan={planName || "Free"}
+            requiredPlan="Professional"
+            inline={true}
+          />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (isCreating) {
     return (

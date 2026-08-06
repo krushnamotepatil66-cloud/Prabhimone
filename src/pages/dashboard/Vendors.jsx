@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
 import VendorModal from "../../components/Purchase/VendorModal";
+import { isFeatureAllowed } from "../../utils/subscriptionLimits";
+import UpgradeGate from "../../components/Subscription/UpgradeGate";
 import "../dashboard/Customers.css"; // Reuse Customers CSS for similar layout
 
 // Import Shared Layout and Component Styles
@@ -141,6 +143,32 @@ function Vendors() {
     setEditingVendor(vendor);
     setIsEditing(true);
   };
+
+  const planName = settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan;
+  const purchasesAllowed = isFeatureAllowed(planName, settings?.subscriptionStatus, "purchases");
+
+  if (!purchasesAllowed) {
+    return (
+      <DashboardLayout>
+        <div style={{ padding: "48px 32px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>🔒</div>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1e293b", marginBottom: 8 }}>Vendors Unlocked on Professional+</h2>
+          <p style={{ color: "#64748b", lineHeight: 1.7, marginBottom: 28 }}>
+            Manage your vendors and supplier contacts. This feature is available from the <strong>Professional</strong> plan and above.
+          </p>
+          <UpgradeGate
+            isOpen={true}
+            onClose={null}
+            title="Feature Locked"
+            description="Vendor management is available on the Professional plan."
+            currentPlan={planName || "Free"}
+            requiredPlan="Professional"
+            inline={true}
+          />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

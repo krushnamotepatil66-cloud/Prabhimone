@@ -7,6 +7,8 @@ import {
   FiSearch, FiTrash2, FiPlusCircle, FiShoppingCart,
   FiDollarSign, FiClock, FiCheckCircle, FiAlertCircle, FiEye
 } from "react-icons/fi";
+import { isFeatureAllowed } from "../../utils/subscriptionLimits";
+import UpgradeGate from "../../components/Subscription/UpgradeGate";
 import "./Purchases.css";
 
 const STATUS_COLORS = {
@@ -67,6 +69,33 @@ function Purchases() {
     addPurchase(data);
     setIsCreating(false);
   };
+
+
+  const planName = settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan;
+  const purchasesAllowed = isFeatureAllowed(planName, settings?.subscriptionStatus, "purchases");
+
+  if (!purchasesAllowed) {
+    return (
+      <DashboardLayout>
+        <div style={{ padding: "48px 32px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>🔒</div>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1e293b", marginBottom: 8 }}>Purchases Unlocked on Professional+</h2>
+          <p style={{ color: "#64748b", lineHeight: 1.7, marginBottom: 28 }}>
+            Manage vendors, purchase orders, bills, and procurement spend. This feature is available from the <strong>Professional</strong> plan and above.
+          </p>
+          <UpgradeGate
+            isOpen={true}
+            onClose={null}
+            title="Feature Locked"
+            description="Purchases, Bills, Vendors and Purchase Orders are available on the Professional plan."
+            currentPlan={planName || "Free"}
+            requiredPlan="Professional"
+            inline={true}
+          />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (isCreating) {
     return (

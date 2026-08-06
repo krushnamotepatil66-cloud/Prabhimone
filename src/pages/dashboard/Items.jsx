@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
 import ItemModal from "../../components/Item/ItemModal";
+import { checkLimit } from "../../utils/subscriptionLimits";
+import UpgradeGate from "../../components/Subscription/UpgradeGate";
 import "./Items.css";
 
 // Import Shared Layout and Component Styles from Invoices Page
@@ -36,6 +38,7 @@ function Items() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selected, setSelected] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showUpgradeGate, setShowUpgradeGate] = useState(false);
 
   const handleExportCSV = () => {
     const headers = ["Type", "Item Name", "HSN/SAC", "Selling Price", "Purchase Price", "GST Rate (%)", "Unit", "Description"];
@@ -183,6 +186,16 @@ function Items() {
 
   return (
     <DashboardLayout>
+      {/* Subscription Upgrade Gate */}
+      <UpgradeGate
+        isOpen={showUpgradeGate}
+        onClose={() => setShowUpgradeGate(false)}
+        title="Item Limit Reached"
+        description={`You've reached your item limit on the ${(settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan) || "Free"} plan. Upgrade to add more items.`}
+        currentPlan={(settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan) || "Free"}
+        requiredPlan="Professional"
+        usage={{ used: itemList.length, limit: checkLimit((settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan), settings?.subscriptionStatus, "items", itemList.length).limit }}
+      />
       {/* Header matching Invoice Header exactly */}
       <div className="invoice-header">
         <div className="invoice-header-left">
@@ -208,6 +221,9 @@ function Items() {
               type="button"
               className="primary-btn add-invoice-btn"
               onClick={() => {
+                const planName = settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan;
+                const limit = checkLimit(planName, settings?.subscriptionStatus, "items", itemList.length);
+                if (!limit.allowed) { setShowUpgradeGate(true); return; }
                 setEditingItem(null);
                 setIsCreating(true);
               }}

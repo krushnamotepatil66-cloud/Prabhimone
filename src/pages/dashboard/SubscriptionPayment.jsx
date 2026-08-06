@@ -116,11 +116,24 @@ function SubscriptionPayment() {
         razorpayPaymentId: pid,
       };
 
+      // Compute next billing date
+      const startDate = new Date();
+      const nextBilling = new Date(startDate);
+      if (billing === "Yearly") {
+        nextBilling.setFullYear(nextBilling.getFullYear() + 1);
+      } else {
+        nextBilling.setDate(nextBilling.getDate() + 30);
+      }
+      const nextBillingDateStr = nextBilling.toISOString().split("T")[0];
+
       const currentHistory = settings.billingHistory || [];
       updateSettings({
         ...settings,
         subscriptionPlan: plan.name,
         subscriptionStatus: "active",
+        subscriptionBilling: billing,
+        subscriptionStartDate: startDate.toISOString().split("T")[0],
+        nextBillingDate: nextBillingDateStr,
         billingHistory: [newHistoryItem, ...currentHistory],
         savedPaymentMethod: {
           type: "razorpay",

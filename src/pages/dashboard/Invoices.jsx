@@ -9,6 +9,8 @@ import InvoicePreview from "../../components/Invoice/InvoicePreview";
 import RecordPaymentModal from "../../components/Payment/RecordPaymentModal";
 
 import { useApp } from "../../context/AppContext";
+import { checkLimit, countInvoicesThisMonth } from "../../utils/subscriptionLimits";
+import UpgradeGate from "../../components/Subscription/UpgradeGate";
 import "./Invoices.css";
 
 function Invoices() {
@@ -27,6 +29,11 @@ function Invoices() {
 
   const { invoices: invoiceList, addInvoice, updateInvoice, deleteInvoice, settings } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showUpgradeGate, setShowUpgradeGate] = useState(false);
+
+  const planName = settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan;
+  const invoicesThisMonth = countInvoicesThisMonth(invoiceList);
+  const invoiceLimit = checkLimit(planName, settings?.subscriptionStatus, "invoicesPerMonth", invoicesThisMonth);
 
   // Summary card computations
   const totalRevenue = invoiceList.reduce((sum, inv) => sum + (inv.grandTotal || 0), 0);
@@ -54,6 +61,14 @@ function Invoices() {
     setIsCreating(false);
     setPreviewInvoice(invoice);
     setAutoOpenPrintModal(!!shouldPrint);
+  };
+
+  const handleCreateClick = () => {
+    if (!invoiceLimit.allowed) {
+      setShowUpgradeGate(true);
+      return;
+    }
+    setIsCreating(true);
   };
 
   const handleUpdateInvoice = (updatedInvoice, shouldPrint) => {
@@ -177,10 +192,19 @@ function Invoices() {
             setSearch={setSearch}
             status={status}
             setStatus={setStatus}
-            onCreate={() => {
-              setIsCreating(true);
-            }}
+            onCreate={handleCreateClick}
             invoices={invoiceList}
+          />
+
+          {/* Upgrade Gate Modal */}
+          <UpgradeGate
+            isOpen={showUpgradeGate}
+            onClose={() => setShowUpgradeGate(false)}
+            title="Invoice Limit Reached"
+            description={`You've used ${invoicesThisMonth} of ${invoiceLimit.limit} invoices this month on the ${planName || "Free"} plan. Upgrade to create more.`}
+            currentPlan={planName || "Free"}
+            requiredPlan="Professional"
+            usage={{ used: invoicesThisMonth, limit: invoiceLimit.limit }}
           />
 
           {/* ── Summary Cards ── */}

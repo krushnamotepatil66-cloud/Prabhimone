@@ -4,6 +4,8 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
 import CreateExpenseForm from "../../components/DashboardHome/CreateExpenseForm";
 import { FiSearch, FiTrash2, FiPlusCircle, FiTag, FiDollarSign, FiList } from "react-icons/fi";
+import { checkLimit } from "../../utils/subscriptionLimits";
+import UpgradeGate from "../../components/Subscription/UpgradeGate";
 import "./Expenses.css";
 
 function Expenses() {
@@ -12,13 +14,20 @@ function Expenses() {
   const [filter, setFilter] = useState("All");
   const [isCreating, setIsCreating] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showUpgradeGate, setShowUpgradeGate] = useState(false);
+
+  const planName = settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan;
+  const expenseLimit = checkLimit(planName, settings?.subscriptionStatus, "expenses", expenses.length);
 
   useEffect(() => {
     const action = searchParams.get("action");
     setIsCreating(action === "new");
   }, [searchParams]);
 
-  const handleOpenCreate = () => setSearchParams({ action: "new" });
+  const handleOpenCreate = () => {
+    if (!expenseLimit.allowed) { setShowUpgradeGate(true); return; }
+    setSearchParams({ action: "new" });
+  };
 
   const handleCloseCreate = () => {
     if (searchParams.get("action") === "new") {
@@ -71,6 +80,15 @@ function Expenses() {
 
   return (
     <DashboardLayout>
+      <UpgradeGate
+        isOpen={showUpgradeGate}
+        onClose={() => setShowUpgradeGate(false)}
+        title="Expense Limit Reached"
+        description={`You've reached your expense limit on the ${planName || "Free"} plan. Upgrade to track more expenses.`}
+        currentPlan={planName || "Free"}
+        requiredPlan="Professional"
+        usage={{ used: expenses.length, limit: expenseLimit.limit }}
+      />
       <div className="exp-page">
 
         {/* ── Page Header ── */}

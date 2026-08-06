@@ -1,6 +1,8 @@
 import { useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
+import { isFeatureAllowed } from "../../utils/subscriptionLimits";
+import UpgradeGate from "../../components/Subscription/UpgradeGate";
 import {
   BarChart,
   Bar,
@@ -22,6 +24,9 @@ import "../../pages/dashboard/Invoices.css";
 function Reports() {
   const { invoices, payments, settings } = useApp();
   const [activeTab, setActiveTab] = useState("overview");
+
+  const planName = settings?.subscriptionStatus === "cancelled" ? null : settings?.subscriptionPlan;
+  const advancedReportsAllowed = isFeatureAllowed(planName, settings?.subscriptionStatus, "advancedReports");
 
   // Helper to parse amount
   const parseAmount = (amtStr) => {
@@ -218,26 +223,40 @@ function Reports() {
         )}
 
         {activeTab === "sales" && (
-          <div className="reports-grid single-col">
-            {/* Sales By Customer Bar Chart */}
-            <div className="report-chart-card">
-              <h3>Sales Billings by Customer</h3>
-              <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={salesByCustomerData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => `${settings.currency}${value.toLocaleString()}`} />
-                  <Legend />
-                  <Bar dataKey="Billed" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40}>
-                    {salesByCustomerData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill="#3b82f6" />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+          advancedReportsAllowed ? (
+            <div className="reports-grid single-col">
+              {/* Sales By Customer Bar Chart */}
+              <div className="report-chart-card">
+                <h3>Sales Billings by Customer</h3>
+                <ResponsiveContainer width="100%" height={320}>
+                  <BarChart data={salesByCustomerData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => `${settings.currency}${value.toLocaleString()}`} />
+                    <Legend />
+                    <Bar dataKey="Billed" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40}>
+                      {salesByCustomerData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill="#3b82f6" />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div style={{ padding: "32px 16px" }}>
+              <UpgradeGate
+                isOpen={true}
+                onClose={null}
+                title="Advanced Reports Locked"
+                description="Sales Analytics, customer breakdowns, and advanced charts are available on the Professional plan and above."
+                currentPlan={planName || "Free"}
+                requiredPlan="Professional"
+                inline={true}
+              />
+            </div>
+          )
         )}
       </div>
     </DashboardLayout>

@@ -10,6 +10,7 @@ import SalesReceiptsDuesChart from "../../components/Charts/SalesReceiptsDuesCha
 import RecentInvoices from "../../components/DashboardHome/RecentInvoices";
 import TopExpensesChart from "../../components/Charts/TopExpensesChart";
 import RecentUpdates from "../../components/DashboardHome/RecentUpdates";
+import PlanStatusWidget, { ShortPlanBadge } from "../../components/DashboardHome/PlanStatusWidget";
 
 import "./Dashboard.css";
 
@@ -30,7 +31,10 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Removed header-right / quick add container (moved to TotalReceivables) */}
+        {/* Short Plan Info Badge */}
+        <div className="header-right">
+          <ShortPlanBadge />
+        </div>
       </div>
 
       {/* Main Grid Widget System */}
@@ -44,6 +48,7 @@ function Dashboard() {
 
         {/* Right Column (Sidebar Lists & Breakdown Donuts) */}
         <div className="grid-right-col">
+          <PlanStatusWidget />
           <RecentInvoices />
           <TopExpensesChart />
           <RecentUpdates />
