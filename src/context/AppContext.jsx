@@ -755,6 +755,25 @@ export function AppProvider({ children }) {
     logActivity(`Purchase ${updatedPurchase.id} updated`);
   };
 
+  const convertPurchaseToBill = (id) => {
+    setPurchases((prev) => {
+      const existing = prev.find(p => p.id === id);
+      if (!existing) return prev;
+      
+      const numbers = prev
+        .filter(p => String(p.id).startsWith("BILL-"))
+        .map((p) => {
+          const match = String(p.id).match(/\d+/);
+          return match ? parseInt(match[0], 10) : 0;
+        });
+      const maxNum = numbers.length > 0 ? Math.max(...numbers) : 0;
+      const newId = `BILL-${String(maxNum + 1).padStart(3, "0")}`;
+      
+      return prev.map((p) => (p.id === id ? { ...p, id: newId, status: "Pending" } : p));
+    });
+    logActivity(`Purchase Order ${id} converted to Bill`);
+  };
+
   const deletePurchase = (id) => {
     setPurchases((prev) => prev.filter((p) => p.id !== id));
     logActivity(`Purchase ${id} deleted`);
@@ -841,6 +860,7 @@ export function AppProvider({ children }) {
         deleteProformaInvoice,
         addPurchase,
         updatePurchase,
+        convertPurchaseToBill,
         deletePurchase,
         addVendor,
         updateVendor,

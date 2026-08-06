@@ -323,6 +323,10 @@
 
 .pur-action-btn.view  { color: #6d28d9; }
 .pur-action-btn.view:hover  { background: #ede9fe; }
+.pur-action-btn.edit  { color: #059669; }
+.pur-action-btn.edit:hover  { background: #d1fae5; }
+.pur-action-btn.convert { color: #2563eb; }
+.pur-action-btn.convert:hover { background: #dbeafe; }
 .pur-action-btn.delete { color: #94a3b8; }
 .pur-action-btn.delete:hover { background: #fee2e2; color: #dc2626; }
 

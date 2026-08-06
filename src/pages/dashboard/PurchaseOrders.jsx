@@ -5,7 +5,7 @@ import { useApp } from "../../context/AppContext";
 import CreatePurchaseForm from "../../components/Purchase/CreatePurchaseForm";
 import {
   FiSearch, FiTrash2, FiPlusCircle, FiShoppingCart,
-  FiDollarSign, FiClock, FiCheckCircle, FiAlertCircle, FiEye, FiEdit3, FiClipboard
+  FiDollarSign, FiClock, FiCheckCircle, FiAlertCircle, FiEye, FiEdit3, FiClipboard, FiFilePlus
 } from "react-icons/fi";
 import "./Purchases.css";
 import { isFeatureAllowed } from "../../utils/subscriptionLimits";
@@ -19,7 +19,7 @@ const STATUS_COLORS = {
 };
 
 function PurchaseOrders() {
-  const { purchases = [], addPurchase, updatePurchase, deletePurchase, settings } = useApp();
+  const { purchases = [], addPurchase, updatePurchase, deletePurchase, convertPurchaseToBill, settings } = useApp();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [isCreating, setIsCreating] = useState(false);
@@ -64,8 +64,14 @@ function PurchaseOrders() {
   const ordered     = basePurchases.filter((p) => p.status === "Ordered").length;
 
   const handleDelete = (id) => {
-    if (window.confirm(`Delete purchase ${id}? This cannot be undone.`)) {
+    if (window.confirm("Are you sure you want to delete this purchase order?")) {
       deletePurchase(id);
+    }
+  };
+
+  const handleConvertToBill = (id) => {
+    if (window.confirm("Are you sure you want to convert this Purchase Order to a Bill? It will be moved to the Bills section.")) {
+      convertPurchaseToBill(id);
     }
   };
 
@@ -274,6 +280,13 @@ function PurchaseOrders() {
                         <td className="align-right pur-total">{fmt(p.total)}</td>
                         <td className="align-center">
                           <div className="pur-actions">
+                            <button
+                              className="pur-action-btn convert"
+                              title="Convert to Bill"
+                              onClick={() => handleConvertToBill(p.id)}
+                            >
+                              <FiFilePlus size={14} />
+                            </button>
                             <button
                               className="pur-action-btn edit"
                               title="Edit"
