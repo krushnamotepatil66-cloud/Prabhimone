@@ -307,7 +307,9 @@ function Bills() {
       maximumFractionDigits: 2,
     })}`;
 
-  const filtered = (purchases || []).filter((p) => {
+  const basePurchases = (purchases || []).filter((p) => p.id?.startsWith("BILL-") || p.id?.startsWith("IMP-"));
+
+  const filtered = basePurchases.filter((p) => {
     const q = search.toLowerCase();
     const matchSearch =
       (p.id || "").toLowerCase().includes(q) ||
@@ -319,9 +321,9 @@ function Bills() {
   });
 
   // Stats
-  const totalBilled = (purchases || []).reduce((s, p) => s + Number(p.total || 0), 0);
-  const pending     = (purchases || []).filter((p) => p.status === "Pending").length;
-  const received    = (purchases || []).filter((p) => p.status === "Received").length;
+  const totalBilled = basePurchases.reduce((s, p) => s + Number(p.total || 0), 0);
+  const pending     = basePurchases.filter((p) => p.status === "Pending").length;
+  const received    = basePurchases.filter((p) => p.status === "Received").length;
 
   const handleDelete = (id) => {
     if (window.confirm(`Delete bill ${id}? This cannot be undone.`)) {
@@ -438,7 +440,7 @@ function Bills() {
           <div className="pur-stat-card">
             <div className="pur-stat-icon blue"><FiFileText size={20} /></div>
             <div>
-              <div className="pur-stat-value">{(purchases || []).length}</div>
+              <div className="pur-stat-value">{basePurchases.length}</div>
               <div className="pur-stat-label">Total Bills</div>
             </div>
           </div>
@@ -583,7 +585,7 @@ function Bills() {
               </table>
               <div className="pur-table-footer">
                 Showing <strong>{filtered.length}</strong> of{" "}
-                <strong>{(purchases || []).length}</strong> bills
+                <strong>{basePurchases.length}</strong> bills
               </div>
             </>
           )}

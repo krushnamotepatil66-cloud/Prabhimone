@@ -42,7 +42,9 @@ function Purchases() {
       maximumFractionDigits: 2,
     })}`;
 
-  const filtered = (purchases || []).filter((p) => {
+  const basePurchases = (purchases || []).filter(p => p.id?.startsWith("PUR-"));
+
+  const filtered = basePurchases.filter((p) => {
     const q = search.toLowerCase();
     const matchSearch =
       (p.id || "").toLowerCase().includes(q) ||
@@ -54,10 +56,10 @@ function Purchases() {
   });
 
   // Stats
-  const totalSpend  = (purchases || []).reduce((s, p) => s + Number(p.total || 0), 0);
-  const pending     = (purchases || []).filter((p) => p.status === "Pending").length;
-  const received    = (purchases || []).filter((p) => p.status === "Received").length;
-  const ordered     = (purchases || []).filter((p) => p.status === "Ordered").length;
+  const totalSpend  = basePurchases.reduce((s, p) => s + Number(p.total || 0), 0);
+  const pending     = basePurchases.filter((p) => p.status === "Pending").length;
+  const received    = basePurchases.filter((p) => p.status === "Received").length;
+  const ordered     = basePurchases.filter((p) => p.status === "Ordered").length;
 
   const handleDelete = (id) => {
     if (window.confirm(`Delete purchase ${id}? This cannot be undone.`)) {
@@ -141,7 +143,7 @@ function Purchases() {
           <div className="pur-stat-card">
             <div className="pur-stat-icon blue"><FiShoppingCart size={20} /></div>
             <div>
-              <div className="pur-stat-value">{(purchases || []).length}</div>
+              <div className="pur-stat-value">{basePurchases.length}</div>
               <div className="pur-stat-label">Total Orders</div>
             </div>
           </div>
@@ -281,7 +283,7 @@ function Purchases() {
               </table>
               <div className="pur-table-footer">
                 Showing <strong>{filtered.length}</strong> of{" "}
-                <strong>{(purchases || []).length}</strong> purchase orders
+                <strong>{basePurchases.length}</strong> purchases
               </div>
             </>
           )}
