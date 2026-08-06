@@ -1,0 +1,960 @@
+/* ── Subscription Payment Page ── */
+.sp-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.sp-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: fit-content;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.sp-back-btn:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  border-color: #cbd5e1;
+}
+
+/* ── Two-column layout ── */
+.sp-layout {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── LEFT: Summary Panel ── */
+.sp-summary-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sp-trial-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+}
+
+.sp-trial-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.sp-trial-banner strong {
+  font-size: 15px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+.sp-trial-banner p {
+  font-size: 12.5px;
+  opacity: 0.88;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Plan summary card */
+.sp-plan-summary-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.sp-plan-color-bar {
+  height: 5px;
+  width: 100%;
+}
+
+.sp-plan-summary-body {
+  padding: 22px 24px 24px;
+}
+
+.sp-plan-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sp-plan-summary-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.sp-billing-badge {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sp-plan-price-display {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.sp-price-big {
+  font-size: 38px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -1.5px;
+}
+
+.sp-price-period {
+  font-size: 15px;
+  color: #64748b;
+}
+
+.sp-plan-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.sp-plan-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.sp-feature-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Billing timeline */
+.sp-billing-timeline {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.sp-timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.sp-tl-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #6366f1;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.sp-tl-dot.charge {
+  background: #0f172a;
+}
+
+.sp-timeline-line {
+  width: 2px;
+  height: 24px;
+  background: #e2e8f0;
+  margin-left: 5px;
+}
+
+.sp-tl-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.sp-tl-val {
+  font-size: 13px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+/* Trust row */
+.sp-trust-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.sp-trust-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* ── RIGHT: Form Panel ── */
+.sp-form-panel {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 34px 36px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.sp-form-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px;
+}
+
+.sp-form-subtitle {
+  font-size: 13.5px;
+  color: #64748b;
+  margin: 0 0 26px;
+}
+
+/* Payment method tabs */
+.sp-method-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 26px;
+  flex-wrap: wrap;
+}
+
+.sp-method-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, box-shadow 0.18s;
+  flex: 1;
+  justify-content: center;
+  min-width: 110px;
+}
+
+.sp-method-tab:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.sp-method-tab.active {
+  background: #eef2ff;
+  border-color: #6366f1;
+  color: #4f46e5;
+  font-weight: 700;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+/* Form groups */
+.sp-payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sp-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sp-form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.sp-form-group input {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: #1e293b;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sp-form-group input:focus {
+  border-color: #6366f1;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.sp-form-group input.error {
+  border-color: #ef4444;
+  background: #fff5f5;
+}
+
+.sp-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sp-card-input-wrap {
+  position: relative;
+}
+
+.sp-card-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.sp-card-input-wrap input {
+  padding-left: 38px !important;
+}
+
+.sp-err {
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* UPI hint */
+.sp-upi-hint {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Wallet options */
+.sp-wallet-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.sp-wallet-btn {
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.sp-wallet-btn:hover {
+  background: #eef2ff;
+  border-color: #6366f1;
+  color: #4f46e5;
+}
+
+/* Terms */
+.sp-terms-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #475569;
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.sp-terms-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  accent-color: #6366f1;
+  cursor: pointer;
+}
+
+.sp-terms-row a {
+  color: #6366f1;
+  text-decoration: underline;
+}
+
+.sp-terms-row.error {
+  color: #ef4444;
+}
+
+/* Submit button */
+.sp-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 15px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  margin-top: 4px;
+}
+
+.sp-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5);
+}
+
+.sp-submit-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.sp-submit-btn.loading {
+  gap: 0;
+}
+
+/* Spinner */
+.sp-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: sp-spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes sp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.sp-no-charge-note {
+  text-align: center;
+  font-size: 12.5px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ── Success Screen ── */
+.sp-success-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  min-height: 500px;
+}
+
+.sp-success-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 52px 48px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.sp-success-icon {
+  font-size: 64px;
+  animation: sp-pop 0.5s ease;
+}
+
+@keyframes sp-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.sp-success-card h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.sp-success-sub {
+  font-size: 15px;
+  color: #475569;
+  margin: 0;
+  line-height: 1.6;
+  max-width: 380px;
+}
+
+.sp-trial-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 30px;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.sp-goto-dash-btn {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 30px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s;
+}
+
+.sp-goto-dash-btn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .sp-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .sp-form-panel {
+    padding: 24px 20px;
+  }
+
+  .sp-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sp-method-tabs {
+    flex-direction: column;
+  }
+
+  .sp-success-card {
+    padding: 36px 24px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RAZORPAY INTEGRATION STYLES
+   ═══════════════════════════════════════════ */
+
+/* ── Razorpay Panel ── */
+.rzp-panel {
+  padding: 30px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ── Header ── */
+.rzp-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rzp-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rzp-favicon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.rzp-powered-by {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.rzp-powered-by strong {
+  color: #0f172a;
+}
+
+.rzp-test-badge {
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.06em;
+  margin-left: auto;
+}
+
+/* ── Order Summary Box ── */
+.rzp-order-box {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rzp-order-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13.5px;
+  color: #475569;
+}
+
+.rzp-free-tag {
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 20px;
+  border: 1px solid #bbf7d0;
+}
+
+.rzp-order-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 2px 0;
+}
+
+.rzp-total-row {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.rzp-due-amount {
+  font-size: 20px;
+  font-weight: 800;
+  color: #16a34a;
+}
+
+.rzp-after-trial {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ── Error Banner ── */
+.rzp-error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.rzp-error-banner svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Razorpay Pay Button ── */
+.rzp-pay-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-size: 15.5px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.42);
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.rzp-pay-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+  pointer-events: none;
+}
+
+.rzp-pay-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.55);
+}
+
+.rzp-pay-btn:disabled,
+.rzp-pay-btn.disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.rzp-pay-btn.loading {
+  pointer-events: none;
+}
+
+/* ── Test Credentials Card ── */
+.rzp-test-info-card {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  border-radius: 14px;
+  padding: 16px 18px;
+  border: 1px solid #312e81;
+}
+
+.rzp-test-info-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #a5b4fc;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.rzp-test-credentials {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.rzp-cred-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rzp-cred-label {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rzp-cred-val {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: #e2e8f0;
+  background: rgba(255,255,255,0.07);
+  border-radius: 6px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  letter-spacing: 0.03em;
+}
+
+/* Domestic note banner */
+.rzp-domestic-note {
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.rzp-domestic-note strong {
+  color: #fcd34d;
+}
+
+/* Card option blocks (Visa / Mastercard sections) */
+.rzp-card-option-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rzp-card-option-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #818cf8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Divider between card options */
+.rzp-card-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 10px 0;
+}
+
+/* ── Trust Logos ── */
+.rzp-trust-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.rzp-trust-logos span {
+  font-size: 11.5px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Success Screen (Razorpay version) ── */
+.rzp-success-card {
+  border-top: 5px solid #7c3aed;
+  padding: 52px 48px;
+}
+
+.rzp-success-badge {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.rzp-success-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  animation: rzp-ring-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes rzp-ring-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.rzp-success-emoji {
+  font-size: 46px;
+  position: relative;
+  z-index: 1;
+  animation: rzp-emoji-pop 0.5s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes rzp-emoji-pop {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+
+.rzp-payment-id-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.rzp-pid-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.rzp-pid-value {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #7c3aed;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.rzp-success-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.rzp-goto-manage-btn {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 13px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+
+.rzp-goto-manage-btn:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+

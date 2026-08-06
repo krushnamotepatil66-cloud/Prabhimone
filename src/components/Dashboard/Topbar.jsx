@@ -44,7 +44,16 @@ function Topbar() {
   return (
     <header className="topbar">
       <div className="topbar-left">
-        {location.pathname !== "/dashboard" ? (
+        <button 
+          className="mobile-menu-toggle"
+          onClick={() => setSidebarMobileOpen(true)}
+          title="Open Menu"
+          aria-label="Open menu"
+        >
+          <FiMenu />
+        </button>
+
+        {location.pathname !== "/dashboard" && (
           <button
             type="button"
             className="topbar-back-btn"
@@ -53,15 +62,6 @@ function Topbar() {
             aria-label="Go back"
           >
             <FiArrowLeft />
-          </button>
-        ) : (
-          <button 
-            className="mobile-menu-toggle"
-            onClick={() => setSidebarMobileOpen(true)}
-            title="Open Menu"
-            aria-label="Open menu"
-          >
-            <FiMenu />
           </button>
         )}
         <h3 className="topbar-title">{getPageTitle(location.pathname)}</h3>

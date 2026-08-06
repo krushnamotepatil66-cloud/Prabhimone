@@ -161,7 +161,7 @@
 }
 
 .sidebar-submenu.expanded {
-  max-height: 250px; /* enough for children */
+  max-height: 300px; /* enough for up to 4 children */
   opacity: 1;
 }
 

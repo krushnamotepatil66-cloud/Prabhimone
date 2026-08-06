@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useApp } from "../../context/AppContext";
 import CreateExpenseForm from "../../components/DashboardHome/CreateExpenseForm";
+import { FiSearch, FiTrash2, FiPlusCircle, FiTag, FiDollarSign, FiList } from "react-icons/fi";
 import "./Expenses.css";
 
 function Expenses() {
@@ -10,158 +11,214 @@ function Expenses() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
   const [isCreating, setIsCreating] = useState(false);
-
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Monitor Query Parameters for dashboard redirects (?action=new)
   useEffect(() => {
     const action = searchParams.get("action");
-    if (action === "new") {
-      setIsCreating(true);
-      setSearchParams({}, { replace: true });
+    setIsCreating(action === "new");
+  }, [searchParams]);
+
+  const handleOpenCreate = () => setSearchParams({ action: "new" });
+
+  const handleCloseCreate = () => {
+    if (searchParams.get("action") === "new") {
+      setSearchParams({});
+    } else {
+      setIsCreating(false);
     }
-  }, [searchParams, setSearchParams]);
+  };
 
   const handleDelete = (id) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete expense ${id}?`);
-    if (confirmDelete) {
+    if (window.confirm(`Delete expense ${id}? This cannot be undone.`)) {
       deleteExpense(id);
     }
   };
 
   const handleSaveExpense = (expenseData) => {
     addExpense(expenseData);
-    setIsCreating(false);
+    handleCloseCreate();
   };
 
-  const filteredExpenses = expenses.filter((exp) => {
-    const matchSearch =
-      exp.category.toLowerCase().includes(search.toLowerCase()) ||
-      (exp.customerName && exp.customerName.toLowerCase().includes(search.toLowerCase()));
+  const cur = settings.currency || "₹";
 
-    const matchFilter = filter === "All" || exp.status === filter;
-
-    return matchSearch && matchFilter;
-  });
-
-  const formatCurrency = (amount) => {
-    return `${settings.currency || "₹"}${amount.toLocaleString("en-IN", {
+  const formatCurrency = (amount) =>
+    `${cur}${Number(amount).toLocaleString("en-IN", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
-  };
+
+  const filteredExpenses = expenses.filter((exp) => {
+    const matchSearch =
+      (exp.category || "").toLowerCase().includes(search.toLowerCase()) ||
+      (exp.customerName && exp.customerName.toLowerCase().includes(search.toLowerCase())) ||
+      (exp.id && exp.id.toLowerCase().includes(search.toLowerCase()));
+    const matchFilter = filter === "All" || exp.status === filter;
+    return matchSearch && matchFilter;
+  });
+
+  // Summary stats
+  const totalAmount = expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+  const billableCount = expenses.filter((e) => e.status === "Billable").length;
+  const totalCount = expenses.length;
 
   if (isCreating) {
     return (
       <DashboardLayout>
-        <CreateExpenseForm
-          onSave={handleSaveExpense}
-          onCancel={() => setIsCreating(false)}
-        />
+        <CreateExpenseForm onSave={handleSaveExpense} onCancel={handleCloseCreate} />
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout>
-      <div className="expenses-page">
-        {/* Header Block */}
-        <div className="expenses-header">
-          <div>
+      <div className="exp-page">
+
+        {/* ── Page Header ── */}
+        <div className="exp-header">
+          <div className="exp-header-text">
             <h1>Expenses</h1>
-            <p className="subtitle">Track and manage business costs and billable client tasks.</p>
+            <p>Track and manage business costs and billable client expenses.</p>
           </div>
-          
-          <div className="header-actions">
-            <div className="search-bar-container">
-              <span className="search-icon">🔍</span>
-              <input
-                type="text"
-                placeholder="Search category or customer..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="search-input"
-              />
+          <button className="exp-record-btn" onClick={handleOpenCreate}>
+            <FiPlusCircle size={16} />
+            Record Expense
+          </button>
+        </div>
+
+        {/* ── Stat Cards ── */}
+        <div className="exp-stats-row">
+          <div className="exp-stat-card">
+            <div className="exp-stat-icon blue"><FiList size={20} /></div>
+            <div>
+              <div className="exp-stat-value">{totalCount}</div>
+              <div className="exp-stat-label">Total Expenses</div>
             </div>
-            
-            <button className="primary-btn add-expense-btn" onClick={() => setIsCreating(true)}>
-              + Record Expense
-            </button>
+          </div>
+          <div className="exp-stat-card">
+            <div className="exp-stat-icon green"><FiDollarSign size={20} /></div>
+            <div>
+              <div className="exp-stat-value">{formatCurrency(totalAmount)}</div>
+              <div className="exp-stat-label">Total Spent</div>
+            </div>
+          </div>
+          <div className="exp-stat-card">
+            <div className="exp-stat-icon purple"><FiTag size={20} /></div>
+            <div>
+              <div className="exp-stat-value">{billableCount}</div>
+              <div className="exp-stat-label">Billable Expenses</div>
+            </div>
           </div>
         </div>
 
-        {/* Filters Bar */}
-        <div className="filters-bar">
-          <button
-            className={`filter-btn ${filter === "All" ? "active" : ""}`}
-            onClick={() => setFilter("All")}
-          >
-            All
-          </button>
-          <button
-            className={`filter-btn ${filter === "Billable" ? "active" : ""}`}
-            onClick={() => setFilter("Billable")}
-          >
-            Billable
-          </button>
-          <button
-            className={`filter-btn ${filter === "Non-Billable" ? "active" : ""}`}
-            onClick={() => setFilter("Non-Billable")}
-          >
-            Non-Billable
-          </button>
+        {/* ── Toolbar: Search + Filters ── */}
+        <div className="exp-toolbar">
+          <div className="exp-search-wrap">
+            <FiSearch className="exp-search-icon" size={15} />
+            <input
+              type="text"
+              placeholder="Search by category, customer or ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="exp-search-input"
+            />
+          </div>
+          <div className="exp-filter-tabs">
+            {["All", "Billable", "Non-Billable"].map((tab) => (
+              <button
+                key={tab}
+                className={`exp-filter-tab ${filter === tab ? "active" : ""}`}
+                onClick={() => setFilter(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Expenses List Table */}
-        <div className="table-card">
-          <table className="expenses-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Expense ID</th>
-                <th>Category</th>
-                <th>Customer Name</th>
-                <th>Status</th>
-                <th style={{ textAlign: "right" }}>Amount</th>
-                <th style={{ textAlign: "center" }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredExpenses.length === 0 ? (
+        {/* ── Table ── */}
+        <div className="exp-table-card">
+          {filteredExpenses.length === 0 ? (
+            <div className="exp-empty-state">
+              <div className="exp-empty-icon">📋</div>
+              <p className="exp-empty-title">No expenses found</p>
+              <p className="exp-empty-sub">
+                {search ? `No results for "${search}"` : "Record your first expense to get started."}
+              </p>
+              {!search && (
+                <button className="exp-record-btn" onClick={handleOpenCreate}>
+                  <FiPlusCircle size={15} /> Record Expense
+                </button>
+              )}
+            </div>
+          ) : (
+            <table className="exp-table">
+              <thead>
                 <tr>
-                  <td colSpan="7" className="no-data">
-                    No expenses found.
-                  </td>
+                  <th>Expense ID</th>
+                  <th>Date</th>
+                  <th>Category</th>
+                  <th>Customer</th>
+                  <th>GST</th>
+                  <th>Status</th>
+                  <th className="align-right">Amount</th>
+                  <th className="align-center">Action</th>
                 </tr>
-              ) : (
-                filteredExpenses.map((exp) => (
-                  <tr key={exp.id}>
-                    <td>{exp.date}</td>
-                    <td className="expense-id-cell">{exp.id}</td>
-                    <td className="category-cell">{exp.category}</td>
-                    <td>{exp.customerName || <span className="none-text">-</span>}</td>
+              </thead>
+              <tbody>
+                {filteredExpenses.map((exp) => (
+                  <tr key={exp.id} className="exp-table-row">
                     <td>
-                      <span className={`status-badge badge-${exp.status.toLowerCase()}`}>
+                      <span className="exp-id-badge">{exp.id}</span>
+                    </td>
+                    <td className="exp-date">{exp.date}</td>
+                    <td>
+                      <div className="exp-category-cell">
+                        <span className="exp-category-dot" />
+                        <span className="exp-category-name">{exp.category}</span>
+                      </div>
+                    </td>
+                    <td className="exp-customer">
+                      {exp.customerName ? (
+                        <span className="exp-customer-name">{exp.customerName}</span>
+                      ) : (
+                        <span className="exp-none">—</span>
+                      )}
+                    </td>
+                    <td className="exp-gst">
+                      {exp.gstRate && Number(exp.gstRate) > 0 ? (
+                        <span className="exp-gst-badge">{exp.gstRate}%</span>
+                      ) : (
+                        <span className="exp-none">Nil</span>
+                      )}
+                    </td>
+                    <td>
+                      <span className={`exp-status-chip ${exp.status === "Billable" ? "chip-billable" : "chip-nonbillable"}`}>
                         {exp.status}
                       </span>
                     </td>
-                    <td style={{ textAlign: "right", fontWeight: "600", color: "#1e293b" }}>
+                    <td className="exp-amount align-right">
                       {formatCurrency(exp.amount)}
                     </td>
-                    <td style={{ textAlign: "center" }}>
+                    <td className="align-center">
                       <button
-                        className="delete-icon-btn"
+                        className="exp-delete-btn"
                         onClick={() => handleDelete(exp.id)}
                         title="Delete Expense"
                       >
-                        🗑️
+                        <FiTrash2 size={14} />
                       </button>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          {filteredExpenses.length > 0 && (
+            <div className="exp-table-footer">
+              Showing <strong>{filteredExpenses.length}</strong> of <strong>{totalCount}</strong> expenses
+            </div>
+          )}
         </div>
       </div>
     </DashboardLayout>

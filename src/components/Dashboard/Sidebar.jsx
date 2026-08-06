@@ -8,13 +8,17 @@ import {
   FiUsers,
   FiDollarSign,
   FiTag,
-  FiClock,
   FiBarChart2,
   FiSettings,
   FiUser,
   FiShoppingBag,
   FiChevronRight,
-  FiX
+  FiX,
+  FiCreditCard,
+  FiShoppingCart,
+  FiTruck,
+  FiClipboard,
+  FiPackage
 } from "react-icons/fi";
 
 const menu = [
@@ -31,9 +35,19 @@ const menu = [
       { name: "Proforma Invoices", icon: FiFileText, path: "/dashboard/proforma-invoices" },
     ],
   },
-  { name: "Payments", icon: FiDollarSign, path: "/dashboard/payments" },
+  {
+    name: "Purchases",
+    icon: FiShoppingCart,
+    children: [
+      { name: "Vendors", icon: FiTruck, path: "/dashboard/purchases/vendors" },
+      { name: "Purchase Orders", icon: FiClipboard, path: "/dashboard/purchases/purchase-orders" },
+      { name: "Bills", icon: FiPackage, path: "/dashboard/purchases/bills" },
+    ],
+  },
   { name: "Expenses", icon: FiTag, path: "/dashboard/expenses" },
+  { name: "Payments", icon: FiDollarSign, path: "/dashboard/payments" },
   { name: "Reports", icon: FiBarChart2, path: "/dashboard/reports" },
+  { name: "Subscription", icon: FiCreditCard, path: "/dashboard/subscription" },
   { name: "Settings", icon: FiSettings, path: "/dashboard/settings" },
   { name: "Profile", icon: FiUser, path: "/dashboard/profile" },
 ];
@@ -45,7 +59,7 @@ function Sidebar() {
     setSidebarMobileOpen,
     profile
   } = useApp();
-  const [expandedMenus, setExpandedMenus] = useState(["Sales"]); // Sales open by default
+  const [expandedMenus, setExpandedMenus] = useState(["Sales", "Purchases"]); // Sales & Purchases open by default
 
   const handleLinkClick = () => {
     if (sidebarMobileOpen) {

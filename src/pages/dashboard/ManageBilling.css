@@ -1,0 +1,1528 @@
+/* ── Manage Billing Page ── */
+
+.mb-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1100px;
+}
+
+/* ── Back Button ── */
+.mb-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: fit-content;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+.mb-back-btn:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  border-color: #cbd5e1;
+}
+
+/* ── Page Header ── */
+.mb-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mb-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.mb-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.mb-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ── Tabs ── */
+.mb-tabs {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  gap: 0;
+  background: #fff;
+  border-radius: 10px 10px 0 0;
+  padding: 0 4px;
+  overflow-x: auto;
+}
+
+.mb-tab {
+  background: none;
+  border: none;
+  padding: 13px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.18s, border-color 0.18s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.mb-tab:hover { color: #1b75bb; }
+.mb-tab.active {
+  color: #1b75bb;
+  border-bottom-color: #1b75bb;
+}
+
+/* ── Tab Content ── */
+.mb-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: mbFadeIn 0.2s ease;
+}
+
+@keyframes mbFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Cards ── */
+.mb-card {
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+}
+
+.mb-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.mb-card-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 4px;
+}
+
+.mb-plan-name {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.mb-plan-price-display {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.mb-plan-price {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.mb-plan-period {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.mb-card-brand {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.mb-card-chip {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f46e5;
+}
+
+.mb-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 16px 0;
+}
+
+/* ── Info Rows ── */
+.mb-info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.mb-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.mb-info-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.mb-info-val {
+  color: #1e293b;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mb-card-number {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+}
+
+.mb-days-badge {
+  background: #fef3c7;
+  color: #d97706;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+/* ── Card Actions ── */
+.mb-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mb-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #1b75bb;
+  color: #fff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+.mb-btn-primary:hover {
+  background: #155e96;
+  box-shadow: 0 3px 10px rgba(27, 117, 187, 0.3);
+}
+
+.mb-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  color: #475569;
+  border: 1.5px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+.mb-btn-outline:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.mb-btn-danger-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+.mb-btn-danger-outline:hover {
+  background: #fee2e2;
+}
+
+.mb-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+.mb-btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+.mb-btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Overview Grid ── */
+.mb-overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Next Invoice Card (full width) */
+.mb-next-invoice-card {
+  grid-column: 1 / -1;
+}
+
+.mb-next-invoice-amount {
+  font-size: 38px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -1px;
+  margin: 8px 0 2px;
+}
+
+.mb-next-invoice-date {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.mb-secure-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 12px;
+}
+
+/* ── Payment Method Tab ── */
+.mb-payment-method-full {
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mb-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 16px 0;
+}
+
+/* Visual Credit Card */
+.mb-visual-card {
+  border-radius: 16px;
+  padding: 28px 26px 22px;
+  color: #fff;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.mb-visual-card::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.mb-vc-brand {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.mb-vc-number {
+  font-size: 20px;
+  letter-spacing: 3px;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.mb-vc-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.mb-vc-label {
+  font-size: 9px;
+  opacity: 0.7;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+
+.mb-vc-val {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mb-update-card-btn {
+  align-self: flex-start;
+}
+
+.mb-payment-trust {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.mb-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* ── Billing History Table ── */
+.mb-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.mb-history-count {
+  font-size: 12px;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.mb-history-scroll {
+  overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mb-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.mb-history-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mb-history-table td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+}
+
+.mb-history-row:last-child td { border-bottom: none; }
+.mb-history-row:hover td { background: #f8fafc; }
+
+.mb-inv-id {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: #1b75bb;
+  font-size: 12px;
+}
+
+.mb-inv-desc {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.mb-inv-sub {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.mb-inv-amount {
+  font-weight: 700;
+  color: #059669;
+}
+
+.mb-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mb-status-pill.status-paid {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.mb-status-pill.status-failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.mb-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+.mb-download-btn:hover {
+  background: #1b75bb;
+  color: #fff;
+  border-color: #1b75bb;
+}
+
+/* ── Change Plan Grid ── */
+.mb-change-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.mb-change-plan-card {
+  background: #fff;
+  border: 2px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.mb-change-plan-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.mb-change-plan-card.current {
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+}
+
+.mb-current-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mb-cp-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.enterprise-icon {
+  background: #f1f5f9;
+}
+
+.mb-cp-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.mb-cp-price {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -1px;
+}
+
+.mb-cp-price span {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.enterprise-price {
+  font-size: 22px;
+}
+
+.mb-cp-features {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+}
+
+.mb-cp-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.mb-cp-features li svg { color: #16a34a; flex-shrink: 0; }
+
+.mb-cp-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.mb-cp-btn.current {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1.5px solid #86efac;
+  cursor: default;
+}
+
+.mb-cp-btn:hover:not(.current) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.enterprise-btn {
+  background: #0f172a;
+}
+.enterprise-btn:hover {
+  background: #1e293b;
+}
+
+/* ── Modals ── */
+.mb-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: mbModalFade 0.2s ease;
+}
+
+@keyframes mbModalFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mb-modal {
+  background: #fff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+  animation: mbModalSlide 0.25s ease;
+}
+
+@keyframes mbModalSlide {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.mb-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 18px 18px 0 0;
+}
+
+.mb-modal-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.mb-modal-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+.mb-modal-close:hover { background: #f1f5f9; color: #1e293b; }
+
+.mb-modal-body {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Form Groups */
+.mb-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mb-form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mb-form-group input {
+  padding: 10px 12px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1e293b;
+  background: #fff;
+  outline: none;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mb-form-group input:focus {
+  border-color: #1b75bb;
+  box-shadow: 0 0 0 3px rgba(27, 117, 187, 0.1);
+}
+
+.mb-form-group input.error {
+  border-color: #ef4444;
+}
+
+.mb-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mb-card-input-wrap {
+  position: relative;
+}
+
+.mb-card-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.mb-card-input-wrap input {
+  padding-left: 36px !important;
+}
+
+.mb-err {
+  font-size: 11px;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.mb-modal-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1b75bb;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  margin-top: 4px;
+}
+.mb-modal-submit:hover:not(:disabled) {
+  background: #155e96;
+  box-shadow: 0 4px 14px rgba(27, 117, 187, 0.3);
+}
+.mb-modal-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.mb-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: mbSpin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes mbSpin { to { transform: rotate(360deg); } }
+
+.mb-secure-note-sm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: center;
+  margin: 0;
+}
+
+.mb-modal-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 36px 22px;
+  text-align: center;
+  animation: mbFadeIn 0.3s ease;
+}
+
+.mb-success-check {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
+  animation: mbPop 0.4s ease;
+}
+
+@keyframes mbPop {
+  from { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.1); }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ── Cancel Modal ── */
+.mb-cancel-warning {
+  background: #fff5f5;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mb-cancel-icon { font-size: 32px; }
+
+.mb-cancel-warning h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #dc2626;
+  margin: 0;
+}
+
+.mb-cancel-warning p {
+  font-size: 13px;
+  color: #475569;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.mb-cancel-loses {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.mb-lose-item {
+  background: #f1f5f9;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.mb-cancel-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mb-cancel-reason-title {
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+  margin: 0;
+}
+
+.mb-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mb-reason-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #374151;
+  transition: all 0.15s ease;
+  font-weight: 500;
+}
+
+.mb-reason-item.selected {
+  border-color: #1b75bb;
+  background: #eff6ff;
+  color: #1b75bb;
+}
+
+.mb-reason-item input[type="radio"] {
+  accent-color: #1b75bb;
+  width: 16px;
+  height: 16px;
+}
+
+.mb-cancel-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 40px 24px;
+  text-align: center;
+  animation: mbFadeIn 0.3s ease;
+}
+
+.mb-cancel-done-icon { font-size: 52px; }
+
+.mb-cancel-done h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.mb-cancel-done p {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 340px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .mb-overview-grid {
+    grid-template-columns: 1fr;
+  }
+  .mb-change-plan-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .mb-change-plan-grid {
+    grid-template-columns: 1fr;
+  }
+  .mb-form-row {
+    grid-template-columns: 1fr;
+  }
+  .mb-cancel-loses {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════
+   RAZORPAY PAYMENT DETAILS — ManageBilling
+   ═══════════════════════════════════════ */
+
+/* Inline Razorpay badge (small pill) */
+.mb-rzp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #7c3aed20, #4f46e520);
+  color: #6d28d9;
+  border: 1px solid #c4b5fd;
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+/* Payment ID monospace inline */
+.mb-rzp-pid {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 5px;
+  padding: 2px 8px;
+  word-break: break-all;
+}
+
+.mb-rzp-pid-sm {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: #6d28d9;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 4px;
+  padding: 1px 6px;
+  word-break: break-all;
+}
+
+/* ── Razorpay full payment display (Payment Method tab) ── */
+.mb-rzp-payment-display {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid #312e81;
+}
+
+.mb-rzp-payment-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mb-rzp-icon-wrap {
+  width: 60px;
+  height: 60px;
+  background: rgba(124, 58, 237, 0.2);
+  border-radius: 14px;
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mb-rzp-gateway-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #e2e8f0;
+  letter-spacing: -0.3px;
+}
+
+.mb-rzp-gateway-sub {
+  font-size: 12.5px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.mb-rzp-verified-badge {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(22, 163, 74, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Details grid (Payment ID, Gateway, Mode, etc.) */
+.mb-rzp-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mb-rzp-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.mb-rzp-detail-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.mb-rzp-detail-val {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #e2e8f0;
+  word-break: break-all;
+}
+
+code.mb-rzp-detail-val {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #a5b4fc;
+}
+
+/* "View in Razorpay Dashboard" button */
+.mb-rzp-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 20px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none !important;
+  transition: transform 0.18s, box-shadow 0.18s;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.38);
+  width: fit-content;
+}
+
+.mb-rzp-link-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 20px rgba(124, 58, 237, 0.5);
+}
+
+/* Test mode note */
+.mb-rzp-test-note {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  color: #fbbf24;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ── Billing History — Razorpay payment row ── */
+.mb-rzp-history-pid {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.mb-rzp-history-badge {
+  background: #ede9fe;
+  color: #7c3aed;
+  border: 1px solid #ddd6fe;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mb-rzp-history-id {
+  font-family: 'Courier New', monospace;
+  font-size: 10.5px;
+  color: #6d28d9;
+  word-break: break-all;
+}
+
+/* ═══════════════════════════════════════════
+   BILLING HISTORY TAB — Card Redesign
+   ═══════════════════════════════════════════ */
+
+/* Summary bar at top */
+.bh-summary-bar {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 28px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.bh-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 100px;
+}
+
+.bh-summary-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.bh-summary-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+.bh-summary-val.green {
+  color: #16a34a;
+}
+
+.bh-summary-sep {
+  width: 1px;
+  height: 40px;
+  background: #e2e8f0;
+  margin: 0 28px;
+  flex-shrink: 0;
+}
+
+/* Invoice card list */
+.bh-invoice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Single invoice card */
+.bh-invoice-card {
+  display: flex;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.bh-invoice-card:hover {
+  box-shadow: 0 6px 22px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+
+/* Left color accent bar */
+.bh-card-accent {
+  width: 5px;
+  flex-shrink: 0;
+  border-radius: 14px 0 0 14px;
+}
+
+/* Card body */
+.bh-card-body {
+  flex: 1;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Top row: ID + amount */
+.bh-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bh-card-id-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.bh-card-index {
+  background: #f1f5f9;
+  color: #64748b;
+  border-radius: 8px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.bh-card-inv-id {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.03em;
+}
+
+.bh-card-date {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.bh-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.bh-card-amount {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+/* Status pill on card */
+.bh-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Meta info grid */
+.bh-card-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.bh-card-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 120px;
+}
+
+.bh-meta-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.bh-meta-val {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Razorpay payment ID inline */
+.bh-rzp-id-pill {
+  font-family: 'Courier New', monospace;
+  font-size: 11.5px;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 5px;
+  padding: 2px 8px;
+  word-break: break-all;
+}
+
+/* Bottom actions row */
+.bh-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Razorpay badge on card */
+.bh-rzp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #6d28d9;
+  border: 1px solid #c4b5fd;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+/* Download button on card */
+.bh-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  margin-left: auto;
+}
+
+.bh-download-btn:hover {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #6d28d9;
+}
+
+/* Empty state */
+.bh-empty {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.bh-empty-icon {
+  font-size: 52px;
+  margin-bottom: 14px;
+}
+
+.bh-empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.bh-empty-sub {
+  font-size: 13px;
+  color: #94a3b8;
+  max-width: 340px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .bh-summary-bar {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  .bh-summary-sep { display: none; }
+  .bh-card-body { padding: 14px 16px; }
+  .bh-card-amount { font-size: 18px; }
+  .bh-card-meta { gap: 14px; }
+}

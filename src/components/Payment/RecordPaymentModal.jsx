@@ -16,6 +16,11 @@ function RecordPaymentModal({ isOpen, onClose, initialInvoice }) {
   const { customers, invoices, addPayment, settings } = useApp();
   const [form, setForm] = useState(emptyForm);
   const [pendingInvoices, setPendingInvoices] = useState([]);
+  const currency = settings?.currency || "₹";
+
+  const paymentModes = settings?.paymentModes
+    ? settings.paymentModes.split(",").map((m) => m.trim()).filter(Boolean)
+    : ["Bank Transfer", "Cash", "UPI", "Credit Card", "Debit Card", "Cheque"];
 
   // Filter customers to only those with pending/overdue invoices
   const billingCustomers = customers.filter((cust) =>
@@ -33,14 +38,18 @@ function RecordPaymentModal({ isOpen, onClose, initialInvoice }) {
         invoiceId: initialInvoice.id,
         amount: numAmount,
         date: new Date().toISOString().split("T")[0],
-        method: "Bank Transfer",
+        method: settings?.paymentDefaultMethod || "Bank Transfer",
         reference: "",
         notes: `Payment for Invoice ${initialInvoice.id}`,
       });
     } else if (isOpen) {
-      setForm(emptyForm);
+      setForm({
+        ...emptyForm,
+        date: new Date().toISOString().split("T")[0],
+        method: settings?.paymentDefaultMethod || "Bank Transfer",
+      });
     }
-  }, [isOpen, initialInvoice]);
+  }, [isOpen, initialInvoice, settings?.paymentDefaultMethod]);
 
   // When customer is selected, filter their unpaid invoices
   useEffect(() => {
@@ -50,12 +59,10 @@ function RecordPaymentModal({ isOpen, onClose, initialInvoice }) {
       );
       setPendingInvoices(unpaid);
 
-      // Skip auto selecting first unpaid invoice if we populated from initialInvoice
       if (initialInvoice && form.invoiceId === initialInvoice.id) {
         return;
       }
 
-      // Auto select the first unpaid invoice if available
       if (unpaid.length > 0) {
         const firstInv = unpaid[0];
         const numAmount = Number(String(firstInv.amount).replace(/[^0-9.-]/g, "")) || 0;
@@ -130,15 +137,25 @@ function RecordPaymentModal({ isOpen, onClose, initialInvoice }) {
     onClose();
   };
 
+  const selectedInvoice = pendingInvoices.find((i) => i.id === form.invoiceId) ||
+    (initialInvoice && form.invoiceId === initialInvoice.id ? initialInvoice : null);
+  const invoiceAmount = selectedInvoice
+    ? Number(String(selectedInvoice.amount).replace(/[^0-9.-]/g, "")) || 0 : 0;
+  const formAmount = Number(form.amount) || 0;
+  const isPartialPayment = formAmount > 0 && invoiceAmount > 0 && formAmount < invoiceAmount;
+
+  const methodIcons = { "Bank Transfer": "🏦", "Cash": "💵", "UPI": "📱", "Credit Card": "💳", "Debit Card": "💳", "Cheque": "📄" };
+
   return (
-    <div className="modal-overlay">
-      <div className="modal">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Record Payment</h2>
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className="payment-form">
+          {/* Customer */}
           <div className="form-group">
             <label>Customer *</label>
             <select
@@ -149,44 +166,76 @@ function RecordPaymentModal({ isOpen, onClose, initialInvoice }) {
               <option value="">Select Customer with Unpaid Balance...</option>
               {billingCustomers.map((c) => (
                 <option key={c.id} value={c.name}>
-                  {c.name}
+                  {c.name}{c.company ? ` (${c.company})` : ""}
                 </option>
               ))}
             </select>
           </div>
 
+          {/* Invoice */}
           {form.customerName && (
-            <>
-              <div className="form-group">
-                <label>Invoice *</label>
-                <select
-                  value={form.invoiceId}
-                  onChange={(e) => handleInvoiceChange(e.target.value)}
-                  required
-                >
-                  <option value="">Select Unpaid Invoice...</option>
-                  {pendingInvoices.map((inv) => (
+            <div className="form-group">
+              <label>Invoice *</label>
+              <select
+                value={form.invoiceId}
+                onChange={(e) => handleInvoiceChange(e.target.value)}
+                required
+              >
+                <option value="">Select Unpaid Invoice...</option>
+                {pendingInvoices.map((inv) => {
+                  const amt = Number(String(inv.amount).replace(/[^0-9.-]/g, "")) || 0;
+                  return (
                     <option key={inv.id} value={inv.id}>
-                      {inv.id} — {inv.amount} (Due: {inv.date})
+                      {inv.id} — {currency}{amt.toLocaleString("en-IN")} (Due: {inv.dueDate || inv.date})
                     </option>
-                  ))}
-                </select>
-              </div>
+                  );
+                })}
+              </select>
+            </div>
+          )}
 
-              <div className="form-group">
-                <label>Amount Received ({settings.currency}) *</label>
+          {/* Amount */}
+          {form.customerName && form.invoiceId && (
+            <div className="form-group">
+              <label>Amount Received ({currency}) *</label>
+              <div style={{ position: "relative" }}>
                 <input
                   type="number"
                   placeholder="0.00"
                   value={form.amount === 0 ? "" : form.amount}
                   onChange={(e) => handleInput("amount", e.target.value)}
                   required
-                  min="1"
+                  min="0.01"
+                  step="0.01"
                 />
+                {invoiceAmount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => handleInput("amount", invoiceAmount)}
+                    style={{
+                      position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
+                      background: "#1b75bb", color: "#fff", border: "none", borderRadius: 4,
+                      padding: "2px 8px", fontSize: 11, fontWeight: 600, cursor: "pointer"
+                    }}
+                  >
+                    Full
+                  </button>
+                )}
               </div>
-            </>
+              {invoiceAmount > 0 && (
+                <small style={{ color: "#64748b", fontSize: 11 }}>
+                  Invoice total: {currency}{invoiceAmount.toLocaleString("en-IN")}
+                </small>
+              )}
+              {isPartialPayment && (
+                <small style={{ color: "#92400e", background: "#fef3c7", padding: "4px 8px", borderRadius: 4, display: "block", marginTop: 4, fontSize: 11 }}>
+                  ⚠️ Partial payment — {currency}{(invoiceAmount - formAmount).toLocaleString("en-IN")} remaining
+                </small>
+              )}
+            </div>
           )}
 
+          {/* Date */}
           <div className="form-group">
             <label>Payment Date *</label>
             <input
@@ -194,48 +243,57 @@ function RecordPaymentModal({ isOpen, onClose, initialInvoice }) {
               value={form.date}
               onChange={(e) => handleInput("date", e.target.value)}
               required
+              max={new Date().toISOString().split("T")[0]}
             />
           </div>
 
+          {/* Payment Mode */}
           <div className="form-group">
             <label>Payment Mode *</label>
-            <select
-              value={form.method}
-              onChange={(e) => handleInput("method", e.target.value)}
-              required
-            >
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Cash">Cash</option>
-              <option value="UPI">UPI</option>
-              <option value="Credit Card">Credit Card</option>
-              <option value="Cheque">Cheque</option>
-            </select>
+            <div className="modal-mode-grid">
+              {paymentModes.map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  className={`modal-mode-btn ${form.method === mode ? "selected" : ""}`}
+                  onClick={() => handleInput("method", mode)}
+                >
+                  <span>{methodIcons[mode] || "💰"}</span>
+                  <span>{mode}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
+          {/* Reference */}
           <div className="form-group">
-            <label>Reference Number (Txn ID, Cheque #, etc.)</label>
+            <label>Reference Number</label>
             <input
               type="text"
-              placeholder="e.g. TXN987234"
+              placeholder={
+                form.method === "UPI" ? "UPI Txn ID..." :
+                form.method === "Cheque" ? "Cheque No..." :
+                "e.g. TXN987234"
+              }
               value={form.reference}
               onChange={(e) => handleInput("reference", e.target.value)}
             />
           </div>
 
+          {/* Notes */}
           <div className="form-group">
             <label>Notes / Remarks</label>
             <textarea
               placeholder="e.g. Received full amount via net banking"
               value={form.notes}
               onChange={(e) => handleInput("notes", e.target.value)}
-              rows={3}
-              style={{ padding: "10px", borderRadius: "6px", border: "1px solid #ddd" }}
+              rows={2}
             />
           </div>
 
           <div className="modal-buttons">
             <button type="button" onClick={onClose}>Cancel</button>
-            <button type="submit" className="primary-btn">Record Payment</button>
+            <button type="submit" className="primary-btn">✓ Record Payment</button>
           </div>
         </form>
       </div>

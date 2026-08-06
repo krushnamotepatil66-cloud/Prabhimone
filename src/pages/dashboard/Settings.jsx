@@ -69,6 +69,8 @@ function Settings() {
     creditNoteTermsAndConditions: "1. Credit balance must be applied to future invoices within 180 days.\n2. Refunds on credit notes are subject to review.\n3. Original invoice details must accompany any disputes.",
     proformaPrefix: "PI-", proformaAutoNumber: true, proformaValidityDays: 30, proformaDefaultNotes: "",
     proformaTermsAndConditions: "1. This proforma invoice is sent for approval before final billing.\n2. Prices and rates listed are subject to terms of agreement.\n3. Final tax invoice will be generated upon receipt of payment or approval.",
+    purchaseOrderTermsAndConditions: "1. Goods received subject to inspection and approval.\n2. Payment will be processed as per agreed terms.\n3. Mention PO number on all invoices and delivery notes.\n4. All disputes are subject to PUNE jurisdiction only.",
+    billTermsAndConditions: "1. Bill is payable within the agreed credit period.\n2. Late payments will attract interest as per agreed terms.\n3. Discrepancies must be reported within 7 days of receipt.\n4. All disputes are subject to PUNE jurisdiction only.",
     customerDefaultType: "Existing", customerDefaultState: "Maharashtra",
     customerRequireEmail: false, customerRequirePhone: true,
     paymentDefaultMethod: "UPI", paymentModes: "UPI,Cash,Bank Transfer,Cheque,Credit Card,Debit Card",
@@ -725,6 +727,34 @@ function Settings() {
             <textarea
               value={form.proformaTermsAndConditions}
               onChange={(e) => handleInput("proformaTermsAndConditions", e.target.value)}
+              rows="5"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-card">
+        <h3 className="settings-card-title"><FiFileText className="card-title-icon" /> Purchase Order Terms</h3>
+        <p className="settings-card-desc">Default terms and conditions printed on all Purchase Orders sent to vendors.</p>
+        <div className="settings-form-grid">
+          <div className="form-group full-width">
+            <textarea
+              value={form.purchaseOrderTermsAndConditions || ""}
+              onChange={(e) => handleInput("purchaseOrderTermsAndConditions", e.target.value)}
+              rows="5"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-card">
+        <h3 className="settings-card-title"><FiCreditCard className="card-title-icon" /> Bill Terms</h3>
+        <p className="settings-card-desc">Default terms and conditions shown on Bills received from vendors.</p>
+        <div className="settings-form-grid">
+          <div className="form-group full-width">
+            <textarea
+              value={form.billTermsAndConditions || ""}
+              onChange={(e) => handleInput("billTermsAndConditions", e.target.value)}
               rows="5"
             />
           </div>

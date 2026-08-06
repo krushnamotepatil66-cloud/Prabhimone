@@ -31,9 +31,9 @@ const plans = [
   },
   {
     name: "Enterprise",
-    price: "Custom",
-    period: "",
-    button: "Contact Sales",
+    price: "₹149",
+    period: "/month",
+    button: "Start Free Trial",
     featured: false,
     features: [
       "Everything Included",

@@ -3,10 +3,11 @@
 .zoho-expense-form-container {
   display: flex;
   flex-direction: column;
-  background-color: #f8fafc;
-  min-height: calc(100vh - 120px);
+  background-color: #f4f6f8; /* Soft background */
+  min-height: calc(100vh - 64px); /* Topbar is usually around 64px */
+  margin: -30px; /* Negate DashboardLayout padding to span full width */
   position: relative;
-  padding-bottom: 90px; /* Space for the sticky footer actions bar */
+  padding-bottom: 90px;
   text-align: left;
 }
 
@@ -15,15 +16,38 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
+  padding: 20px 32px;
   background-color: #ffffff;
   border-bottom: 1px solid #e5e7eb;
-  border-radius: 8px 8px 0 0;
+}
+
+.header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-back-btn {
+  background: none;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.form-back-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
 }
 
 .form-page-header h2 {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: #1e293b;
   margin: 0;
 }
@@ -31,103 +55,305 @@
 .form-close-x {
   background: none;
   border: none;
-  font-size: 24px;
-  color: #94a3b8;
+  color: #64748b;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .form-close-x:hover {
   background-color: #f1f5f9;
-  color: #1e293b;
+  color: #0f172a;
 }
 
-/* Form layouts */
-.zoho-billing-form {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
+/* Form Layout */
+.form-content-wrapper {
+  padding: 24px 32px;
   width: 100%;
   box-sizing: border-box;
 }
 
+.zoho-billing-form {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.form-main-columns {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.form-left-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-right-col {
+  width: 320px;
+}
+
+/* Adjusted breakpoint for sidebar */
+@media (max-width: 1150px) {
+  .form-main-columns {
+    flex-direction: column;
+  }
+  .form-right-col {
+    width: 100%;
+  }
+}
+
+/* Cards */
 .form-section-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  box-sizing: border-box;
 }
 
 .section-card-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  color: #1b75bb; /* Zoho blue title highlights */
-  margin: 0 0 18px 0;
-  border-bottom: 1px dashed #e2e8f0;
-  padding-bottom: 8px;
+  color: #0f172a;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-/* Input Fields Controls */
+/* Grid within cards */
+.zoho-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .zoho-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .form-field-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  box-sizing: border-box;
 }
 
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Labels */
 .form-field-group label {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: #475569;
 }
 
 .required-label::after {
   content: " *";
-  color: #ea4335;
+  color: #ef4444;
 }
 
+/* Inputs & Selects */
 .form-input-control {
   padding: 10px 12px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 14px;
   outline: none;
   background-color: #ffffff;
   color: #1e293b;
-  transition: border-color 0.2s ease;
-  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .form-input-control:focus {
-  border-color: #1b75bb;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Customer Fields Grid */
-.customer-fields-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+.form-input-control:disabled {
+  background-color: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
-  .customer-fields-grid {
-    grid-template-columns: 1fr;
-  }
+.textarea-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Icons in Inputs */
+.input-with-icon, .input-with-currency {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 12px;
+  color: #64748b;
+  font-weight: 500;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.pl-9 {
+  padding-left: 36px !important;
+}
+
+.pl-10 {
+  padding-left: 40px !important;
+}
+
+/* Checkboxes */
+.checkbox-group {
+  margin-top: 8px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px !important;
+  color: #1e293b !important;
+  cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+}
+
+.helper-text {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+/* Receipt Upload Zone */
+.receipt-card {
+  height: calc(100% - 48px);
+}
+
+.receipt-upload-zone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+  min-height: 200px;
+}
+
+.receipt-upload-zone.drag-active {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.receipt-upload-zone.has-file {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.upload-icon {
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+.upload-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  margin: 0 0 4px 0;
+}
+
+.upload-subtext {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0 0 12px 0;
+}
+
+.upload-limits {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 12px;
+}
+
+.browse-btn {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.browse-btn:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.file-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.filename {
+  font-size: 14px;
+  font-weight: 500;
+  color: #065f46;
+  word-break: break-all;
+}
+
+.remove-file {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.remove-file:hover {
+  text-decoration: underline;
 }
 
 /* Sticky Footer actions bar */
 .customer-form-footer-actions {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 260px; /* Default Sidebar Width */
   right: 0;
   height: 70px;
   background-color: #ffffff;
@@ -135,38 +361,354 @@
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 32px;
   gap: 12px;
   z-index: 50;
   box-sizing: border-box;
+  transition: left 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* When the sidebar is collapsed */
+.sidebar-collapsed .customer-form-footer-actions {
+  left: 72px; /* Collapsed Sidebar Width */
+}
+
+/* When on mobile devices */
+@media (max-width: 768px) {
+  .customer-form-footer-actions {
+    left: 0;
+  }
 }
 
 .action-footer-btn {
   padding: 10px 20px;
   border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .save-btn {
-  background-color: #1b75bb;
+  background-color: #1b75bb; /* Zoho Blue */
   color: #ffffff;
-  border: 1px solid #155e96;
+  border: 1px solid #1b75bb;
 }
 
 .save-btn:hover {
   background-color: #155e96;
+  border-color: #155e96;
+  box-shadow: 0 2px 4px rgba(27, 117, 187, 0.2);
+}
+
+.save-new-btn {
+  background-color: #ffffff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+}
+
+.save-new-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
 }
 
 .cancel-btn {
   background-color: #ffffff;
-  color: #475569;
-  border: 1px solid #cbd5e1;
+  color: #ef4444; /* Subtle red for cancel */
+  border: 1px solid #fca5a5;
+  margin-left: auto; /* Push to right if desired, or keep next to others */
 }
 
 .cancel-btn:hover {
-  background-color: #f8fafc;
+  background-color: #fef2f2;
+  border-color: #ef4444;
+}
+
+/* Add Expense Type Button */
+.add-category-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: #1b75bb;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 2px;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.add-category-btn:hover {
+  color: #155e96;
+  background-color: #eff6ff;
+  padding: 4px 8px;
+}
+
+/* Inline modal that appears below the dropdown */
+.add-category-modal {
+  margin-top: 10px;
+  background: #f0f7ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeInDown 0.18s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.add-category-modal-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin: 0;
+}
+
+.add-category-modal-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.modal-confirm-btn {
+  background-color: #1b75bb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.modal-confirm-btn:hover {
+  background-color: #155e96;
+}
+
+.modal-cancel-btn {
+  background-color: #ffffff;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.modal-cancel-btn:hover {
+  background-color: #f1f5f9;
   border-color: #94a3b8;
+}
+
+/* ── Customer Autocomplete Search ── */
+.customer-autocomplete-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  transition: border-color 0.2s;
+  height: 44px;
+  padding: 0 12px;
+  gap: 8px;
+}
+
+.customer-autocomplete-wrapper:focus-within {
+  border-color: #1b75bb;
+  box-shadow: 0 0 0 3px rgba(27, 117, 187, 0.1);
+}
+
+.customer-search-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.customer-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.customer-search-input::placeholder {
+  color: #94a3b8;
+}
+
+.customer-caret {
+  color: #94a3b8;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.customer-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+  max-height: 240px;
+  overflow-y: auto;
+  animation: fadeInDown 0.15s ease;
+}
+
+.customer-suggestion-row {
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.15s;
+}
+
+.customer-suggestion-row:last-child {
+  border-bottom: none;
+}
+
+.customer-suggestion-row:hover {
+  background-color: #f0f7ff;
+}
+
+.customer-suggestion-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.customer-suggestion-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.customer-no-results {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.create-new-row {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1b75bb;
+  background: #f0f7ff;
+  border-top: 1px solid #dbeafe;
+  border-radius: 0 0 8px 8px;
+}
+
+.create-new-row:hover {
+  background: #dbeafe;
+}
+
+/* -- Expense Summary Card -- */
+.expense-summary-card {
+  margin-top: 16px;
+  background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);
+  border: 1.5px solid #dbeafe;
+}
+
+.expense-summary-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.expense-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.expense-summary-label {
+  font-size: 13.5px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expense-summary-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.expense-tax-badge {
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 99px;
+  border: 1px solid #bfdbfe;
+}
+
+.text-muted {
+  color: #94a3b8;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.expense-summary-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #cbd5e1, transparent);
+  margin: 4px 0;
+}
+
+.expense-summary-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #1b75bb 0%, #1e40af 100%);
+  border-radius: 10px;
+  margin-top: 2px;
+}
+
+.expense-total-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+
+.expense-total-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+}
+
+.expense-billable-badge {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 7px 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.readonly-input {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  cursor: not-allowed !important;
+  font-weight: 600;
 }

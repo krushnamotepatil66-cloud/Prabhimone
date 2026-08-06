@@ -13,12 +13,12 @@ const initialPayments = [];
 
 const initialSettings = {
   // Organization
-  companyName: "PrabhimOne India",
-  email: "billing@prabhimone.com",
-  phone: "+91 98765 43210",
-  address: "123, Business Hub, Bandra East",
-  city: "Mumbai, Maharashtra",
-  zip: "400051",
+  companyName: "",
+  email: "",
+  phone: "",
+  address: "",
+  city: "",
+  zip: "",
   website: "",
   gstinOrg: "",
 
@@ -53,6 +53,10 @@ const initialSettings = {
   proformaDefaultNotes: "",
   proformaTermsAndConditions: "1. This proforma invoice is sent for approval before final billing.\n2. Prices and rates listed are subject to terms of agreement.\n3. Final tax invoice will be generated upon receipt of payment or approval.",
 
+  // Purchases
+  purchaseOrderTermsAndConditions: "1. Goods received subject to inspection and approval.\n2. Payment will be processed as per agreed terms.\n3. Mention PO number on all invoices and delivery notes.\n4. All disputes are subject to PUNE jurisdiction only.",
+  billTermsAndConditions: "1. Bill is payable within the agreed credit period.\n2. Late payments will attract interest as per agreed terms.\n3. Discrepancies must be reported within 7 days of receipt.\n4. All disputes are subject to PUNE jurisdiction only.",
+
   // Customers
   customerDefaultType: "Existing",
   customerDefaultState: "Maharashtra",
@@ -79,15 +83,23 @@ const initialSettings = {
   dateFormat: "YYYY-MM-DD",
   numberFormat: "Indian",
   theme: "light",
-  language: "English"
+  language: "English",
+
+  // Subscription Billing History
+  billingHistory: [],
+
+  // Subscription
+  subscriptionPlan: null,
+  subscriptionStatus: null,
+  savedPaymentMethod: null
 };
 
 const initialProfile = {
-  name: "Aditya Kumar",
-  email: "aditya.k@prabhimone.com",
-  phone: "+91 99887 76655",
-  role: "Administrator",
-  avatar: "👨‍💻",
+  name: "",
+  email: "",
+  phone: "",
+  role: "",
+  avatar: "👤",
   theme: "light",
   profilePic: ""
 };
@@ -101,6 +113,10 @@ const initialEstimates = [];
 const initialCreditNotes = [];
 
 const initialProformaInvoices = [];
+
+const initialPurchases = [];
+
+const initialVendors = [];
 
 export function AppProvider({ children }) {
   const [customers, setCustomers] = useState(() => {
@@ -125,7 +141,21 @@ export function AppProvider({ children }) {
 
   const [settings, setSettings] = useState(() => {
     const val = localStorage.getItem("prabhimone_settings");
-    return val ? JSON.parse(val) : initialSettings;
+    if (val) {
+      const saved = JSON.parse(val);
+      // Merge new defaults over saved — but filter out old sample billing history entries
+      // (sample entries had no razorpayPaymentId and used the demo INV-YYYY-MM-001 pattern)
+      const cleanBillingHistory = Array.isArray(saved.billingHistory)
+        ? saved.billingHistory.filter(
+            (inv) =>
+              // Keep only entries that have a Razorpay ID (real payment) OR aren't the hardcoded samples
+              inv.razorpayPaymentId ||
+              !/^INV-20\d\d-\d\d-00\d$/.test(inv.id || "")
+          )
+        : [];
+      return { ...initialSettings, ...saved, billingHistory: cleanBillingHistory };
+    }
+    return initialSettings;
   });
 
   const [profile, setProfile] = useState(() => {
@@ -156,6 +186,16 @@ export function AppProvider({ children }) {
   const [proformaInvoices, setProformaInvoices] = useState(() => {
     const val = localStorage.getItem("prabhimone_proforma_invoices");
     return val ? JSON.parse(val) : initialProformaInvoices;
+  });
+
+  const [purchases, setPurchases] = useState(() => {
+    const val = localStorage.getItem("prabhimone_purchases");
+    return val ? JSON.parse(val) : initialPurchases;
+  });
+
+  const [vendors, setVendors] = useState(() => {
+    const val = localStorage.getItem("prabhimone_vendors");
+    return val ? JSON.parse(val) : initialVendors;
   });
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -290,6 +330,14 @@ export function AppProvider({ children }) {
   useEffect(() => {
     localStorage.setItem("prabhimone_proforma_invoices", JSON.stringify(proformaInvoices));
   }, [proformaInvoices]);
+
+  useEffect(() => {
+    localStorage.setItem("prabhimone_purchases", JSON.stringify(purchases));
+  }, [purchases]);
+
+  useEffect(() => {
+    localStorage.setItem("prabhimone_vendors", JSON.stringify(vendors));
+  }, [vendors]);
 
   useEffect(() => {
     localStorage.setItem("prabhimone_sidebar_collapsed", JSON.stringify(sidebarCollapsed));
@@ -608,7 +656,7 @@ export function AppProvider({ children }) {
   const addExpense = (expense) => {
     const newExp = {
       ...expense,
-      id: `EXP-${String(expenses.length + 1).padStart(3, "0")}`
+      id: expense.id || `EXP-${String(expenses.length + 1).padStart(3, "0")}`
     };
     setExpenses((prev) => [newExp, ...prev]);
     logActivity(`Expense of ₹${newExp.amount} for ${newExp.category} recorded`);
@@ -689,6 +737,55 @@ export function AppProvider({ children }) {
     logActivity(`Proforma Invoice ${id} deleted`);
   };
 
+  // Purchases CRUD
+  const addPurchase = (purchase) => {
+    const newPur = {
+      ...purchase,
+      id: purchase.id || `PUR-${String(purchases.length + 1).padStart(3, "0")}`
+    };
+    setPurchases((prev) => [newPur, ...prev]);
+    logActivity(`Purchase of ₹${newPur.total} recorded`);
+    return newPur;
+  };
+
+  const deletePurchase = (id) => {
+    setPurchases((prev) => prev.filter((p) => p.id !== id));
+    logActivity(`Purchase ${id} deleted`);
+  };
+
+  // Vendors CRUD
+  const addVendor = (vendor) => {
+    const newVendor = {
+      ...vendor,
+      id: vendor.id || `VND-${String(vendors.length + 1).padStart(3, "0")}`
+    };
+    setVendors((prev) => [newVendor, ...prev]);
+    logActivity(`Vendor ${newVendor.name} added`);
+    return newVendor;
+  };
+
+  const updateVendor = (updatedVendor) => {
+    setVendors((prev) =>
+      prev.map((v) => (v.id === updatedVendor.id ? updatedVendor : v))
+    );
+    // Update purchase vendor names if changed
+    setPurchases((prev) =>
+      prev.map((pur) => {
+        const matchingVendor = vendors.find((v) => v.id === updatedVendor.id);
+        if (matchingVendor && pur.vendor === matchingVendor.name) {
+          return { ...pur, vendor: updatedVendor.name };
+        }
+        return pur;
+      })
+    );
+    logActivity(`Vendor ${updatedVendor.name} updated`);
+  };
+
+  const deleteVendor = (id) => {
+    setVendors((prev) => prev.filter((v) => v.id !== id));
+    logActivity(`Vendor ${id} deleted`);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -704,6 +801,8 @@ export function AppProvider({ children }) {
         estimates,
         creditNotes,
         proformaInvoices,
+        purchases,
+        vendors,
         addCustomer,
         updateCustomer,
         deleteCustomer,
@@ -733,6 +832,11 @@ export function AppProvider({ children }) {
         addProformaInvoice,
         updateProformaInvoice,
         deleteProformaInvoice,
+        addPurchase,
+        deletePurchase,
+        addVendor,
+        updateVendor,
+        deleteVendor,
         sidebarCollapsed,
         setSidebarCollapsed,
         sidebarMobileOpen,
